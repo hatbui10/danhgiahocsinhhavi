@@ -683,11 +683,7 @@ function renderFullSystemUI() {
     });
 }
 
-function renderAbsentRowsHtml(students) {
-    const absentStudents = students.filter(s => s.status === 'absent');
-    if (absentStudents.length === 0) return '<li><em>Chưa có học sinh vắng</em></li>';
-    return absentStudents.map(s => `<li>• ${s.name} ${s.note ? '(' + s.note + ')' : '(Chưa rõ lý do)'}</li>`).join('');
-}
+
 
 function renderStudentCardsHtml(classKey, students) {
 
@@ -749,9 +745,20 @@ function renderStudentCardsHtml(classKey, students) {
                             ${idx + 1}. ${student.name}
                         </span>
 
-                        <span class="student-phone" style="display:none;">
-                            SĐT: ${displayPhone(student.phone)}
-                        </span>
+                        <div
+style="
+font-size:11px;
+color:#aaa;
+margin-top:2px;
+">
+
+👤 ${student.lastEditor || "Chưa có"}
+
+<br>
+
+🕒 ${student.lastUpdate || ""}
+
+</div>
 
                     </div>
 
@@ -772,7 +779,7 @@ function renderStudentCardsHtml(classKey, students) {
                 <div
                     style="
                         display:grid;
-                        grid-template-columns:repeat(5,1fr);
+                        grid-template-columns:repeat(4,1fr);
                         gap:6px;
                         margin-top:5px;
                     ">
@@ -781,6 +788,74 @@ function renderStudentCardsHtml(classKey, students) {
 
                 </div>
 
+
+<div style="margin-top:8px;">
+
+    <textarea
+    id="note-${classKey}-${student.id}"
+    rows="3"
+    placeholder="Nhập ghi chú..."
+    style="width:100%;resize:vertical;padding:6px;"></textarea>
+
+</div>
+<div
+id="history-${classKey}-${student.id}"
+style="
+margin-top:8px;
+max-height:160px;
+overflow-y:auto;
+background:#222;
+padding:6px;
+border-radius:6px;
+font-size:12px;
+">
+
+${
+(student.noteHistory || []).slice().reverse().map(item=>`
+
+<div style="
+border-bottom:1px solid #444;
+padding:6px 0;
+">
+
+<div style="color:#ffd700;">
+
+👤 ${item.editor}
+
+</div>
+
+<div style="font-size:11px;color:#aaa;">
+
+🕒 ${item.time}
+
+</div>
+
+<div>
+
+${item.note}
+
+</div>
+
+</div>
+
+`).join("")
+}
+
+</div>
+
+<div style="margin-top:8px;text-align:right;">
+
+    <button
+class="btn-add"
+onclick="saveStudent('${classKey}',${student.id})">
+
+💾 Xác nhận
+
+</button>
+
+</div>
+
+
             </div>
         `;
 
@@ -788,6 +863,65 @@ function renderStudentCardsHtml(classKey, students) {
 
 }
 
+function updateStudentNote(classKey, studentId, note){
+
+    const student = bigClassesDatabase[classKey].students.find(
+        s=>s.id===studentId
+    );
+
+    if(!student) return;
+
+    student.note = note;
+
+}
+
+
+async function saveStudent(classKey, studentId){
+
+    const student =
+        bigClassesDatabase[classKey]
+        .students
+        .find(s=>s.id===studentId);
+
+    if(!student) return;
+
+    const textarea=document.getElementById(
+        `note-${classKey}-${student.id}`
+    );
+
+    const note=textarea.value.trim();
+
+    if(!student.noteHistory){
+
+        student.noteHistory=[];
+
+    }
+
+    if(note!==""){
+
+        student.noteHistory.push({
+
+            editor:currentUser,
+
+            time:new Date().toLocaleString("vi-VN"),
+
+            note:note
+
+        });
+
+        textarea.value="";
+
+    }
+
+    student.lastEditor=currentUser;
+
+    student.lastUpdate=new Date().toLocaleString("vi-VN");
+
+    await saveDatabaseState();
+
+    renderFullSystemUI();
+
+}
 function updateStudentStatus(classKey, studentId, status) {
     let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
     if (student) {
