@@ -248,6 +248,110 @@ name:"Lê Thị B"
 }
 
 };
+
+const dropdownConfig = {
+
+    "1": [
+        "",
+        "Xuất sắc",
+        "Tốt",
+        "Khá",
+        "Trung bình",
+        "Yếu"
+    ],
+
+    "2": [
+        "",
+        "Có",
+        "Không"
+    ],
+
+    "3": [
+        "",
+        "Đạt",
+        "Chưa đạt"
+    ],
+
+    "4": [
+        "",
+        "Hoàn thành",
+        "Chưa hoàn thành"
+    ],
+
+    "5": [
+        "",
+        "A",
+        "B",
+        "C",
+        "D"
+    ],
+
+    "6": [
+        "",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+    ],
+
+    "7": [
+        "",
+        "Có",
+        "Không"
+    ],
+
+    "8": [
+        "",
+        "Rất tốt",
+        "Tốt",
+        "Khá"
+    ],
+
+    "9": [
+        "",
+        "Đúng",
+        "Sai"
+    ],
+
+    "10": [
+        "",
+        "Có",
+        "Không"
+    ],
+
+    "11": [
+        "",
+        "A",
+        "B",
+        "C"
+    ],
+
+    "12": [
+        "",
+        "Đạt",
+        "Không đạt"
+    ],
+
+    "13": [
+        "",
+        "Có",
+        "Không"
+    ],
+
+    "14": [
+        "",
+        "Đầy đủ",
+        "Thiếu"
+    ],
+
+    "15": [
+        "",
+        "Hoàn thành",
+        "Chưa hoàn thành"
+    ]
+
+};
 let bigClassesDatabase = {};
 let currentUser = null;
 
@@ -586,57 +690,102 @@ function renderAbsentRowsHtml(students) {
 }
 
 function renderStudentCardsHtml(classKey, students) {
+
     return students.map((student, idx) => {
+
         const cardId = `card-${classKey.replace(/\s+/g, '-')}-${student.id}`;
 
-        // Tự động tạo 15 dropdown đánh giá
-        let dropdownsHtml = '';
+        let dropdownsHtml = "";
+
         for (let i = 1; i <= 15; i++) {
-            // Lấy giá trị đã lưu trước đó nếu có (mặc định là trống)
-            const savedValue = student[`eval_${i}`] || ''; 
-            
+
+            // Giá trị đã lưu
+            const savedValue = student[`eval_${i}`] || "";
+
+            // Danh sách option của dropdown thứ i
+            const options = dropdownConfig[i] || [""];
+
+            let optionHtml = "";
+
+            options.forEach(option => {
+
+                optionHtml += `
+                    <option value="${option}" ${savedValue === option ? "selected" : ""}>
+                        ${option === "" ? "--" : option}
+                    </option>
+                `;
+
+            });
+
             dropdownsHtml += `
-                <div style="display: flex; flex-direction: column; gap: 2px;">
-                    <label style="font-size: 0.7rem; color: #aaa;">ĐG ${i}</label>
-                    <select class="note-select" style="padding: 5px 2px; font-size: 0.75rem;" 
-                            onchange="updateStudentEvaluation('${classKey}', ${student.id}, ${i}, this.value)">
-                        <option value="" ${savedValue === '' ? 'selected' : ''}>--</option>
-                        <option value="1" ${savedValue === '1' ? 'selected' : ''}>1</option>
-                        <option value="2" ${savedValue === '2' ? 'selected' : ''}>2</option>
-                        <option value="3" ${savedValue === '3' ? 'selected' : ''}>3</option>
-                        <option value="4" ${savedValue === '4' ? 'selected' : ''}>4</option>
-                        <option value="5" ${savedValue === '5' ? 'selected' : ''}>5</option>
-                        <option value="6" ${savedValue === '6' ? 'selected' : ''}>6</option>
-                        <option value="7" ${savedValue === '7' ? 'selected' : ''}>7</option>
-                        <option value="8" ${savedValue === '8' ? 'selected' : ''}>8</option>
-                        <option value="9" ${savedValue === '9' ? 'selected' : ''}>9</option>
-                        <option value="10" ${savedValue === '10' ? 'selected' : ''}>10</option>
+                <div style="display:flex;flex-direction:column;gap:2px;">
+
+                    <label style="font-size:0.7rem;color:#aaa;">
+                        ĐG ${i}
+                    </label>
+
+                    <select
+                        class="note-select"
+                        style="padding:5px 2px;font-size:0.75rem;"
+                        onchange="updateStudentEvaluation('${classKey}', ${student.id}, ${i}, this.value)">
+
+                        ${optionHtml}
+
                     </select>
+
                 </div>
             `;
+
         }
 
         return `
-            <div class="student-card" id="${cardId}" style="border-left-color: #ffd700;">
+            <div class="student-card" id="${cardId}" style="border-left-color:#ffd700;">
+
                 <div class="student-info-row">
+
                     <div class="student-meta">
-                        <span class="student-name">${idx + 1}. ${student.name}</span>
-                        <!-- Nếu muốn hiện lại SĐT thì xóa style="display:none;" ở dưới -->
-                        <span class="student-phone" style="display: none;">SĐT: ${displayPhone(student.phone)}</span>
+
+                        <span class="student-name">
+                            ${idx + 1}. ${student.name}
+                        </span>
+
+                        <span class="student-phone" style="display:none;">
+                            SĐT: ${displayPhone(student.phone)}
+                        </span>
+
                     </div>
+
                     <div class="student-actions-right">
-                        
-                        <button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')">Xoá</button>
+
+                        <button
+                            class="btn-delete"
+                            onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')">
+
+                            Xoá
+
+                        </button>
+
                     </div>
+
                 </div>
-                
-                <!-- Khu vực chứa 15 ô dropdown đánh giá chia theo dạng lưới (Grid) -->
-                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 5px;">
+
+                <div
+                    style="
+                        display:grid;
+                        grid-template-columns:repeat(5,1fr);
+                        gap:6px;
+                        margin-top:5px;
+                    ">
+
                     ${dropdownsHtml}
+
                 </div>
+
             </div>
         `;
-    }).join('');
+
+    }).join("");
+
 }
 
 function updateStudentStatus(classKey, studentId, status) {
