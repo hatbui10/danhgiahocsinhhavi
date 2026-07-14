@@ -735,6 +735,27 @@ function clearSystemCache() {
         document.getElementById('fileStatusMessage').innerText = "Chưa có dữ liệu học viên. Vui lòng chọn tệp Excel.";
     }
 }
+
+function updateStudentEvaluation(classKey, studentId, evalIndex, value) {
+
+    const student = bigClassesDatabase[classKey].students.find(
+        s => s.id === studentId
+    );
+
+    if (!student) return;
+
+    // Lưu giá trị dropdown
+    student[`eval_${evalIndex}`] = value;
+
+    // Lưu local
+    localStorage.setItem(
+        "big_classes_database",
+        JSON.stringify(bigClassesDatabase)
+    );
+
+    // Đồng bộ Firebase
+    saveDatabaseState();
+}
 </script>
 
 <script type="module">
