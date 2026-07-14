@@ -117,51 +117,139 @@
 </head>
 <body>
 
-<h2>ĐÁNH GIÁ HỌC SINH </h2>
+<h2>ĐÁNH GIÁ HỌC SINH</h2>
 
-<div class="upload-card">
-    <div class="btn-group-top">
-        <label for="excelFileInput" class="custom-upload-btn">📂 Tải lên File Excel</label>
-        <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;" onchange="startProcessingExcel(this)">
-        <button class="btn-danger-top" onclick="clearSystemCache()"> XÓA dữ liệu CŨ</button>
+<!-- MÀN HÌNH ĐĂNG NHẬP -->
+<div id="loginBox"
+style="
+background:#111;
+padding:20px;
+border:2px solid gold;
+border-radius:8px;
+margin-bottom:20px;
+">
+
+<h3 style="text-align:center;color:#ffd700">
+ĐĂNG NHẬP
+</h3>
+
+<input
+id="username"
+placeholder="Tên đăng nhập"
+style="
+width:100%;
+padding:10px;
+margin:8px 0;
+">
+
+<input
+id="password"
+type="password"
+placeholder="Mật khẩu"
+style="
+width:100%;
+padding:10px;
+margin:8px 0;
+">
+
+<button
+class="btn-add"
+style="width:100%;"
+onclick="loginSystem()">
+
+ĐĂNG NHẬP
+
+</button>
+
+</div>
+
+<!-- TOÀN BỘ GIAO DIỆN CHÍNH -->
+<div id="mainApp" style="display:none;">
+
+    <div class="upload-card">
+        <div class="btn-group-top">
+            <label for="excelFileInput" class="custom-upload-btn">📂 Tải lên File Excel</label>
+            <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display:none;" onchange="startProcessingExcel(this)">
+            <button class="btn-danger-top" onclick="clearSystemCache()">XÓA dữ liệu CŨ</button>
+        </div>
+
+        <div id="fileStatusMessage" class="file-status">
+            Chưa có dữ liệu học viên. Vui lòng chọn tệp Excel.
+        </div>
     </div>
-    <div id="fileStatusMessage" class="file-status">Chưa có dữ liệu học viên. Vui lòng chọn tệp Excel.</div>
-</div>
 
-<div class="progress-container" id="progressContainer">
-    <div class="progress-bar" id="progressBar">0%</div>
-</div>
-
-<div class="search-box">
-    <input type="text" id="globalSearchInput" class="search-input" placeholder="Nhập tên hoặc số điện thoại để tìm nhanh..." onkeypress="handleSearchKeyPress(event)">
-    <button class="search-btn" onclick="searchGlobalStudent()">Tìm Kiếm</button>
-</div>
-
-<div id="searchResultBox" class="search-result-panel">
-    <div class="result-title">
-        <span>🔍 KẾT QUẢ TÌM KIẾM TOÀN HỆ THỐNG:</span>
-        <span id="resultCount" style="color: #ffd700;"></span>
+    <div class="progress-container" id="progressContainer">
+        <div class="progress-bar" id="progressBar">0%</div>
     </div>
-    <table class="result-table">
-        <thead>
-            <tr>
-                <th>Họ và Tên</th>
-                <th>SĐT</th>
-                <th>Lớp Học</th>
-                <th>Gọi</th>
-            </tr>
-        </thead>
-        <tbody id="resultTableBody"></tbody>
-    </table>
-</div>
 
-<div id="dynamicMainContainer">
-    <div class="empty-alert">Danh sách trống. Hệ thống sẽ tự động vẽ giao diện HTML 1 sau khi bạn nạp file Excel thành công!</div>
+    <div class="search-box">
+        <input
+            type="text"
+            id="globalSearchInput"
+            class="search-input"
+            placeholder="Nhập tên hoặc số điện thoại để tìm nhanh..."
+            onkeypress="handleSearchKeyPress(event)">
+
+        <button class="search-btn"
+            onclick="searchGlobalStudent()">
+            Tìm Kiếm
+        </button>
+    </div>
+
+    <div id="searchResultBox" class="search-result-panel">
+
+        <div class="result-title">
+            <span>🔍 KẾT QUẢ TÌM KIẾM TOÀN HỆ THỐNG:</span>
+            <span id="resultCount" style="color:#ffd700;"></span>
+        </div>
+
+        <table class="result-table">
+
+            <thead>
+                <tr>
+                    <th>Họ và Tên</th>
+                    <th>SĐT</th>
+                    <th>Lớp Học</th>
+                    <th>Gọi</th>
+                </tr>
+            </thead>
+
+            <tbody id="resultTableBody"></tbody>
+
+        </table>
+
+    </div>
+
+    <div id="dynamicMainContainer">
+        <div class="empty-alert">
+            Danh sách trống. Hệ thống sẽ tự động vẽ giao diện HTML sau khi bạn nạp file Excel thành công!
+        </div>
+    </div>
+
 </div>
 
 <script>
 const targetSheets = ["SV", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "DH25", "DH26"];
+const users={
+
+admin:{
+password:"123456",
+name:"Quản trị"
+},
+
+gv01:{
+password:"111111",
+name:"Nguyễn Văn A"
+},
+
+gv02:{
+password:"222222",
+name:"Lê Thị B"
+}
+
+};
 let bigClassesDatabase = {};
+let currentUser = null;
 
 function displayPhone(p) { 
     if(!p || p === 'Chưa có' || p === 'undefined') return 'Chưa có';
@@ -170,18 +258,60 @@ function displayPhone(p) {
     return p; 
 }
 
-window.onload = async function () {
-    try {
-        await window.loadFromFirebase();
-    } catch (e) {
-        const cachedData = localStorage.getItem("big_classes_database");
-        if (cachedData) {
-            bigClassesDatabase = JSON.parse(cachedData);
-            renderFullSystemUI();
-        }
+function loginSystem() {
+
+    const u = document.getElementById("username").value.trim();
+    const p = document.getElementById("password").value.trim();
+
+    if (users[u] && users[u].password === p) {
+
+        currentUser = users[u].name;
+
+        // Ẩn màn hình đăng nhập
+        document.getElementById("loginBox").style.display = "none";
+
+        // Hiện toàn bộ hệ thống
+        document.getElementById("mainApp").style.display = "block";
+
+        // Vẽ giao diện lớp học
+        renderFullSystemUI();
+
+        alert("✅ Đăng nhập thành công\nXin chào " + currentUser);
+
+    } else {
+
+        alert("❌ Bạn đã truy cập thất bại");
+
+        document.getElementById("password").value = "";
+        document.getElementById("password").focus();
+
     }
+
 }
 
+window.onload = async function () {
+
+    try {
+
+        await window.loadFromFirebase();
+
+    } catch (e) {
+
+        const cachedData = localStorage.getItem("big_classes_database");
+
+        if (cachedData) {
+            bigClassesDatabase = JSON.parse(cachedData);
+        }
+
+    }
+
+    // Luôn ẩn giao diện chính khi mới mở
+    document.getElementById("mainApp").style.display = "none";
+
+    // Luôn hiện màn hình đăng nhập
+    document.getElementById("loginBox").style.display = "block";
+
+};
 function startProcessingExcel(input) {
     const file = input.files[0];
     if (!file) return;
