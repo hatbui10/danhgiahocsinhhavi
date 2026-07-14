@@ -563,19 +563,11 @@ function renderFullSystemUI() {
                     
                     <div class="add-student-box">
                         <input type="text" id="inputName-${classKey.replace(/\s+/g, '-')}" placeholder="Dòng 1: Nhập họ và tên...">
-                        <input type="tel" id="inputPhone-${classKey.replace(/\s+/g, '-')}" placeholder="Dòng 2: Nhập số điện thoại...">
+                        
                         <button class="btn-add" onclick="addNewStudentToClass('${classKey}')">+ Thêm vào danh sách</button>
                     </div>
                     
-                    <div class="absent-section">
-                        <div class="absent-header">
-                            <span class="absent-title">DANH SÁCH VẮNG HÔM NAY</span>
-                            <button class="copy-btn" onclick="copyAbsentReport('${classKey}')">Copy</button>
-                        </div>
-                        <ul class="absent-list" id="absentList-${classKey.replace(/\s+/g, '-')}">
-                            ${renderAbsentRowsHtml(students)}
-                        </ul>
-                    </div>
+                    
                     
                     <div class="student-list" id="studentList-${classKey.replace(/\s+/g, '-')}">
                         ${renderStudentCardsHtml(classKey, students)}
