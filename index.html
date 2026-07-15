@@ -100,9 +100,44 @@
         .student-card.active .student-arrow { transform: rotate(180deg); }
         
         /* DANH SÁCH TIÊU CHÍ HÀNG DỌC */
-        .eval-vertical-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; background: #090911; padding: 10px; border-radius: 4px; border: 1px solid #222; }
-        .eval-item { display: flex; flex-direction: column; gap: 4px; border-bottom: 1px solid #1a1a2e; padding-bottom: 8px; }
-        .eval-item:last-child { border-bottom: none; padding-bottom: 0; }
+        /* DANH SÁCH TIÊU CHÍ - KHUNG CHỨA FLEXBOX CHUNG */
+.eval-vertical-list { 
+    display: flex; 
+    flex-direction: row;       /* Chuyển sang dạng hàng ngang để xếp cạnh nhau */
+    flex-wrap: wrap;           /* Tự động xuống dòng khi hết chỗ */
+    gap: 12px 15px;            /* Khoảng cách giữa các tiêu chí (dưới - ngang) */
+    margin-top: 10px; 
+    background: #090911; 
+    padding: 12px 10px; 
+    border-radius: 4px; 
+    border: 1px solid #222; 
+}
+
+/* ĐỊNH DẠNG TỪNG TIÊU CHÍ DỰA TRÊN ĐỘ DÀI */
+.eval-item { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 4px; 
+    padding-bottom: 4px;
+    flex-grow: 1;              /* Tự động kéo giãn để lấp đầy khoảng trống */
+    flex-shrink: 1; 
+    min-width: 140px;          /* Chiều rộng tối thiểu để không bị quá hẹp */
+}
+
+/* Các tiêu chí ngắn (Thường có độ dài ký tự ngắn, ví dụ: "Khả năng nói", "Khả năng nghe") 
+   Sẽ tự co giãn và chiếm khoảng một nửa hàng (ở màn hình lớn) */
+.eval-item.short-item {
+    flex-basis: calc(50% - 15px); /* Ưu tiên chiếm 50% độ rộng dòng */
+}
+
+/* Các tiêu chí dài (Ví dụ: "Đề xuất của giáo viên", "Tình trạng tháng trước")
+   Sẽ luôn luôn chiếm trọn vẹn 100% dòng riêng biệt */
+.eval-item.long-item {
+    flex-basis: 100%;             /* Luôn chiếm 100% độ rộng */
+}
+
+
+
         .eval-label { font-size: 0.8rem; color: #00f0ff; font-weight: bold; }
         .note-select { background: #1a1a3a; color: #fff; border: 1px solid #555; padding: 8px; font-size: 0.85rem; border-radius: 4px; outline: none; width: 100%; }
         .note-select:focus { border-color: #ffd700; }
@@ -272,12 +307,13 @@ const dropdownConfig = {
     "Đánh giá ngữ pháp": ["", "Xuất sắc 9-10", "Khá 7-8", "Trung bình 5-6", "Dưới 5", "Mất gốc (1-2)"],
     "Ý thức học bài": ["", "Làm và ôn bài đầy đủ", "Có buổi làm, có buổi còn thiếu", "Thường xuyên không làm", "Không bao giờ làm"],
     "Thuộc từ mới": ["", "Tốt", "Khá", "Trung bình", "Yếu"],
-    "Áp dụng cấu trúc": ["", "Thuộc và biết cách áp dụng công thức", "Hiểu nhưng vẫn còn chưa vững, vẫn còn nhầm khi áp dụng công thức", "Gặp khó khăn trong việc áp dụng công thức", "Không hiểu và không thể áp dụng được công thức"],
+"Đề xuất của giáo viên": ["", "Có thể học vượt lớp", "Giữ nguyên", "GV Không thể dạy được", "Hà Vi không nên nhận dạy HS"],
+    
     "Khả năng nói": ["", "A", "B", "C", "D"],
     "Khả năng nghe": ["", "A", "B", "C", "D"],
     "Ý thức giờ học": ["", "Ngoan", "Còn thỉnh thoảng nói chuyện, làm việc riêng", "Nghịch nhưng cô nhắc vẫn nghe", "Tăng động, nghịch rất khó kiểm soát"],
     "Tình trạng tháng trước": ["", "Tiến bộ", "Như cũ", "Kém đi", "Báo động (Thụt lùi nghiêm trọng)", "Học sinh chán, muốn nghỉ học"],
-    "Đề xuất của giáo viên": ["", "Có thể học vượt lớp", "Giữ nguyên", "GV Không thể dạy được", "Hà Vi không nên nhận dạy HS"]
+    "Áp dụng cấu trúc": ["", "Thuộc và biết cách áp dụng công thức", "Hiểu nhưng vẫn còn chưa vững, vẫn còn nhầm khi áp dụng công thức", "Gặp khó khăn trong việc áp dụng công thức", "Không hiểu và không thể áp dụng được công thức"]
 };
 
 let bigClassesDatabase = {};
@@ -627,8 +663,11 @@ for (let key in dropdownConfig) {
         <option value="${opt}" ${opt === currentSelected ? 'selected' : ''}>${opt === "" ? "-- Trống --" : opt}</option>
     `).join('');
 
+    // Tự động phân loại: Tiêu chí nào có tên dài hơn 15 ký tự là dài (long-item), ngược lại là ngắn (short-item)
+    const itemClass = key.length > 25 ? 'long-item' : 'short-item';
+
     dropdownsHtml += `
-        <div class="eval-item">
+        <div class="eval-item ${itemClass}">
             <span class="eval-label">${count}. ${key}:</span>
             <select class="note-select" data-eval-idx="${key}">
                 ${optionsHtml}
