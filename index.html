@@ -414,25 +414,41 @@ function startProcessingExcel(input) {
                                 
                                 const nextStudentId = bigClassesDatabase[currentClassKey].students.length + 1;
                                 
-                                let targetStudent = {
-                                    id: nextStudentId,
-                                    name: cellB,
-                                    phone: cleanPhone,
-                                    history: []
-                                };
-                                for (let i = 1; i <= 15; i++) { targetStudent[`eval_${i}`] = ""; }
 
-                                if (oldDatabase[currentClassKey]) {
-                                    const matchedOldStudent = oldDatabase[currentClassKey].students.find(
-                                        s => s.name.trim().toLowerCase() === cellB.toLowerCase() && s.phone === cleanPhone
-                                    );
-                                    if (matchedOldStudent) {
-                                        targetStudent.history = matchedOldStudent.history || [];
-                                        for (let i = 1; i <= 15; i++) {
-                                            targetStudent[`eval_${i}`] = matchedOldStudent[`eval_${i}`] || "";
-                                        }
-                                    }
-                                }
+
+
+
+
+ let targetStudent = {
+    id: nextStudentId,
+    name: cellB,
+    phone: cleanPhone,
+    history: []
+};
+
+// Khởi tạo các tiêu chí đánh giá đúng theo cấu hình dropdownConfig thực tế
+for (let key in dropdownConfig) { 
+    targetStudent[`eval_${key}`] = ""; 
+}
+
+if (oldDatabase[currentClassKey]) {
+    const matchedOldStudent = oldDatabase[currentClassKey].students.find(
+        s => s.name.trim().toLowerCase() === cellB.toLowerCase() && s.phone === cleanPhone
+    );
+    if (matchedOldStudent) {
+        // Giữ lại lịch sử chỉnh sửa
+        targetStudent.history = matchedOldStudent.history || [];
+        // Khôi phục chính xác các đánh giá cũ theo tên tiêu chí tiếng Việt
+        for (let key in dropdownConfig) {
+            targetStudent[`eval_${key}`] = matchedOldStudent[`eval_${key}`] || "";
+        }
+    }
+}
+
+
+
+
+
 
                                 bigClassesDatabase[currentClassKey].students.push(targetStudent);
                                 return;
