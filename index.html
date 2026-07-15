@@ -88,11 +88,9 @@
         .student-info-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid #222; padding-bottom: 6px; }
         .student-meta { display: flex; flex-direction: column; gap: 2px; flex: 1; }
         .student-name { font-weight: bold; font-size: 0.95rem; color: #fff; }
-        .student-phone { font-size: 0.8rem; color: #888; }
         
-        .student-actions-right { display: flex; gap: 5px; }
-        .btn-call { background: #ffd700; color: #000; padding: 8px 12px; font-size: 0.9rem; border: none; border-radius: 4px; cursor: pointer; box-shadow: 0 0 5px #ffd700; }
-        .btn-delete { background: #4a0000; color: #ff3333; border: 1px solid #ff3333; padding: 8px 10px; font-size: 0.9rem; border-radius: 4px; cursor: pointer; }
+        .student-actions-right { display: flex; gap: 5px; width: 100%; justify-content: flex-end; }
+        .btn-delete { background: #4a0000; color: #ff3333; border: 1px solid #ff3333; padding: 8px 15px; font-size: 0.9rem; border-radius: 4px; cursor: pointer; }
         
         /* HIỂN THỊ CHI TIẾT KHI MỞ ACCORDION HỌC SINH */
         .student-card .student-detail-panel { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #333; }
@@ -144,15 +142,15 @@
             display: block; 
         }
 
-        /* Cấu hình danh sách lịch sử có thanh cuộn (Hiển thị khoảng 7 mục, nhiều hơn sẽ cuộn) */
+        /* Cấu hình danh sách lịch sử có thanh cuộn */
         .history-list { 
             list-style: none; 
             display: flex; 
             flex-direction: column; 
             gap: 6px; 
-            max-height: 250px;       /* Giới hạn chiều cao vừa vặn cho khoảng 7 mục */
-            overflow-y: scroll;      /* Hiện thanh cuộn dọc khi danh sách vượt quá chiều cao */
-            padding-right: 5px;      /* Tránh nội dung đè lên thanh cuộn */
+            max-height: 250px;       
+            overflow-y: scroll;      
+            padding-right: 5px;      
         }
 
         /* Tùy chỉnh thanh cuộn đẹp mắt theo phong cách Dark Mode */
@@ -237,9 +235,7 @@
             <thead>
                 <tr>
                     <th>Họ và Tên</th>
-                    <th>SĐT</th>
                     <th>Lớp Học</th>
-                    <th>Gọi</th>
                 </tr>
             </thead>
             <tbody id="resultTableBody"></tbody>
@@ -281,12 +277,11 @@ const dropdownConfig = {
 let bigClassesDatabase = {};
 let currentUser = "Ẩn danh";
 
-// Hàm xử lý tạo ID an toàn, loại bỏ ký tự đặc biệt gây lỗi Selector
 function createSafeId(str) {
     if (!str) return "";
     return str.toString()
-              .replace(/[^a-zA-Z0-9]/g, '_') // Thay tất cả các ký tự không phải chữ và số (kể cả khoảng trắng, +, -, @...) bằng dấu gạch dưới
-              .replace(/__+/g, '_');         // Gom nhiều gạch dưới liên tiếp thành 1 gạch dưới
+              .replace(/[^a-zA-Z0-9]/g, '_') 
+              .replace(/__+/g, '_');         
 }
 
 function displayPhone(p) { 
@@ -328,7 +323,6 @@ window.onload = async function () {
     document.getElementById("loginBox").style.display = "block";
 };
 
-// --- NẠP FILE MỚI GIỮ NGUYÊN ĐÁNH GIÁ CỦA HỌC VIÊN CŨ ---
 function startProcessingExcel(input) {
     const file = input.files[0];
     if (!file) return;
@@ -342,10 +336,7 @@ function startProcessingExcel(input) {
     progressBar.style.width = '0%';
     progressBar.innerText = '0%';
 
-    // Sao lưu database hiện tại để đối chiếu giữ lại đánh giá cũ
     const oldDatabase = JSON.parse(JSON.stringify(bigClassesDatabase));
-    
-    // Khởi tạo database trống mới
     bigClassesDatabase = {};
     
     const reader = new FileReader();
@@ -428,7 +419,6 @@ function startProcessingExcel(input) {
                                 
                                 const nextStudentId = bigClassesDatabase[currentClassKey].students.length + 1;
                                 
-                                // Tạo khung học sinh mới mặc định
                                 let targetStudent = {
                                     id: nextStudentId,
                                     name: cellB,
@@ -437,15 +427,12 @@ function startProcessingExcel(input) {
                                 };
                                 for (let i = 1; i <= 15; i++) { targetStudent[`eval_${i}`] = ""; }
 
-                                // ĐỐI CHIẾU DỮ LIỆU CŨ: Kiểm tra xem học sinh đã tồn tại ở database cũ chưa
                                 if (oldDatabase[currentClassKey]) {
                                     const matchedOldStudent = oldDatabase[currentClassKey].students.find(
                                         s => s.name.trim().toLowerCase() === cellB.toLowerCase() && s.phone === cleanPhone
                                     );
                                     if (matchedOldStudent) {
-                                        // Khôi phục lại lịch sử sửa đổi cũ
                                         targetStudent.history = matchedOldStudent.history || [];
-                                        // Khôi phục 15 tiêu chí đánh giá cũ
                                         for (let i = 1; i <= 15; i++) {
                                             targetStudent[`eval_${i}`] = matchedOldStudent[`eval_${i}`] || "";
                                         }
@@ -583,7 +570,6 @@ function renderStudentCardsHtml(classKey, students) {
         const cardId = `card-${classIdStr}-${student.id}`;
         const historyPanelId = `history-${classIdStr}-${student.id}`;
 
-        // Xây dựng danh sách 15 Tiêu chí hàng dọc
         let dropdownsHtml = "";
         for (let key in dropdownConfig) {
             let options = dropdownConfig[key];
@@ -603,7 +589,6 @@ function renderStudentCardsHtml(classKey, students) {
             `;
         }
 
-        // Tạo danh sách lịch sử sửa đổi (Sẽ được lấy đảo ngược từ bản ghi đã lưu)
         let historyItemsHtml = '<li class="history-item" style="text-align:center;color:#666;">Chưa có lịch sử chỉnh sửa</li>';
         if (student.history && student.history.length > 0) {
             historyItemsHtml = student.history.slice().reverse().map(h => `
@@ -626,10 +611,8 @@ function renderStudentCardsHtml(classKey, students) {
                 
                 <div class="student-detail-panel" onclick="event.stopPropagation();">
                     <div class="student-info-row" style="border: none; padding: 0; margin-bottom: 5px;">
-                        <span class="student-phone">SĐT: ${displayPhone(student.phone)}</span>
                         <div class="student-actions-right">
-                            <button class="btn-call" onclick="callPhoneAction('${student.phone}')">📞</button>
-                            <button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')">Xoá</button>
+                            <button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')">Xoá học sinh</button>
                         </div>
                     </div>
 
@@ -686,7 +669,6 @@ function saveStudentEvaluationChanges(classKey, studentId) {
     });
 
     if (hasChanges) {
-        // Cấu hình giới hạn lưu trữ tối đa 100 thay đổi gần nhất
         if (student.history.length > 100) {
             student.history = student.history.slice(-100);
         }
@@ -798,11 +780,8 @@ function searchGlobalStudent() {
                 const tr = document.createElement('tr'); 
                 tr.innerHTML = ` 
                     <td style="font-weight: bold; color: #fff;">${student.name}</td> 
-                    <td style="color: #00ff66; font-family: monospace;">${displayPhone(student.phone)}</td> 
                     <td style="color: #00f0ff; font-weight: bold; font-size:0.75rem;">${classKey}</td> 
-                    <td style="text-align:center;">
-                        <button class="btn-call" style="padding:4px 8px; font-size:0.8rem;" onclick="callPhoneAction('${student.phone}')">📞</button>
-                    </td> `; 
+                `; 
                 resultBody.appendChild(tr); 
             } 
         }); 
@@ -844,11 +823,6 @@ function clearSystemCache() {
         document.getElementById('fileStatusMessage').style.color = "#ffd700"; 
         document.getElementById('fileStatusMessage').innerText = "Chưa có dữ liệu học viên. Vui lòng chọn tệp Excel."; 
     } 
-}
-
-function callPhoneAction(phone) {
-    if(!phone || phone === 'Chưa có') { alert("Không có số điện thoại!"); return; }
-    window.location.href = "tel:" + phone;
 }
 </script>
 
