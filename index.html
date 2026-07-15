@@ -113,88 +113,88 @@
         .btn-save-eval { background: #00ff66; color: #000; width: 100%; padding: 10px 0; margin-top: 12px; font-size: 0.9rem; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 8px rgba(0, 255, 102, 0.4); }
         .btn-save-eval:active { background: #00cc52; }
 
-       /* ⏳ KHU VỰC LỊCH SỬ CHỈNH SỬA */
-.btn-history { 
-    background: transparent; 
-    border: 1px solid #ffd700; 
-    color: #ffd700; 
-    width: 100%; 
-    padding: 8px 0; 
-    margin-top: 8px; 
-    font-size: 0.85rem; 
-    font-weight: bold; 
-    border-radius: 4px; 
-    cursor: pointer; 
-    text-transform: uppercase; 
-}
-.btn-history:active { 
-    background: #ffd700; 
-    color: #000; 
-}
+        /* ⏳ KHU VỰC LỊCH SỬ CHỈNH SỬA */
+        .btn-history { 
+            background: transparent; 
+            border: 1px solid #ffd700; 
+            color: #ffd700; 
+            width: 100%; 
+            padding: 8px 0; 
+            margin-top: 8px; 
+            font-size: 0.85rem; 
+            font-weight: bold; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+        }
+        .btn-history:active { 
+            background: #ffd700; 
+            color: #000; 
+        }
 
-.history-panel { 
-    display: none; 
-    background: #020205; 
-    border: 1px solid #ff007f; 
-    padding: 8px; 
-    border-radius: 4px; 
-    margin-top: 8px; 
-}
-.history-panel.show { 
-    display: block; 
-}
+        .history-panel { 
+            display: none; 
+            background: #020205; 
+            border: 1px solid #ff007f; 
+            padding: 8px; 
+            border-radius: 4px; 
+            margin-top: 8px; 
+        }
+        .history-panel.show { 
+            display: block; 
+        }
 
-/* Cấu hình danh sách lịch sử có thanh cuộn (Hiển thị khoảng 7 mục, nhiều hơn sẽ cuộn) */
-.history-list { 
-    list-style: none; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 6px; 
-    max-height: 200px;       /* Giới hạn chiều cao vừa vặn cho khoảng 7 mục */
-    overflow-y: scroll;        /* Hiện thanh cuộn dọc khi danh sách vượt quá chiều cao */
-    padding-right: 5px;      /* Tránh nội dung đè lên thanh cuộn */
-}
+        /* Cấu hình danh sách lịch sử có thanh cuộn (Hiển thị khoảng 7 mục, nhiều hơn sẽ cuộn) */
+        .history-list { 
+            list-style: none; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 6px; 
+            max-height: 250px;       /* Giới hạn chiều cao vừa vặn cho khoảng 7 mục */
+            overflow-y: scroll;      /* Hiện thanh cuộn dọc khi danh sách vượt quá chiều cao */
+            padding-right: 5px;      /* Tránh nội dung đè lên thanh cuộn */
+        }
 
-/* Tùy chỉnh thanh cuộn đẹp mắt theo phong cách Dark Mode */
-.history-list::-webkit-scrollbar {
-    width: 6px;
-}
-.history-list::-webkit-scrollbar-track {
-    background: #0d0d1a; 
-    border-radius: 3px;
-}
-.history-list::-webkit-scrollbar-thumb {
-    background: #555; 
-    border-radius: 3px;
-}
-.history-list::-webkit-scrollbar-thumb:hover {
-    background: #ffd700;
-}
+        /* Tùy chỉnh thanh cuộn đẹp mắt theo phong cách Dark Mode */
+        .history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .history-list::-webkit-scrollbar-track {
+            background: #0d0d1a; 
+            border-radius: 3px;
+        }
+        .history-list::-webkit-scrollbar-thumb {
+            background: #555; 
+            border-radius: 3px;
+        }
+        .history-list::-webkit-scrollbar-thumb:hover {
+            background: #ffd700;
+        }
 
-.history-item { 
-    font-size: 0.75rem; 
-    border-bottom: 1px dashed #222; 
-    padding-bottom: 4px; 
-    line-height: 1.4; 
-    color: #ccc; 
-}
-.history-item:last-child { 
-    border-bottom: none; 
-}
+        .history-item { 
+            font-size: 0.75rem; 
+            border-bottom: 1px dashed #222; 
+            padding-bottom: 4px; 
+            line-height: 1.4; 
+            color: #ccc; 
+        }
+        .history-item:last-child { 
+            border-bottom: none; 
+        }
 
-.history-user { 
-    color: #ff007f; 
-    font-weight: bold; 
-}
-.history-time { 
-    color: #888; 
-    font-style: italic; 
-    font-size: 0.7rem; 
-    float: right; 
-}
-.history-change { 
-    color: #00ff66; 
-}
+        .history-user { 
+            color: #ff007f; 
+            font-weight: bold; 
+        }
+        .history-time { 
+            color: #888; 
+            font-style: italic; 
+            font-size: 0.7rem; 
+            float: right; 
+        }
+        .history-change { 
+            color: #00ff66; 
+        }
     </style>
 </head>
 <body>
@@ -328,6 +328,7 @@ window.onload = async function () {
     document.getElementById("loginBox").style.display = "block";
 };
 
+// --- NẠP FILE MỚI GIỮ NGUYÊN ĐÁNH GIÁ CỦA HỌC VIÊN CŨ ---
 function startProcessingExcel(input) {
     const file = input.files[0];
     if (!file) return;
@@ -341,7 +342,12 @@ function startProcessingExcel(input) {
     progressBar.style.width = '0%';
     progressBar.innerText = '0%';
 
+    // Sao lưu database hiện tại để đối chiếu giữ lại đánh giá cũ
+    const oldDatabase = JSON.parse(JSON.stringify(bigClassesDatabase));
+    
+    // Khởi tạo database trống mới
     bigClassesDatabase = {};
+    
     const reader = new FileReader();
     reader.onload = function(e) {
         try {
@@ -419,12 +425,34 @@ function startProcessingExcel(input) {
                                 if (!bigClassesDatabase[currentClassKey]) {
                                     bigClassesDatabase[currentClassKey] = { sheet: sheetName, schedule: detectedSchedule, students: [] };
                                 }
-                                bigClassesDatabase[currentClassKey].students.push({
-                                    id: bigClassesDatabase[currentClassKey].students.length + 1,
+                                
+                                const nextStudentId = bigClassesDatabase[currentClassKey].students.length + 1;
+                                
+                                // Tạo khung học sinh mới mặc định
+                                let targetStudent = {
+                                    id: nextStudentId,
                                     name: cellB,
                                     phone: cleanPhone,
                                     history: []
-                                });
+                                };
+                                for (let i = 1; i <= 15; i++) { targetStudent[`eval_${i}`] = ""; }
+
+                                // ĐỐI CHIẾU DỮ LIỆU CŨ: Kiểm tra xem học sinh đã tồn tại ở database cũ chưa
+                                if (oldDatabase[currentClassKey]) {
+                                    const matchedOldStudent = oldDatabase[currentClassKey].students.find(
+                                        s => s.name.trim().toLowerCase() === cellB.toLowerCase() && s.phone === cleanPhone
+                                    );
+                                    if (matchedOldStudent) {
+                                        // Khôi phục lại lịch sử sửa đổi cũ
+                                        targetStudent.history = matchedOldStudent.history || [];
+                                        // Khôi phục 15 tiêu chí đánh giá cũ
+                                        for (let i = 1; i <= 15; i++) {
+                                            targetStudent[`eval_${i}`] = matchedOldStudent[`eval_${i}`] || "";
+                                        }
+                                    }
+                                }
+
+                                bigClassesDatabase[currentClassKey].students.push(targetStudent);
                                 return;
                             }
                             if (cellB && cleanPhone.length < 9) {
@@ -575,7 +603,7 @@ function renderStudentCardsHtml(classKey, students) {
             `;
         }
 
-        // Tạo danh sách lịch sử sửa đổi (7 cái gần nhất)
+        // Tạo danh sách lịch sử sửa đổi (Sẽ được lấy đảo ngược từ bản ghi đã lưu)
         let historyItemsHtml = '<li class="history-item" style="text-align:center;color:#666;">Chưa có lịch sử chỉnh sửa</li>';
         if (student.history && student.history.length > 0) {
             historyItemsHtml = student.history.slice().reverse().map(h => `
@@ -612,7 +640,7 @@ function renderStudentCardsHtml(classKey, students) {
 
                     <button class="btn-save-eval" onclick="saveStudentEvaluationChanges('${classKey}', ${student.id})">💾 Xác nhận lưu đánh giá</button>
 
-                    <button class="btn-history" onclick="toggleHistoryPanel(event, '${historyPanelId}')">⏳ Xem lịch sử sửa đổi (7 lần gần nhất)</button>
+                    <button class="btn-history" onclick="toggleHistoryPanel(event, '${historyPanelId}')">⏳ Xem lịch sử sửa đổi (100 lần gần nhất)</button>
                     <div class="history-panel" id="${historyPanelId}">
                         <ul class="history-list">
                             ${historyItemsHtml}
@@ -658,8 +686,9 @@ function saveStudentEvaluationChanges(classKey, studentId) {
     });
 
     if (hasChanges) {
+        // Cấu hình giới hạn lưu trữ tối đa 100 thay đổi gần nhất
         if (student.history.length > 100) {
-            student.history = student.history.slice(-7);
+            student.history = student.history.slice(-100);
         }
 
         saveDatabaseState();
