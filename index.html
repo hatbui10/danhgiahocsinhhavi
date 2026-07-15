@@ -108,6 +108,22 @@
         .eval-label { font-size: 0.8rem; color: #00f0ff; font-weight: bold; }
         .note-select { background: #1a1a3a; color: #fff; border: 1px solid #555; padding: 8px; font-size: 0.85rem; border-radius: 4px; outline: none; width: 100%; }
         .note-select:focus { border-color: #ffd700; }
+
+        /* 💾 NÚT XÁC NHẬN LƯU */
+        .btn-save-eval { background: #00ff66; color: #000; width: 100%; padding: 10px 0; margin-top: 12px; font-size: 0.9rem; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 8px rgba(0, 255, 102, 0.4); }
+        .btn-save-eval:active { background: #00cc52; }
+
+        /* ⏳ KHU VỰC LỊCH SỬ CHỈNH SỬA */
+        .btn-history { background: transparent; border: 1px solid #ffd700; color: #ffd700; width: 100%; padding: 8px 0; margin-top: 8px; font-size: 0.85rem; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+        .btn-history:active { background: #ffd700; color: #000; }
+        .history-panel { display: none; background: #020205; border: 1px solid #ff007f; padding: 8px; border-radius: 4px; margin-top: 8px; }
+        .history-panel.show { display: block; }
+        .history-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+        .history-item { font-size: 0.75rem; border-bottom: 1px dashed #222; padding-bottom: 4px; line-height: 1.4; color: #ccc; }
+        .history-item:last-child { border-bottom: none; }
+        .history-user { color: #ff007f; font-weight: bold; }
+        .history-time { color: #888; font-style: italic; font-size: 0.7rem; float: right; }
+        .history-change { color: #00ff66; }
     </style>
 </head>
 <body>
@@ -192,7 +208,15 @@ const dropdownConfig = {
 };
 
 let bigClassesDatabase = {};
-let currentUser = null;
+let currentUser = "Ẩn danh";
+
+// Hàm xử lý tạo ID an toàn, loại bỏ ký tự đặc biệt gây lỗi Selector
+function createSafeId(str) {
+    if (!str) return "";
+    return str.toString()
+              .replace(/[^a-zA-Z0-9]/g, '_') // Thay tất cả các ký tự không phải chữ và số (kể cả khoảng trắng, +, -, @...) bằng dấu gạch dưới
+              .replace(/__+/g, '_');         // Gom nhiều gạch dưới liên tiếp thành 1 gạch dưới
+}
 
 function displayPhone(p) { 
     if(!p || p === 'Chưa có' || p === 'undefined') return 'Chưa có';
@@ -302,7 +326,6 @@ function startProcessingExcel(input) {
 
                     rows.forEach((row) => {
                         if (!row) return;
-                        let cellA = row[colAIndex] ? row[colAIndex].toString().trim() : "";
                         let cellB = row[colBIndex] ? row[colBIndex].toString().trim() : "";
                         let cellP = row[colPIndex] ? row[colPIndex].toString().trim() : "";
                         let cellB_lower = cellB.toLowerCase();
@@ -328,7 +351,8 @@ function startProcessingExcel(input) {
                                 bigClassesDatabase[currentClassKey].students.push({
                                     id: bigClassesDatabase[currentClassKey].students.length + 1,
                                     name: cellB,
-                                    phone: cleanPhone
+                                    phone: cleanPhone,
+                                    history: []
                                 });
                                 return;
                             }
@@ -359,6 +383,12 @@ function toggleClassAccordion(headerElement) { headerElement.parentElement.class
 function toggleGroupAccordion(headerElement) { headerElement.parentElement.classList.toggle('active'); }
 function toggleStudentAccordion(cardId) { const card = document.getElementById(cardId); if (card) card.classList.toggle('active'); }
 
+function toggleHistoryPanel(event, panelId) {
+    event.stopPropagation();
+    const panel = document.getElementById(panelId);
+    if(panel) panel.classList.toggle('show');
+}
+
 function getGroupKeyBySheet(sheetName) {
     const s = sheetName.trim();
     if (["2", "3", "4", "5"].includes(s)) return { key: "TIEU_HOC", name: "Khối Tiểu Học (Lớp 2-5)" };
@@ -373,7 +403,7 @@ function renderFullSystemUI() {
     mainContainer.innerHTML = "";
     const classKeys = Object.keys(bigClassesDatabase);
     if (classKeys.length === 0) {
-        mainContainer.innerHTML = '<div class="empty-alert">Danh sách trống. Hệ thống sẽ sinh giao diện sau khi nạp file Excel.</div>';
+        mainContainer.innerHTML = '<div class="empty-alert">Danh sách trống. Giao diện sẽ được sinh ra sau khi nạp file Excel.</div>';
         return;
     }
 
@@ -421,7 +451,7 @@ function renderFullSystemUI() {
         group.classes.forEach(cls => {
             const classKey = cls.key;
             const classObj = cls.data;
-            const classIdStr = classKey.replace(/\s+/g, '-');
+            const classIdStr = createSafeId(classKey);
             
             const classSection = document.createElement("div");
             classSection.className = "class-block-wrapper";
@@ -450,8 +480,9 @@ function renderFullSystemUI() {
 
 function renderStudentCardsHtml(classKey, students) {
     return students.map((student, idx) => {
-        const classIdStr = classKey.replace(/\s+/g, '-');
+        const classIdStr = createSafeId(classKey);
         const cardId = `card-${classIdStr}-${student.id}`;
+        const historyPanelId = `history-${classIdStr}-${student.id}`;
 
         // Xây dựng danh sách 15 Tiêu chí hàng dọc
         let dropdownsHtml = "";
@@ -466,11 +497,23 @@ function renderStudentCardsHtml(classKey, students) {
             dropdownsHtml += `
                 <div class="eval-item">
                     <span class="eval-label">Tiêu chí ${key}:</span>
-                    <select class="note-select" onchange="updateStudentEvaluation('${classKey}', ${student.id}, '${key}', this.value)">
+                    <select class="note-select" data-eval-idx="${key}">
                         ${optionsHtml}
                     </select>
                 </div>
             `;
+        }
+
+        // Tạo danh sách lịch sử sửa đổi (7 cái gần nhất)
+        let historyItemsHtml = '<li class="history-item" style="text-align:center;color:#666;">Chưa có lịch sử chỉnh sửa</li>';
+        if (student.history && student.history.length > 0) {
+            historyItemsHtml = student.history.slice().reverse().map(h => `
+                <li class="history-item">
+                    <span class="history-user">${h.user}</span>: Tiêu chí ${h.index} 
+                    <span class="history-change">"${h.old || 'Trống'}" ➜ "${h.new || 'Trống'}"</span>
+                    <span class="history-time">${h.time}</span>
+                </li>
+            `).join('');
         }
 
         return `
@@ -495,22 +538,79 @@ function renderStudentCardsHtml(classKey, students) {
                     <div class="eval-vertical-list">
                         ${dropdownsHtml}
                     </div>
+
+                    <button class="btn-save-eval" onclick="saveStudentEvaluationChanges('${classKey}', ${student.id})">💾 Xác nhận lưu đánh giá</button>
+
+                    <button class="btn-history" onclick="toggleHistoryPanel(event, '${historyPanelId}')">⏳ Xem lịch sử sửa đổi (7 lần gần nhất)</button>
+                    <div class="history-panel" id="${historyPanelId}">
+                        <ul class="history-list">
+                            ${historyItemsHtml}
+                        </ul>
+                    </div>
                 </div>
             </div>
         `;
     }).join('');
 }
 
-function updateStudentEvaluation(classKey, studentId, evalIndex, value) { 
+function saveStudentEvaluationChanges(classKey, studentId) {
     let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId); 
     if (!student) return; 
-    
-    student[`eval_${evalIndex}`] = value; 
-    saveDatabaseState(); 
+
+    const classIdStr = createSafeId(classKey);
+    const cardElement = document.getElementById(`card-${classIdStr}-${studentId}`);
+    if (!cardElement) return;
+
+    const selectElements = cardElement.querySelectorAll('select[data-eval-idx]');
+    let hasChanges = false;
+    let now = new Date();
+    let timeStr = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+
+    if (!student.history) student.history = [];
+
+    selectElements.forEach(select => {
+        const evalIndex = select.getAttribute('data-eval-idx');
+        const newValue = select.value;
+        const oldValue = student[`eval_${evalIndex}`] || "";
+
+        if (oldValue !== newValue) {
+            hasChanges = true;
+            student.history.push({
+                user: currentUser,
+                index: evalIndex,
+                old: oldValue,
+                new: newValue,
+                time: timeStr
+            });
+            student[`eval_${evalIndex}`] = newValue;
+        }
+    });
+
+    if (hasChanges) {
+        if (student.history.length > 100) {
+            student.history = student.history.slice(-7);
+        }
+
+        saveDatabaseState();
+
+        const historyList = document.querySelector(`#history-${classIdStr}-${studentId} .history-list`);
+        if (historyList) {
+            historyList.innerHTML = student.history.slice().reverse().map(h => `
+                <li class="history-item">
+                    <span class="history-user">${h.user}</span>: Tiêu chí ${h.index} 
+                    <span class="history-change">"${h.old || 'Trống'}" ➜ "${h.new || 'Trống'}"</span>
+                    <span class="history-time">${h.time}</span>
+                </li>
+            `).join('');
+        }
+        alert(`💾 Đã cập nhật và lưu đánh giá cho học viên [${student.name}] thành công!`);
+    } else {
+        alert("Thông báo: Bạn chưa thực hiện thay đổi tiêu chí nào.");
+    }
 }
 
 function addNewStudentToClass(classKey) { 
-    const classIdStr = classKey.replace(/\s+/g, '-'); 
+    const classIdStr = createSafeId(classKey); 
     const nameInput = document.getElementById(`inputName-${classIdStr}`); 
     const name = nameInput.value.trim(); 
     if (name === '') { alert('Vui lòng nhập tên học viên!'); return; } 
@@ -518,7 +618,7 @@ function addNewStudentToClass(classKey) {
     const studentsList = bigClassesDatabase[classKey].students; 
     const nextId = studentsList.length > 0 ? Math.max(...studentsList.map(s => s.id)) + 1 : 1; 
     
-    let newStudent = { id: nextId, name: name, phone: "Chưa có" };
+    let newStudent = { id: nextId, name: name, phone: "Chưa có", history: [] };
     for(let i=1; i<=15; i++) { newStudent[`eval_${i}`] = ""; }
     
     studentsList.push(newStudent); 
@@ -537,7 +637,7 @@ function deleteStudentFromClass(classKey, studentId, studentName) {
         bigClassesDatabase[classKey].students.forEach((s, idx) => { s.id = idx + 1; }); 
         
         saveDatabaseState(); 
-        const classIdStr = classKey.replace(/\s+/g, '-'); 
+        const classIdStr = createSafeId(classKey); 
         const studentsList = bigClassesDatabase[classKey].students; 
         
         document.getElementById(`stats-${classIdStr}`).innerText = 'Sĩ số: ' + studentsList.length; 
@@ -589,7 +689,7 @@ function searchGlobalStudent() {
             if (nameLower.includes(keyword) || nameLower.replace(/\s+/g, "").includes(keywordNoSpace) || phoneTho.includes(keyword)) { 
                 matchCount++; 
                 matchedClasses.add(classKey); 
-                const cardDomId = `card-${classKey.replace(/\s+/g, '-')}-${student.id}`; 
+                const cardDomId = `card-${createSafeId(classKey)}-${student.id}`; 
                 if (!firstScrolledTargetId) firstScrolledTargetId = cardDomId; 
                 
                 const targetCardDom = document.getElementById(cardDomId); 
