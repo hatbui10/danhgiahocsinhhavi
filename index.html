@@ -582,30 +582,32 @@ function renderStudentCardsHtml(classKey, students) {
         const cardId = `card-${classIdStr}-${student.id}`;
         const historyPanelId = `history-${classIdStr}-${student.id}`;
 
-        let dropdownsHtml = "";
-        for (let key in dropdownConfig) {
-            let options = dropdownConfig[key];
-            let currentSelected = student[`eval_${key}`] || "";
-            
-            let optionsHtml = options.map(opt => `
-                <option value="${opt}" ${opt === currentSelected ? 'selected' : ''}>${opt === "" ? "-- Trống --" : opt}</option>
-            `).join('');
+       let dropdownsHtml = "";
+let count = 1; // Khởi tạo bộ đếm số thứ tự
+for (let key in dropdownConfig) {
+    let options = dropdownConfig[key];
+    let currentSelected = student[`eval_${key}`] || "";
+    
+    let optionsHtml = options.map(opt => `
+        <option value="${opt}" ${opt === currentSelected ? 'selected' : ''}>${opt === "" ? "-- Trống --" : opt}</option>
+    `).join('');
 
-            dropdownsHtml += `
-                <div class="eval-item">
-                    <span class="eval-label">Tiêu chí ${key}:</span>
-                    <select class="note-select" data-eval-idx="${key}">
-                        ${optionsHtml}
-                    </select>
-                </div>
-            `;
-        }
+    dropdownsHtml += `
+        <div class="eval-item">
+            <span class="eval-label">${count}. ${key}:</span>
+            <select class="note-select" data-eval-idx="${key}">
+                ${optionsHtml}
+            </select>
+        </div>
+    `;
+    count++; // Tăng số thứ tự lên 1 sau mỗi tiêu chí
+}
 
         let historyItemsHtml = '<li class="history-item" style="text-align:center;color:#666;">Chưa có lịch sử chỉnh sửa</li>';
         if (student.history && student.history.length > 0) {
             historyItemsHtml = student.history.slice().reverse().map(h => `
                 <li class="history-item">
-                    <span class="history-user">${h.user}</span>: Tiêu chí ${h.index} 
+                    <span class="history-user">${h.user}</span>:${h.index} 
                     <span class="history-change">"${h.old || 'Trống'}" ➜ "${h.new || 'Trống'}"</span>
                     <span class="history-time">${h.time}</span>
                 </li>
@@ -628,7 +630,7 @@ function renderStudentCardsHtml(classKey, students) {
                         </div>
                     </div>
 
-                    <div style="font-size: 0.85rem; color: #ffd700; margin-top: 5px; font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 5px;">DANH SÁCH Tiêu chí đánh giá</div>
+                    <div style="font-size: 0.85rem; color: #ffd700; margin-top: 5px; font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 5px;">CÁC TIÊU CHÍ ĐÁNH GIÁ</div>
                     <div class="eval-vertical-list">
                         ${dropdownsHtml}
                     </div>
