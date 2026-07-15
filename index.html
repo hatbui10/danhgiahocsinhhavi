@@ -82,7 +82,7 @@
         .btn-add { background: #ffd700; color: #000; border: none; padding: 10px; font-weight: bold; font-size: 0.9rem; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
         
         .student-list { display: flex; flex-direction: column; gap: 10px; }
-        .student-card { background: #121224; border: 1px solid #333; border-left: 4px solid #ffd700; border-radius: 4px; padding: 12px 10px; display: flex; flex-direction: column; gap: 10px; transition: background 0.2s; cursor: pointer; }
+        .student-card {  border: 1px solid #333; border-left: 4px solid #ffd700; border-radius: 4px; padding: 12px 10px; display: flex; flex-direction: column; gap: 10px; transition: background 0.2s; cursor: pointer; }
         .student-card.highlight-search { border: 1px solid #ffd700 !important; box-shadow: 0 0 12px rgba(255, 215, 0, 0.4); }
         
         .student-info-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid #222; padding-bottom: 6px; }
@@ -347,12 +347,51 @@
     margin-bottom: 25px;
     border-radius: 12px;
     background: #06060c; /* Nền đen cũ */
-    padding: 50px;
+    padding: 30px;
     overflow: hidden;
     z-index: 1;
     border: 1px solid rgba(255, 215, 0, 0.4);
     box-shadow: 0 0 20px rgba(255, 215, 0, 0.1), inset 0 0 15px rgba(0, 240, 255, 0.05);
 }
+
+/* 🚨 HỆ THỐNG BÁO ĐỘNG CỰC MẠNH: ÉP ĐỔI NỀN ĐỎ & NHẤP NHÁY LIÊN TỤC */
+.student-card.alarm-warning {
+    border: 2px solid #ff0055 !important;
+    border-left: 6px solid #ff0055 !important; /* Viền trái siêu dày nổi bật */
+    
+    /* Ép màu nền cố định sang đỏ sẫm */
+    background-color: #500015 !important; 
+    background: #FF1E1E !important;
+    
+    /* Chạy hoạt ảnh nhấp nháy bằng cách thay đổi độ sáng (brightness) và độ bão hòa (saturate) */
+    animation: alarm-super-pulse 0.8s infinite alternate ease-in-out !important;
+    transition: all 0.3s ease;
+}
+
+/* Đổi màu chữ tên học sinh sang màu vàng sáng để nhìn cực rõ trên nền đỏ */
+.student-card.alarm-warning .student-name {
+    color: #fffb00 !important;
+    text-shadow: 0 0 5px #ff0055 !important;
+}
+
+/* Đổi màu mũi tên góc phải sang màu hồng neon */
+.student-card.alarm-warning .student-arrow {
+    color: #ff0055 !important;
+}
+
+/* HOẠT ẢNH ÉP NHẤP NHÁY BẰNG FILTER (Bảo đảm hoạt động 100% trên Live Editor) */
+@keyframes alarm-super-pulse {
+    0% {
+        filter: brightness(0.8) saturate(1);
+        box-shadow: 0 0 5px rgba(255, 0, 85, 0.4) !important;
+    }
+    100% {
+        /* Tăng vọt độ sáng để tạo hiệu ứng nhấp nháy cực mạnh cho nền đỏ */
+        filter: brightness(1.5) saturate(1.5); 
+        box-shadow: 0 0 22px rgba(255, 0, 85, 0.9), inset 0 0 10px rgba(255, 0, 85, 0.5) !important;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -846,8 +885,12 @@ for (let key in dropdownConfig) {
             `).join('');
         }
 
+        // Gọi hàm kiểm tra xem học sinh này có bị báo động đỏ không
+        const isAlarm = checkStudentAlarmState(student);
+        const alarmClass = isAlarm ? "alarm-warning" : "";
+
         return `
-            <div class="student-card" id="${cardId}" onclick="toggleStudentAccordion('${cardId}')">
+            <div class="student-card ${alarmClass}" id="${cardId}" onclick="toggleStudentAccordion('${cardId}')">
                 <div class="student-header-row">
                     <div class="student-meta">
                         <span class="student-name">${idx + 1}. ${student.name}</span>
@@ -921,6 +964,15 @@ function saveStudentEvaluationChanges(classKey, studentId) {
 
         saveDatabaseState();
 
+// --- CHÈN ĐOẠN NÀY VÀO ---
+        // Gọi hàm kiểm tra và cập nhật viền báo động đỏ lên màn hình ngay lập tức
+        const isAlarmNow = checkStudentAlarmState(student);
+        if (isAlarmNow) {
+            cardElement.classList.add("alarm-warning");
+        } else {
+            cardElement.classList.remove("alarm-warning");
+        }
+
         const historyList = document.querySelector(`#history-${classIdStr}-${studentId} .history-list`);
         if (historyList) {
             historyList.innerHTML = student.history.slice().reverse().map(h => `
@@ -937,6 +989,26 @@ function saveStudentEvaluationChanges(classKey, studentId) {
     }
 }
 
+
+function checkStudentAlarmState(student) {
+    // Duyệt qua tất cả các tiêu chí có trong dropdownConfig
+    for (let key in dropdownConfig) {
+        const options = dropdownConfig[key]; // Lấy danh sách các lựa chọn của tiêu chí này
+        const currentValue = student[`eval_${key}`] || ""; // Giá trị học sinh đang được chọn
+        
+        // Tìm xem giá trị đang chọn nằm ở dòng thứ mấy (0, 1, 2, 3...)
+        const selectedIndex = options.indexOf(currentValue);
+
+        // Nếu dòng được chọn là dòng thứ 3 trở xuống (chỉ số index >= 2)
+        // (Bao gồm dòng 3, dòng 4, dòng 5, dòng 6... để báo động các mức học lực đi xuống hoặc tệ)
+        if (selectedIndex >= 3) {
+            return true; // Kích hoạt báo động ngay lập tức
+        }
+    }
+    return false; // Không có tiêu chí nào vi phạm mức báo động
+}
+
+
 function addNewStudentToClass(classKey) { 
     const classIdStr = createSafeId(classKey); 
     const nameInput = document.getElementById(`inputName-${classIdStr}`); 
@@ -947,7 +1019,11 @@ function addNewStudentToClass(classKey) {
     const nextId = studentsList.length > 0 ? Math.max(...studentsList.map(s => s.id)) + 1 : 1; 
     
     let newStudent = { id: nextId, name: name, phone: "Chưa có", history: [] };
-    for(let i=1; i<=15; i++) { newStudent[`eval_${i}`] = ""; }
+    
+    // Khởi tạo các tiêu chí tiếng Việt chuẩn theo cấu hình dropdownConfig
+    for (let key in dropdownConfig) { 
+        newStudent[`eval_${key}`] = ""; 
+    }
     
     studentsList.push(newStudent); 
     saveDatabaseState(); 
@@ -957,6 +1033,8 @@ function addNewStudentToClass(classKey) {
     document.getElementById(`studentList-${classIdStr}`).innerHTML = renderStudentCardsHtml(classKey, studentsList); 
     updateGroupStatsText(bigClassesDatabase[classKey].sheet); 
 }
+
+
 
 function deleteStudentFromClass(classKey, studentId, studentName) { 
     if (confirm(`Bạn có chắc chắn muốn XÓA học sinh [${studentName}]?`)) { 
