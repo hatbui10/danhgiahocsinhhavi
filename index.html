@@ -717,11 +717,11 @@ function toggleHistoryPanel(event, panelId) {
 
 function getGroupKeyBySheet(sheetName) {
     const s = sheetName.trim();
-    if (["2", "3", "4", "5"].includes(s)) return { key: "TIEU_HOC", name: "Khối Tiểu Học (Lớp 2-5)" };
-    if (["6", "7", "8", "9"].includes(s)) return { key: "THCS", name: "Khối THCS (Lớp 6-9)" };
-    if (["10", "11", "12"].includes(s)) return { key: "THPT", name: "Khối THPT (Lớp 10-12)" };
+    if (["2", "3", "4", "5"].includes(s)) return { key: "TIEU_HOC", name: "Lớp 2->5" };
+    if (["6", "7", "8", "9"].includes(s)) return { key: "THCS", name: "Lớp 6->9" };
+    if (["10", "11", "12"].includes(s)) return { key: "THPT", name: "Lớp 10->12" };
     if (["DH25", "DH26"].includes(s)) return { key: "DAI_HOC", name: "Khối Đại Học (DH25-26)" };
-    return { key: "KHAC", name: "Khối Khác / Sinh Viên" };
+    return { key: "KHAC", name: "Sinh Viên" };
 }
 
 function renderFullSystemUI() {
@@ -743,11 +743,11 @@ updateUIReadOnlyState();
     });
 
     const groupedData = {
-        "TIEU_HOC": { name: "Khối Tiểu Học (Lớp 2-5)", classes: [], totalStudents: 0 },
-        "THCS": { name: "Khối THCS (Lớp 6-9)", classes: [], totalStudents: 0 },
-        "THPT": { name: "Khối THPT (Lớp 10-12)", classes: [], totalStudents: 0 },
+        "TIEU_HOC": { name: "Lớp 2-> Lớp5", classes: [], totalStudents: 0 },
+        "THCS": { name: "Lớp 6-> Lớp 9", classes: [], totalStudents: 0 },
+        "THPT": { name: "Lớp 10-> Lớp 12", classes: [], totalStudents: 0 },
         "DAI_HOC": { name: "Khối Đại Học", classes: [], totalStudents: 0 },
-        "KHAC": { name: "Khối Khác / Khối SV", classes: [], totalStudents: 0 }
+        "KHAC": { name: "Khối SV", classes: [], totalStudents: 0 }
     };
 
     classKeys.forEach(classKey => {
@@ -768,7 +768,7 @@ updateUIReadOnlyState();
         groupSection.innerHTML = `
             <div class="group-accordion-header" onclick="toggleGroupAccordion(this)">
                 <div class="group-main-title">${group.name}</div>
-                <div class="group-stats" id="group-stats-${gKey}">Tổng số lớp: ${group.classes.length} | Học sinh: ${group.totalStudents}</div>
+               
             </div>
             <div class="group-panel" id="group-panel-${gKey}"></div>
         `;
