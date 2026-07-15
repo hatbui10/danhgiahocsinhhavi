@@ -257,21 +257,15 @@ const users = {
 };
 
 const dropdownConfig = {
-    "1": ["", "Xuất sắc", "Tốt", "Khá", "Trung bình", "Yếu"],
-    "2": ["", "Có", "Không"],
-    "3": ["", "Đạt", "Chưa đạt"],
-    "4": ["", "Hoàn thành", "Chưa hoàn thành"],
-    "5": ["", "A", "B", "C", "D"],
-    "6": ["", "1", "2", "3", "4", "5"],
-    "7": ["", "Có", "Không"],
-    "8": ["", "Rất tốt", "Tốt", "Khá"],
-    "9": ["", "Đúng", "Sai"],
-    "10": ["", "Có", "Không"],
-    "11": ["", "A", "B", "C"],
-    "12": ["", "Đạt", "Không đạt"],
-    "13": ["", "Có", "Không"],
-    "14": ["", "Đầy đủ", "Thiếu"],
-    "15": ["", "Hoàn thành", "Chưa hoàn thành"]
+    "Đánh giá ngữ pháp": ["", "Xuất sắc 9-10", "Khá 7-8", "Trung bình 5-6", "Dưới 5", "Mất gốc (1-2)"],
+    "Ý thức học bài": ["", "Làm và ôn bài đầy đủ", "Có buổi làm, có buổi còn thiếu", "Thường xuyên không làm", "Không bao giờ làm"],
+    "Thuộc từ mới": ["", "Tốt", "Khá", "Trung bình", "Yếu"],
+    "Áp dụng cấu trúc": ["", "Thuộc và biết cách áp dụng công thức", "Hiểu nhưng vẫn còn chưa vững, vẫn còn nhầm khi áp dụng công thức", "Gặp khó khăn trong việc áp dụng công thức", "Không hiểu và không thể áp dụng được công thức"],
+    "Khả năng nói": ["", "A", "B", "C", "D"],
+    "Khả năng nghe": ["", "A", "B", "C", "D"],
+    "Ý thức giờ học": ["", "Ngoan", "Còn thỉnh thoảng nói chuyện, làm việc riêng", "Nghịch nhưng cô nhắc vẫn nghe", "Tăng động, nghịch rất khó kiểm soát"],
+    "Tình trạng tháng trước": ["", "Tiến bộ", "Như cũ", "Kém đi", "Báo động (Thụt lùi nghiêm trọng)", "Học sinh chán, muốn nghỉ học"],
+    "Đề xuất của giáo viên": ["", "Có thể học vượt lớp", "Giữ nguyên", "GV Không thể dạy được", "Hà Vi không nên nhận dạy HS"]
 };
 
 let bigClassesDatabase = {};
@@ -299,6 +293,7 @@ function loginSystem() {
         document.getElementById("loginBox").style.display = "none";
         document.getElementById("mainApp").style.display = "block";
         renderFullSystemUI();
+       updateUIReadOnlyState(); // <--- THÊM DÒNG NÀY VÀO
         alert("✅ Đăng nhập thành công\nXin chào " + currentUser);
     } else {
         alert("❌ Sai tài khoản hoặc mật khẩu");
@@ -491,6 +486,7 @@ function renderFullSystemUI() {
     if (classKeys.length === 0) {
         mainContainer.innerHTML = '<div class="empty-alert">Danh sách trống. Giao diện sẽ được sinh ra sau khi nạp file Excel.</div>';
         return;
+updateUIReadOnlyState();
     }
 
     classKeys.sort((a, b) => {
@@ -823,6 +819,20 @@ function clearSystemCache() {
         document.getElementById('fileStatusMessage').style.color = "#ffd700"; 
         document.getElementById('fileStatusMessage').innerText = "Chưa có dữ liệu học viên. Vui lòng chọn tệp Excel."; 
     } 
+}
+// Hàm khóa/mở khóa giao diện dựa trên trạng thái đăng nhập
+function updateUIReadOnlyState() {
+    const isLogged = (currentUser !== "Ẩn danh");
+    
+    // Tìm tất cả các thành phần có thể chỉnh sửa
+    const inputs = document.querySelectorAll('.note-select, .add-student-box input, .add-student-box button');
+    const actionButtons = document.querySelectorAll('.btn-save-eval, .btn-delete, .btn-add');
+
+    inputs.forEach(el => el.disabled = !isLogged);
+    actionButtons.forEach(el => {
+        el.style.pointerEvents = isLogged ? 'auto' : 'none';
+        el.style.opacity = isLogged ? '1' : '0.5';
+    });
 }
 </script>
 
