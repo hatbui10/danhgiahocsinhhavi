@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bộ Lọc Học Viên Điểm Danh Chia Lớp</title>
+    <title>Đánh giá học viên</title>
     
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
@@ -616,14 +616,14 @@ function renderStudentCardsHtml(classKey, students) {
                         </div>
                     </div>
 
-                    <div style="font-size: 0.85rem; color: #ffd700; margin-top: 5px; font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 5px;">DANH SÁCH 15 TIÊU CHÍ ĐÁNH GIÁ</div>
+                    <div style="font-size: 0.85rem; color: #ffd700; margin-top: 5px; font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 5px;">DANH SÁCH Tiêu chí đánh giá</div>
                     <div class="eval-vertical-list">
                         ${dropdownsHtml}
                     </div>
 
-                    <button class="btn-save-eval" onclick="saveStudentEvaluationChanges('${classKey}', ${student.id})">💾 Xác nhận lưu đánh giá</button>
+                    <button class="btn-save-eval" onclick="saveStudentEvaluationChanges('${classKey}', ${student.id})">💾 Xác nhận thay đổi</button>
 
-                    <button class="btn-history" onclick="toggleHistoryPanel(event, '${historyPanelId}')">⏳ Xem lịch sử sửa đổi (100 lần gần nhất)</button>
+                    <button class="btn-history" onclick="toggleHistoryPanel(event, '${historyPanelId}')">⏳ Xem lịch sử </button>
                     <div class="history-panel" id="${historyPanelId}">
                         <ul class="history-list">
                             ${historyItemsHtml}
