@@ -82,7 +82,7 @@
         .btn-add { background: #ffd700; color: #000; border: none; padding: 10px; font-weight: bold; font-size: 0.9rem; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
         
         .student-list { display: flex; flex-direction: column; gap: 10px; }
-        .student-card {  border: 1px solid #333; border-left: 4px solid #ffd700; border-radius: 4px; padding: 12px 10px; display: flex; flex-direction: column; gap: 10px; transition: background 0.2s; cursor: pointer; }
+        .student-card { border: 1px solid #333; border-left: 4px solid #ffd700; border-radius: 4px; padding: 12px 10px; display: flex; flex-direction: column; gap: 10px; transition: background 0.2s; cursor: pointer; position: relative; }
         .student-card.highlight-search { border: 1px solid #ffd700 !important; box-shadow: 0 0 12px rgba(255, 215, 0, 0.4); }
         
         .student-info-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid #222; padding-bottom: 6px; }
@@ -92,6 +92,12 @@
         .student-actions-right { display: flex; gap: 5px; width: 100%; justify-content: flex-end; }
         .btn-delete { background: #4a0000; color: #ff3333; border: 1px solid #ff3333; padding: 8px 15px; font-size: 0.9rem; border-radius: 4px; cursor: pointer; }
         
+        /* 🎓 CSS CHO NÚT TĂNG CẤP VÀ SAO ⭐ */
+        .btn-promote { background: #004d26; color: #00ff66; border: 1px solid #00ff66; padding: 8px 15px; font-size: 0.9rem; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-promote.is-promoted { background: #ffd700; color: #000; border: 1px solid #ffd700; }
+        .score-star { color: #ffd700; font-size: 1rem; margin-left: 6px; display: inline-block; animation: star-flash 1.5s infinite alternate; text-shadow: 0 0 5px #ffd700; }
+        @keyframes star-flash { 0% { opacity: 0.5; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1.1); } }
+
         /* HIỂN THỊ CHI TIẾT KHI MỞ ACCORDION HỌC SINH */
         .student-card .student-detail-panel { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #333; }
         .student-card.active .student-detail-panel { display: block; }
@@ -101,42 +107,40 @@
         
         /* DANH SÁCH TIÊU CHÍ HÀNG DỌC */
         /* DANH SÁCH TIÊU CHÍ - KHUNG CHỨA FLEXBOX CHUNG */
-.eval-vertical-list { 
-    display: flex; 
-    flex-direction: row;       /* Chuyển sang dạng hàng ngang để xếp cạnh nhau */
-    flex-wrap: wrap;           /* Tự động xuống dòng khi hết chỗ */
-    gap: 12px 15px;            /* Khoảng cách giữa các tiêu chí (dưới - ngang) */
-    margin-top: 10px; 
-    background: #090911; 
-    padding: 12px 10px; 
-    border-radius: 4px; 
-    border: 1px solid #222; 
-}
+        .eval-vertical-list { 
+            display: flex; 
+            flex-direction: row;       /* Chuyển sang dạng hàng ngang để xếp cạnh nhau */
+            flex-wrap: wrap;           /* Tự động xuống dòng khi hết chỗ */
+            gap: 12px 15px;            /* Khoảng cách giữa các tiêu chí (dưới - ngang) */
+            margin-top: 10px; 
+            background: #090911; 
+            padding: 12px 10px; 
+            border-radius: 4px; 
+            border: 1px solid #222; 
+        }
 
-/* ĐỊNH DẠNG TỪNG TIÊU CHÍ DỰA TRÊN ĐỘ DÀI */
-.eval-item { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 4px; 
-    padding-bottom: 4px;
-    flex-grow: 1;              /* Tự động kéo giãn để lấp đầy khoảng trống */
-    flex-shrink: 1; 
-    min-width: 140px;          /* Chiều rộng tối thiểu để không bị quá hẹp */
-}
+        /* ĐỊNH DẠNG TỪNG TIÊU CHÍ DỰA TRÊN ĐỘ DÀI */
+        .eval-item { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 4px; 
+            padding-bottom: 4px;
+            flex-grow: 1;              /* Tự động kéo giãn để lấp đầy khoảng trống */
+            flex-shrink: 1; 
+            min-width: 140px;          /* Chiều rộng tối thiểu để không bị quá hẹp */
+        }
 
-/* Các tiêu chí ngắn (Thường có độ dài ký tự ngắn, ví dụ: "Khả năng nói", "Khả năng nghe") 
-   Sẽ tự co giãn và chiếm khoảng một nửa hàng (ở màn hình lớn) */
-.eval-item.short-item {
-    flex-basis: calc(50% - 15px); /* Ưu tiên chiếm 50% độ rộng dòng */
-}
+        /* Các tiêu chí ngắn (Thường có độ dài ký tự ngắn, ví dụ: "Khả năng nói", "Khả năng nghe") 
+           Sẽ tự co giãn và chiếm khoảng một nửa hàng (ở màn hình lớn) */
+        .eval-item.short-item {
+            flex-basis: calc(50% - 15px); /* Ưu tiên chiếm 50% độ rộng dòng */
+        }
 
-/* Các tiêu chí dài (Ví dụ: "Đề xuất của giáo viên", "Tình trạng tháng trước")
-   Sẽ luôn luôn chiếm trọn vẹn 100% dòng riêng biệt */
-.eval-item.long-item {
-    flex-basis: 100%;             /* Luôn chiếm 100% độ rộng */
-}
-
-
+        /* Các tiêu chí dài (Ví dụ: "Đề xuất của giáo viên", "Tình trạng tháng trước")
+           Sẽ luôn luôn chiếm trọn vẹn 100% dòng riêng biệt */
+        .eval-item.long-item {
+            flex-basis: 100%;             /* Luôn chiếm 100% độ rộng */
+        }
 
         .eval-label { font-size: 0.8rem; color: #00f0ff; font-weight: bold; }
         .note-select { background: #1a1a3a; color: #fff; border: 1px solid #555; padding: 8px; font-size: 0.85rem; border-radius: 4px; outline: none; width: 100%; }
@@ -229,168 +233,166 @@
             color: #00ff66; 
         }
 
+        /* --- ĐỊNH NGHĨA NGÔI SAO NỀN (ĐÃ SỬA LỖI Z-INDEX) --- */
+        .star {
+            position: absolute;
+            width: 4px;        /* Tăng từ 2px lên 4px */
+            height: 4px;       /* Tăng từ 2px lên 4px */
+            background: #fff;
+            border-radius: 50%;
+            z-index: 4; /* Nổi lên trên lớp nền */
+            pointer-events: none;
+        }
+        /* Các nhịp nhấp nháy đa dạng và nhanh hơn */
+        .twinkle-1 { animation: twinkle 1s infinite alternate; }
+        .twinkle-2 { animation: twinkle 1.8s infinite alternate-reverse; }
+        .twinkle-3 { animation: twinkle 1.2s infinite alternate; }
 
+        @keyframes twinkle {
+            0% { opacity: 0.1; transform: scale(0.6); }
+            100% { opacity: 1; transform: scale(1.4); box-shadow: 0 0 6px #ffffff, 0 0 10px #ffd700; }
+        }
 
-/* --- ĐỊNH NGHĨA NGÔI SAO NỀN (ĐÃ SỬA LỖI Z-INDEX) --- */
-.star {
-    position: absolute;
-    width: 4px;        /* Tăng từ 2px lên 4px */
-    height: 4px;       /* Tăng từ 2px lên 4px */
-    background: #fff;
-    border-radius: 50%;
-    z-index: 4; /* Nổi lên trên lớp nền */
-    pointer-events: none;
-}
-/* Các nhịp nhấp nháy đa dạng và nhanh hơn */
-.twinkle-1 { animation: twinkle 1s infinite alternate; }
-.twinkle-2 { animation: twinkle 1.8s infinite alternate-reverse; }
-.twinkle-3 { animation: twinkle 1.2s infinite alternate; }
+        /* --- ĐỊNH NGHĨA SAO BĂNG RƠI --- */
+        .shooting-star {
+            position: absolute;
+            z-index: 40; 
+            width: 100px;       /* Tăng chiều dài đuôi từ 60px lên 100px */
+            height: 3px;        /* Tăng độ dày vệt sáng từ 1.5px lên 3px */
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.9), transparent);
+            transform: rotate(-35deg);
+            pointer-events: none;
+            opacity: 0;
+        }
 
-@keyframes twinkle {
-    0% { opacity: 0.1; transform: scale(0.6); }
-    100% { opacity: 1; transform: scale(1.4); box-shadow: 0 0 6px #ffffff, 0 0 10px #ffd700; }
-}
+        /* Cập nhật lại chiều dài đuôi sao băng xuất hiện trong các hiệu ứng chuyển động */
+        @keyframes meteor-fall-1 {
+            0% { top: -10%; left: 30%; opacity: 0; width: 0px; }
+            3% { opacity: 1; width: 100px; } /* Khớp với chiều dài 100px ở trên */
+            8% { top: 70%; left: -15%; opacity: 0; width: 0px; }
+            100% { top: 70%; left: -15%; opacity: 0; }
+        }
 
-/* --- ĐỊNH NGHĨA SAO BĂNG RƠI --- */
-.shooting-star {
-    position: absolute;
-    z-index: 40; 
-    width: 100px;       /* Tăng chiều dài đuôi từ 60px lên 100px */
-    height: 3px;        /* Tăng độ dày vệt sáng từ 1.5px lên 3px */
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.9), transparent);
-    transform: rotate(-35deg);
-    pointer-events: none;
-    opacity: 0;
-}
+        @keyframes meteor-fall-2 {
+            0% { top: -10%; left: 65%; opacity: 0; width: 0px; }
+            3% { opacity: 1; width: 110px; } /* Cho sao băng này dài hơn một chút */
+            8% { top: 80%; left: 15%; opacity: 0; width: 0px; }
+            100% { top: 80%; left: 15%; opacity: 0; }
+        }
 
-/* Cập nhật lại chiều dài đuôi sao băng xuất hiện trong các hiệu ứng chuyển động */
-@keyframes meteor-fall-1 {
-    0% { top: -10%; left: 30%; opacity: 0; width: 0px; }
-    3% { opacity: 1; width: 100px; } /* Khớp với chiều dài 100px ở trên */
-    8% { top: 70%; left: -15%; opacity: 0; width: 0px; }
-    100% { top: 70%; left: -15%; opacity: 0; }
-}
+        @keyframes meteor-fall-3 {
+            0% { top: -10%; left: 95%; opacity: 0; width: 0px; }
+            2% { opacity: 1; width: 120px; } /* Cho sao băng này dài nhất */
+            7% { top: 90%; left: 35%; opacity: 0; width: 0px; }
+            100% { top: 90%; left: 35%; opacity: 0; }
+        }
 
-@keyframes meteor-fall-2 {
-    0% { top: -10%; left: 65%; opacity: 0; width: 0px; }
-    3% { opacity: 1; width: 110px; } /* Cho sao băng này dài hơn một chút */
-    8% { top: 80%; left: 15%; opacity: 0; width: 0px; }
-    100% { top: 80%; left: 15%; opacity: 0; }
-}
+        /* Cấu hình thời gian rơi dồn dập và so le nhau */
+        .meteor-1 {
+            top: -10%; left: 15%;
+            animation: meteor-fall-1 4s infinite linear;
+        }
+        .meteor-2 {
+            top: -10%; left: 45%;
+            animation: meteor-fall-2 5.5s infinite linear;
+            animation-delay: 1.2s;
+            background: linear-gradient(90deg, rgba(0, 240, 255, 0.9), transparent); /* Sao băng xanh cyan */
+        }
+        .meteor-3 {
+            top: -10%; left: 75%;
+            animation: meteor-fall-3 7s infinite linear;
+            animation-delay: 2.5s;
+            background: linear-gradient(90deg, rgba(255, 0, 127, 0.9), transparent); /* Sao băng hồng */
+        }
+        .meteor-4 {
+            top: -10%; left: 30%;
+            animation: meteor-fall-1 6s infinite linear;
+            animation-delay: 0.8s;
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.9), transparent); /* Sao băng vàng gold */
+        }
+        .meteor-5 {
+            top: -10%; left: 60%;
+            animation: meteor-fall-2 4.5s infinite linear;
+            animation-delay: 3s;
+        }
+        .meteor-6 {
+            top: -10%; left: 90%;
+            animation: meteor-fall-3 8s infinite linear;
+            animation-delay: 1.7s;
+            background: linear-gradient(90deg, rgba(0, 255, 102, 0.9), transparent); /* Sao băng xanh lá */
+        }
 
-@keyframes meteor-fall-3 {
-    0% { top: -10%; left: 95%; opacity: 0; width: 0px; }
-    2% { opacity: 1; width: 120px; } /* Cho sao băng này dài nhất */
-    7% { top: 90%; left: 35%; opacity: 0; width: 0px; }
-    100% { top: 90%; left: 35%; opacity: 0; }
-}
+        /* Hoạt ảnh rơi xé gió mượt mà tốc độ cao */
+        @keyframes meteor-fall-1 {
+            0% { top: -10%; left: 30%; opacity: 0; width: 0px; }
+            3% { opacity: 1; width: 70px; }
+            8% { top: 70%; left: -15%; opacity: 0; width: 0px; }
+            100% { top: 70%; left: -15%; opacity: 0; }
+        }
 
-/* Cấu hình thời gian rơi dồn dập và so le nhau */
-.meteor-1 {
-    top: -10%; left: 15%;
-    animation: meteor-fall-1 4s infinite linear;
-}
-.meteor-2 {
-    top: -10%; left: 45%;
-    animation: meteor-fall-2 5.5s infinite linear;
-    animation-delay: 1.2s;
-    background: linear-gradient(90deg, rgba(0, 240, 255, 0.9), transparent); /* Sao băng xanh cyan */
-}
-.meteor-3 {
-    top: -10%; left: 75%;
-    animation: meteor-fall-3 7s infinite linear;
-    animation-delay: 2.5s;
-    background: linear-gradient(90deg, rgba(255, 0, 127, 0.9), transparent); /* Sao băng hồng */
-}
-.meteor-4 {
-    top: -10%; left: 30%;
-    animation: meteor-fall-1 6s infinite linear;
-    animation-delay: 0.8s;
-    background: linear-gradient(90deg, rgba(255, 215, 0, 0.9), transparent); /* Sao băng vàng gold */
-}
-.meteor-5 {
-    top: -10%; left: 60%;
-    animation: meteor-fall-2 4.5s infinite linear;
-    animation-delay: 3s;
-}
-.meteor-6 {
-    top: -10%; left: 90%;
-    animation: meteor-fall-3 8s infinite linear;
-    animation-delay: 1.7s;
-    background: linear-gradient(90deg, rgba(0, 255, 102, 0.9), transparent); /* Sao băng xanh lá */
-}
+        @keyframes meteor-fall-2 {
+            0% { top: -10%; left: 65%; opacity: 0; width: 0px; }
+            3% { opacity: 1; width: 75px; }
+            8% { top: 80%; left: 15%; opacity: 0; width: 0px; }
+            100% { top: 80%; left: 15%; opacity: 0; }
+        }
 
-/* Hoạt ảnh rơi xé gió mượt mà tốc độ cao */
-@keyframes meteor-fall-1 {
-    0% { top: -10%; left: 30%; opacity: 0; width: 0px; }
-    3% { opacity: 1; width: 70px; }
-    8% { top: 70%; left: -15%; opacity: 0; width: 0px; }
-    100% { top: 70%; left: -15%; opacity: 0; }
-}
+        @keyframes meteor-fall-3 {
+            0% { top: -10%; left: 95%; opacity: 0; width: 0px; }
+            2% { opacity: 1; width: 80px; }
+            7% { top: 90%; left: 35%; opacity: 0; width: 0px; }
+            100% { top: 90%; left: 35%; opacity: 0; }
+        }
 
-@keyframes meteor-fall-2 {
-    0% { top: -10%; left: 65%; opacity: 0; width: 0px; }
-    3% { opacity: 1; width: 75px; }
-    8% { top: 80%; left: 15%; opacity: 0; width: 0px; }
-    100% { top: 80%; left: 15%; opacity: 0; }
-}
+        .starlight-container {
+            position: relative;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            background: #06060c; /* Nền đen cũ */
+            padding: 30px;
+            overflow: hidden;
+            z-index: 1;
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.1), inset 0 0 15px rgba(0, 240, 255, 0.05);
+        }
 
-@keyframes meteor-fall-3 {
-    0% { top: -10%; left: 95%; opacity: 0; width: 0px; }
-    2% { opacity: 1; width: 80px; }
-    7% { top: 90%; left: 35%; opacity: 0; width: 0px; }
-    100% { top: 90%; left: 35%; opacity: 0; }
-}
+        /* 🚨 HỆ THỐNG BÁO ĐỘNG CỰC MẠNH: ÉP ĐỔI NỀN ĐỎ & NHẤP NHÁY LIÊN TỤC */
+        .student-card.alarm-warning {
+            border: 2px solid #ff0055 !important;
+            border-left: 6px solid #ff0055 !important; /* Viền trái siêu dày nổi bật */
+            
+            /* Ép màu nền cố định sang đỏ sẫm */
+            background-color: #500015 !important; 
+            background: #FF1E1E !important;
+            
+            /* Chạy hoạt ảnh nhấp nháy bằng cách thay đổi độ sáng (brightness) và độ bão hòa (saturate) */
+            animation: alarm-super-pulse 0.8s infinite alternate ease-in-out !important;
+            transition: all 0.3s ease;
+        }
 
-.starlight-container {
-    position: relative;
-    margin-bottom: 25px;
-    border-radius: 12px;
-    background: #06060c; /* Nền đen cũ */
-    padding: 30px;
-    overflow: hidden;
-    z-index: 1;
-    border: 1px solid rgba(255, 215, 0, 0.4);
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.1), inset 0 0 15px rgba(0, 240, 255, 0.05);
-}
+        /* Đổi màu chữ tên học sinh sang màu vàng sáng để nhìn cực rõ trên nền đỏ */
+        .student-card.alarm-warning .student-name {
+            color: #fffb00 !important;
+            text-shadow: 0 0 5px #ff0055 !important;
+        }
 
-/* 🚨 HỆ THỐNG BÁO ĐỘNG CỰC MẠNH: ÉP ĐỔI NỀN ĐỎ & NHẤP NHÁY LIÊN TỤC */
-.student-card.alarm-warning {
-    border: 2px solid #ff0055 !important;
-    border-left: 6px solid #ff0055 !important; /* Viền trái siêu dày nổi bật */
-    
-    /* Ép màu nền cố định sang đỏ sẫm */
-    background-color: #500015 !important; 
-    background: #FF1E1E !important;
-    
-    /* Chạy hoạt ảnh nhấp nháy bằng cách thay đổi độ sáng (brightness) và độ bão hòa (saturate) */
-    animation: alarm-super-pulse 0.8s infinite alternate ease-in-out !important;
-    transition: all 0.3s ease;
-}
+        /* Đổi màu mũi tên góc phải sang màu hồng neon */
+        .student-card.alarm-warning .student-arrow {
+            color: #ff0055 !important;
+        }
 
-/* Đổi màu chữ tên học sinh sang màu vàng sáng để nhìn cực rõ trên nền đỏ */
-.student-card.alarm-warning .student-name {
-    color: #fffb00 !important;
-    text-shadow: 0 0 5px #ff0055 !important;
-}
-
-/* Đổi màu mũi tên góc phải sang màu hồng neon */
-.student-card.alarm-warning .student-arrow {
-    color: #ff0055 !important;
-}
-
-/* HOẠT ẢNH ÉP NHẤP NHÁY BẰNG FILTER (Bảo đảm hoạt động 100% trên Live Editor) */
-@keyframes alarm-super-pulse {
-    0% {
-        filter: brightness(0.8) saturate(1);
-        box-shadow: 0 0 5px rgba(255, 0, 85, 0.4) !important;
-    }
-    100% {
-        /* Tăng vọt độ sáng để tạo hiệu ứng nhấp nháy cực mạnh cho nền đỏ */
-        filter: brightness(1.5) saturate(1.5); 
-        box-shadow: 0 0 22px rgba(255, 0, 85, 0.9), inset 0 0 10px rgba(255, 0, 85, 0.5) !important;
-    }
-}
+        /* HOẠT ẢNH ÉP NHẤP NHÁY BẰNG FILTER (Bảo đảm hoạt động 100% trên Live Editor) */
+        @keyframes alarm-super-pulse {
+            0% {
+                filter: brightness(0.8) saturate(1);
+                box-shadow: 0 0 5px rgba(255, 0, 85, 0.4) !important;
+            }
+            100% {
+                /* Tăng vọt độ sáng để tạo hiệu ứng nhấp nháy cực mạnh cho nền đỏ */
+                filter: brightness(1.5) saturate(1.5); 
+                box-shadow: 0 0 22px rgba(255, 0, 85, 0.9), inset 0 0 10px rgba(255, 0, 85, 0.5) !important;
+            }
+        }
 
     </style>
 </head>
@@ -429,24 +431,24 @@
         </h3>
         
         <!-- Ô nhập tài khoản -->
-        <input id="username" placeholder="Tên đăng nhập" style="width:50%; display: block;padding:12px; margin: 8px auto; background: #050508; border: 2px solid #333; color: #fff; border-radius: 6px; outline: none; transition: all 0.3s; position: relative; z-index: 5;" onfocus="this.style.borderColor='#ffd700'; this.style.boxShadow='0 0 8px rgba(255, 215, 0, 0.3)';" onblur="this.style.borderColor='#333'; this.style.boxShadow='none';">
+        <input id="username" placeholder="Tên đăng nhập" style="width:50%; display: block;padding:12px; margin: 8px auto; background: #050508; border: 2px solid #333; color: #fff; border-radius: 6px; outline: none; transition: all 0.3s; position: relative; z-index: 10;" onfocus="this.style.borderColor='#ffd700'; this.style.boxShadow='0 0 8px rgba(255, 215, 0, 0.3)';" onblur="this.style.borderColor='#333'; this.style.boxShadow='none';">
         
        
         <!-- Ô mật khẩu chỉ nhỏ 50% so với hộp lớn, con mắt nằm gọn bên trong -->
-<div style="position: relative; margin: 8px auto; width: 50%; z-index: 5;">
-    <input id="password" type="password" placeholder="Mật khẩu" style="width: 100%; padding: 12px; padding-right: 42px; background: #050508; border: 2px solid #333; color: #fff; border-radius: 6px; outline: none; transition: all 0.3s; display: block;" onfocus="this.style.borderColor='#00f0ff'; this.style.boxShadow='0 0 8px rgba(0, 240, 255, 0.3)';" onblur="this.style.borderColor='#333'; this.style.boxShadow='none';">
-    <span id="togglePasswordBtn" onclick="togglePasswordVisibility()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; transition: transform 0.2s;" onmousedown="this.style.transform='translateY(-50%) scale(0.95)'" onmouseup="this.style.transform='translateY(-50%) scale(1)'">
-        <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.4));">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-        </svg>
-    </span>
-</div>
+        <div style="position: relative; margin: 8px auto; width: 50%; z-index: 10;">
+            <input id="password" type="password" placeholder="Mật khẩu" style="width: 100%; padding: 12px; padding-right: 42px; background: #050508; border: 2px solid #333; color: #fff; border-radius: 6px; outline: none; transition: all 0.3s; display: block;" onfocus="this.style.borderColor='#00f0ff'; this.style.boxShadow='0 0 8px rgba(0, 240, 255, 0.3)';" onblur="this.style.borderColor='#333'; this.style.boxShadow='none';">
+            <span id="togglePasswordBtn" onclick="togglePasswordVisibility()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; transition: transform 0.2s;" onmousedown="this.style.transform='translateY(-50%) scale(0.95)'" onmouseup="this.style.transform='translateY(-50%) scale(1)'">
+                <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.4));">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </span>
+        </div>
         
-        <!-- Nút đăng nhập -->
-        <button class="btn-add animate-btn" style="width: 30%; display: block; margin: 15px auto 0 auto; padding: 12px; font-weight: bold; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; border-radius: 6px; background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; border: none; cursor: pointer; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); transition: all 0.3s; position: relative; z-index: 5;" onmouseover="this.style.filter='brightness(1.1)'; this.style.boxShadow='0 0 20px rgba(255, 215, 0, 0.6)';" onmouseout="this.style.filter='brightness(1)'; this.style.boxShadow='0 0 15px rgba(255, 215, 0, 0.4)';" onclick="loginSystem()">
-    ĐĂNG NHẬP 
-</button>
+        <!-- Nút đăng nhập bảo vệ với z-index: 20 để tránh va chạm Pointer-events của Sao Băng -->
+        <button class="btn-login animate-btn" style="width: 30%; display: block; margin: 15px auto 0 auto; padding: 12px; font-weight: bold; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; border-radius: 6px; background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; border: none; cursor: pointer; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); transition: all 0.3s; position: relative; z-index: 20;" onmouseover="this.style.filter='brightness(1.1)'; this.style.boxShadow='0 0 20px rgba(255, 215, 0, 0.6)';" onmouseout="this.style.filter='brightness(1)'; this.style.boxShadow='0 0 15px rgba(255, 215, 0, 0.4)';" onclick="loginSystem()">
+            ĐĂNG NHẬP 
+        </button>
     </div>
 </div>
 
@@ -539,7 +541,7 @@ function loginSystem() {
         document.getElementById("loginBox").style.display = "none";
         document.getElementById("mainApp").style.display = "block";
         renderFullSystemUI();
-       updateUIReadOnlyState(); // <--- THÊM DÒNG NÀY VÀO
+        updateUIReadOnlyState(); // <--- THÊM DÒNG NÀY VÀO
         alert("✅ Đăng nhập thành công\nXin chào " + currentUser);
     } else {
         alert("❌ Sai tài khoản hoặc mật khẩu");
@@ -683,41 +685,33 @@ function startProcessingExcel(input) {
                                 
                                 const nextStudentId = bigClassesDatabase[currentClassKey].students.length + 1;
                                 
+                                let targetStudent = {
+                                    id: nextStudentId,
+                                    name: cellB,
+                                    phone: cleanPhone,
+                                    isPromoted: false, // Thêm trạng thái tăng cấp cho học viên
+                                    history: []
+                                };
 
+                                // Khởi tạo các tiêu chí đánh giá đúng theo cấu hình dropdownConfig thực tế
+                                for (let key in dropdownConfig) { 
+                                    targetStudent[`eval_${key}`] = ""; 
+                                }
 
-
-
-
- let targetStudent = {
-    id: nextStudentId,
-    name: cellB,
-    phone: cleanPhone,
-    history: []
-};
-
-// Khởi tạo các tiêu chí đánh giá đúng theo cấu hình dropdownConfig thực tế
-for (let key in dropdownConfig) { 
-    targetStudent[`eval_${key}`] = ""; 
-}
-
-if (oldDatabase[currentClassKey]) {
-    const matchedOldStudent = oldDatabase[currentClassKey].students.find(
-        s => s.name.trim().toLowerCase() === cellB.toLowerCase() && s.phone === cleanPhone
-    );
-    if (matchedOldStudent) {
-        // Giữ lại lịch sử chỉnh sửa
-        targetStudent.history = matchedOldStudent.history || [];
-        // Khôi phục chính xác các đánh giá cũ theo tên tiêu chí tiếng Việt
-        for (let key in dropdownConfig) {
-            targetStudent[`eval_${key}`] = matchedOldStudent[`eval_${key}`] || "";
-        }
-    }
-}
-
-
-
-
-
+                                if (oldDatabase[currentClassKey]) {
+                                    const matchedOldStudent = oldDatabase[currentClassKey].students.find(
+                                        s => s.name.trim().toLowerCase() === cellB.toLowerCase() && s.phone === cleanPhone
+                                    );
+                                    if (matchedOldStudent) {
+                                        // Giữ lại lịch sử chỉnh sửa
+                                        targetStudent.history = matchedOldStudent.history || [];
+                                        targetStudent.isPromoted = matchedOldStudent.isPromoted || false;
+                                        // Khôi phục chính xác các đánh giá cũ theo tên tiêu chí tiếng Việt
+                                        for (let key in dropdownConfig) {
+                                            targetStudent[`eval_${key}`] = matchedOldStudent[`eval_${key}`] || "";
+                                        }
+                                    }
+                                }
 
                                 bigClassesDatabase[currentClassKey].students.push(targetStudent);
                                 return;
@@ -771,7 +765,6 @@ function renderFullSystemUI() {
     if (classKeys.length === 0) {
         mainContainer.innerHTML = '<div class="empty-alert">Danh sách trống. Giao diện sẽ được sinh ra sau khi nạp file Excel.</div>';
         return;
-updateUIReadOnlyState();
     }
 
     classKeys.sort((a, b) => {
@@ -808,7 +801,6 @@ updateUIReadOnlyState();
         groupSection.innerHTML = `
             <div class="group-accordion-header" onclick="toggleGroupAccordion(this)">
                 <div class="group-main-title">${group.name}</div>
-               
             </div>
             <div class="group-panel" id="group-panel-${gKey}"></div>
         `;
@@ -820,20 +812,20 @@ updateUIReadOnlyState();
             const classObj = cls.data;
             const classIdStr = createSafeId(classKey);
             
-           // Thay đổi đoạn code này trong hàm renderFullSystemUI:
-const classSection = document.createElement("div");
-classSection.className = "class-block-wrapper";
-classSection.setAttribute("data-classname-box", classKey);
-// Tính số lượng học sinh báo động (có class 'alarm-warning' khi render)
-const alarmStudents = classObj.students.filter(s => checkStudentAlarmState(s)).length;
+            const classSection = document.createElement("div");
+            classSection.className = "class-block-wrapper";
+            classSection.setAttribute("data-classname-box", classKey);
+            
+            const alarmStudents = classObj.students.filter(s => checkStudentAlarmState(s)).length;
+            const promotedStudents = classObj.students.filter(s => s.isPromoted || s["eval_Đánh giá ngữ pháp"] === "Xuất sắc 9-10").length;
 
             classSection.innerHTML = `
                 <div class="class-accordion-header" onclick="toggleClassAccordion(this)">
                     <div class="class-main-title">Lớp: ${classKey}</div>
                     <div class="class-schedule">${classObj.schedule || ""}</div>
-                   <div class="class-stats" id="stats-${classIdStr}">
-            Sĩ số: ${classObj.students.length} | 🚨 Báo động: <span style="color: white ;">${alarmStudents}</span>
-        </div>
+                    <div class="class-stats" id="stats-${classIdStr}">
+                        Sĩ số: ${classObj.students.length} | 🚨 Báo động: <span style="color: white ;">${alarmStudents}</span> | 🎓 Tăng cấp: <span style="color: #00ffaa; font-weight: bold;">${promotedStudents}</span>
+                    </div>
                 </div>
                 <div class="class-panel">
                     <h3>Danh Sách Chi Tiết</h3><br>
@@ -849,6 +841,7 @@ const alarmStudents = classObj.students.filter(s => checkStudentAlarmState(s)).l
             groupPanel.appendChild(classSection);
         });
     });
+    updateUIReadOnlyState();
 }
 
 function renderStudentCardsHtml(classKey, students) {
@@ -857,29 +850,29 @@ function renderStudentCardsHtml(classKey, students) {
         const cardId = `card-${classIdStr}-${student.id}`;
         const historyPanelId = `history-${classIdStr}-${student.id}`;
 
-       let dropdownsHtml = "";
-let count = 1; // Khởi tạo bộ đếm số thứ tự
-for (let key in dropdownConfig) {
-    let options = dropdownConfig[key];
-    let currentSelected = student[`eval_${key}`] || "";
-    
-    let optionsHtml = options.map(opt => `
-        <option value="${opt}" ${opt === currentSelected ? 'selected' : ''}>${opt === "" ? "-- Trống --" : opt}</option>
-    `).join('');
+        let dropdownsHtml = "";
+        let count = 1; // Khởi tạo bộ đếm số thứ tự
+        for (let key in dropdownConfig) {
+            let options = dropdownConfig[key];
+            let currentSelected = student[`eval_${key}`] || "";
+            
+            let optionsHtml = options.map(opt => `
+                <option value="${opt}" ${opt === currentSelected ? 'selected' : ''}>${opt === "" ? "-- Trống --" : opt}</option>
+            `).join('');
 
-    // Tự động phân loại: Tiêu chí nào có tên dài hơn 15 ký tự là dài (long-item), ngược lại là ngắn (short-item)
-    const itemClass = key.length > 25 ? 'long-item' : 'short-item';
+            // Tự động phân loại: Tiêu chí nào có tên dài hơn 15 ký tự là dài (long-item), ngược lại là ngắn (short-item)
+            const itemClass = key.length > 25 ? 'long-item' : 'short-item';
 
-    dropdownsHtml += `
-        <div class="eval-item ${itemClass}">
-            <span class="eval-label">${count}. ${key}:</span>
-            <select class="note-select" data-eval-idx="${key}">
-                ${optionsHtml}
-            </select>
-        </div>
-    `;
-    count++; // Tăng số thứ tự lên 1 sau mỗi tiêu chí
-}
+            dropdownsHtml += `
+                <div class="eval-item ${itemClass}">
+                    <span class="eval-label">${count}. ${key}:</span>
+                    <select class="note-select" data-eval-idx="${key}">
+                        ${optionsHtml}
+                    </select>
+                </div>
+            `;
+            count++; // Tăng số thứ tự lên 1 sau mỗi tiêu chí
+        }
 
         let historyItemsHtml = '<li class="history-item" style="text-align:center;color:#666;">Chưa có lịch sử chỉnh sửa</li>';
         if (student.history && student.history.length > 0) {
@@ -896,11 +889,20 @@ for (let key in dropdownConfig) {
         const isAlarm = checkStudentAlarmState(student);
         const alarmClass = isAlarm ? "alarm-warning" : "";
 
+        // Kiểm tra xem Đánh giá ngữ pháp có là "Xuất sắc 9-10" hay không để hiển thị ngôi sao
+        const isExcellent = student["eval_Đánh giá ngữ pháp"] === "Xuất sắc 9-10";
+        const starMarkup = isExcellent ? `<span class="score-star" title="9-10 điểm ngữ pháp">⭐</span>` : '';
+
+        // Tối ưu hóa giao diện nút thăng cấp và gán class hoạt động
+        const isPromoted = student.isPromoted || false;
+        const promoteBtnText = isPromoted ? "Đã tăng cấp" : "Tăng cấp";
+        const promoteBtnClass = isPromoted ? "btn-promote is-promoted" : "btn-promote";
+
         return `
             <div class="student-card ${alarmClass}" id="${cardId}" onclick="toggleStudentAccordion('${cardId}')">
                 <div class="student-header-row">
                     <div class="student-meta">
-                        <span class="student-name">${idx + 1}. ${student.name}</span>
+                        <span class="student-name">${idx + 1}. ${student.name}${starMarkup}</span>
                     </div>
                     <span class="student-arrow">▼</span>
                 </div>
@@ -908,6 +910,7 @@ for (let key in dropdownConfig) {
                 <div class="student-detail-panel" onclick="event.stopPropagation();">
                     <div class="student-info-row" style="border: none; padding: 0; margin-bottom: 5px;">
                         <div class="student-actions-right">
+                            <button class="${promoteBtnClass}" onclick="promoteStudent('${classKey}', ${student.id})">${promoteBtnText}</button>
                             <button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')">Xoá học sinh</button>
                         </div>
                     </div>
@@ -929,6 +932,45 @@ for (let key in dropdownConfig) {
             </div>
         `;
     }).join('');
+}
+
+// Logic cập nhật thăng hạng học viên
+function promoteStudent(classKey, studentId) {
+    let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
+    if (!student) return;
+
+    student.isPromoted = !student.isPromoted; // Đảo trạng thái tăng cấp
+
+    let now = new Date();
+    let timeStr = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+    
+    if (!student.history) student.history = [];
+    student.history.push({
+        user: currentUser,
+        index: "Tăng cấp lớp học",
+        old: !student.isPromoted ? "Được tăng cấp" : "Hủy tăng cấp",
+        new: student.isPromoted ? "Được tăng cấp" : "Hủy tăng cấp",
+        time: timeStr
+    });
+
+    saveDatabaseState();
+
+    // Cập nhật giao diện thống kê của Lớp
+    const classIdStr = createSafeId(classKey);
+    const alarmStudents = bigClassesDatabase[classKey].students.filter(s => checkStudentAlarmState(s)).length;
+    const promotedStudents = bigClassesDatabase[classKey].students.filter(s => s.isPromoted).length;
+    const statsElem = document.getElementById(`stats-${classIdStr}`);
+    if (statsElem) {
+        statsElem.innerHTML = `Sĩ số: ${bigClassesDatabase[classKey].students.length} | 🚨 Báo động: <span style="color: white ;">${alarmStudents}</span> | 🎓 Tăng cấp: <span style="color: #00ffaa; font-weight: bold;">${promotedStudents}</span>`;
+    }
+
+    // Load lại danh sách học sinh của lớp đó
+    const studentListContainer = document.getElementById(`studentList-${classIdStr}`);
+    if (studentListContainer) {
+        studentListContainer.innerHTML = renderStudentCardsHtml(classKey, bigClassesDatabase[classKey].students);
+    }
+    
+    alert(`🎉 Đã cập nhật trạng thái tăng cấp cho [${student.name}]!`);
 }
 
 function saveStudentEvaluationChanges(classKey, studentId) {
@@ -970,15 +1012,15 @@ function saveStudentEvaluationChanges(classKey, studentId) {
         }
 
         saveDatabaseState();
-// Thêm đoạn này sau khi đã lưu xong database
-const classIdStr = createSafeId(classKey);
-const alarmStudents = bigClassesDatabase[classKey].students.filter(s => checkStudentAlarmState(s)).length;
-const statsElem = document.getElementById(`stats-${classIdStr}`);
-if (statsElem) {
-    statsElem.innerHTML = `Sĩ số: ${bigClassesDatabase[classKey].students.length} | 🚨 Báo động: <span style="color: white ;">${alarmStudents}</span>`;
-}
 
-// --- CHÈN ĐOẠN NÀY VÀO ---
+        // Thêm đoạn này sau khi đã lưu xong database để cập nhật lại chỉ số báo động và tăng cấp lớp
+        const alarmStudents = bigClassesDatabase[classKey].students.filter(s => checkStudentAlarmState(s)).length;
+        const promotedStudents = bigClassesDatabase[classKey].students.filter(s => s.isPromoted).length;
+        const statsElem = document.getElementById(`stats-${classIdStr}`);
+        if (statsElem) {
+            statsElem.innerHTML = `Sĩ số: ${bigClassesDatabase[classKey].students.length} | 🚨 Báo động: <span style="color: white ;">${alarmStudents}</span> | 🎓 Tăng cấp: <span style="color: #00ffaa; font-weight: bold;">${promotedStudents}</span>`;
+        }
+
         // Gọi hàm kiểm tra và cập nhật viền báo động đỏ lên màn hình ngay lập tức
         const isAlarmNow = checkStudentAlarmState(student);
         if (isAlarmNow) {
@@ -987,16 +1029,12 @@ if (statsElem) {
             cardElement.classList.remove("alarm-warning");
         }
 
-        const historyList = document.querySelector(`#history-${classIdStr}-${studentId} .history-list`);
-        if (historyList) {
-            historyList.innerHTML = student.history.slice().reverse().map(h => `
-                <li class="history-item">
-                    <span class="history-user">${h.user}</span>: Tiêu chí ${h.index} 
-                    <span class="history-change">"${h.old || 'Trống'}" ➜ "${h.new || 'Trống'}"</span>
-                    <span class="history-time">${h.time}</span>
-                </li>
-            `).join('');
+        // Cập nhật lại danh sách để áp dụng việc hiển thị Ngôi Sao nếu Đánh giá ngữ pháp đổi sang Xuất sắc 9-10
+        const studentListContainer = document.getElementById(`studentList-${classIdStr}`);
+        if (studentListContainer) {
+            studentListContainer.innerHTML = renderStudentCardsHtml(classKey, bigClassesDatabase[classKey].students);
         }
+
         alert(`💾 Đã cập nhật và lưu đánh giá cho học viên [${student.name}] thành công!`);
     } else {
         alert("Thông báo: Bạn chưa thực hiện thay đổi tiêu chí nào.");
@@ -1032,7 +1070,7 @@ function addNewStudentToClass(classKey) {
     const studentsList = bigClassesDatabase[classKey].students; 
     const nextId = studentsList.length > 0 ? Math.max(...studentsList.map(s => s.id)) + 1 : 1; 
     
-    let newStudent = { id: nextId, name: name, phone: "Chưa có", history: [] };
+    let newStudent = { id: nextId, name: name, phone: "Chưa có", isPromoted: false, history: [] };
     
     // Khởi tạo các tiêu chí tiếng Việt chuẩn theo cấu hình dropdownConfig
     for (let key in dropdownConfig) { 
@@ -1043,11 +1081,12 @@ function addNewStudentToClass(classKey) {
     saveDatabaseState(); 
     nameInput.value = ''; 
     
-    document.getElementById(`stats-${classIdStr}`).innerText = 'Sĩ số: ' + studentsList.length; 
+    const alarmStudents = studentsList.filter(s => checkStudentAlarmState(s)).length;
+    const promotedStudents = studentsList.filter(s => s.isPromoted).length;
+    document.getElementById(`stats-${classIdStr}`).innerHTML = `Sĩ số: ${studentsList.length} | 🚨 Báo động: <span style="color: white ;">${alarmStudents}</span> | 🎓 Tăng cấp: <span style="color: #00ffaa; font-weight: bold;">${promotedStudents}</span>`; 
     document.getElementById(`studentList-${classIdStr}`).innerHTML = renderStudentCardsHtml(classKey, studentsList); 
     updateGroupStatsText(bigClassesDatabase[classKey].sheet); 
 }
-
 
 
 function deleteStudentFromClass(classKey, studentId, studentName) { 
@@ -1060,7 +1099,9 @@ function deleteStudentFromClass(classKey, studentId, studentName) {
         const classIdStr = createSafeId(classKey); 
         const studentsList = bigClassesDatabase[classKey].students; 
         
-        document.getElementById(`stats-${classIdStr}`).innerText = 'Sĩ số: ' + studentsList.length; 
+        const alarmStudents = studentsList.filter(s => checkStudentAlarmState(s)).length;
+        const promotedStudents = studentsList.filter(s => s.isPromoted).length;
+        document.getElementById(`stats-${classIdStr}`).innerHTML = `Sĩ số: ${studentsList.length} | 🚨 Báo động: <span style="color: white ;">${alarmStudents}</span> | 🎓 Tăng cấp: <span style="color: #00ffaa; font-weight: bold;">${promotedStudents}</span>`; 
         document.getElementById(`studentList-${classIdStr}`).innerHTML = renderStudentCardsHtml(classKey, studentsList); 
         updateGroupStatsText(targetSheet); 
     } 
@@ -1168,7 +1209,7 @@ function updateUIReadOnlyState() {
     
     // Tìm tất cả các thành phần có thể chỉnh sửa
     const inputs = document.querySelectorAll('.note-select, .add-student-box input, .add-student-box button');
-    const actionButtons = document.querySelectorAll('.btn-save-eval, .btn-delete, .btn-add');
+    const actionButtons = document.querySelectorAll('.btn-save-eval, .btn-delete, .btn-add, .btn-promote');
 
     inputs.forEach(el => el.disabled = !isLogged);
     actionButtons.forEach(el => {
