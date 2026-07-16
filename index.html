@@ -504,13 +504,14 @@ const dropdownConfig = {
     "Đánh giá ngữ pháp": ["", "Xuất sắc 9-10", "Khá 7-8", "Trung bình 5-6", "Dưới 5", "Mất gốc (1-2)"],
     "Ý thức học bài": ["", "Làm và ôn bài đầy đủ", "Có buổi làm, có buổi còn thiếu", "Thường xuyên không làm", "Không bao giờ làm"],
     "Thuộc từ mới": ["", "Tốt", "Khá", "Trung bình", "Yếu"],
-"Đề xuất của giáo viên": ["", "Có thể học vượt lớp", "Giữ nguyên", "GV Không thể dạy được", "Hà Vi không nên nhận dạy HS"],
+    "Đề xuất của giáo viên": ["", "Có thể học vượt lớp", "Giữ nguyên", "GV Không thể dạy được", "Hà Vi không nên nhận dạy HS"],
     
     "Khả năng nói": ["", "A", "B", "C", "D"],
     "Khả năng nghe": ["", "A", "B", "C", "D"],
     "Ý thức giờ học": ["", "Ngoan", "Còn thỉnh thoảng nói chuyện, làm việc riêng", "Nghịch nhưng cô nhắc vẫn nghe", "Tăng động, nghịch rất khó kiểm soát"],
-    "Tình trạng tháng trước": ["", "Tiến bộ", "Như cũ", "Kém đi", "Báo động (Thụt lùi nghiêm trọng)", "Học sinh chán, muốn nghỉ học"],
-    "Áp dụng cấu trúc": ["", "Thuộc và biết cách áp dụng công thức", "Hiểu nhưng vẫn còn chưa vững, vẫn còn nhầm khi áp dụng công thức", "Gặp khó khăn trong việc áp dụng công thức", "Không hiểu và không thể áp dụng được công thức"]
+    "So với tháng trước": ["", "Tiến bộ nhanh", "Tiến bộ chậm","Như cũ", "Kém đi", "Báo động (Thụt lùi nghiêm trọng)"],
+    "Áp dụng cấu trúc": ["", "Thuộc và biết cách áp dụng công thức", "Hiểu nhưng vẫn còn chưa vững, vẫn còn nhầm khi áp dụng công thức", "Gặp khó khăn trong việc áp dụng công thức", "Không hiểu và không thể áp dụng được công thức"],
+    "Tâm lý": ["", "Thoải mái, vui vẻ", "Chán học muốn nghỉ", "Không chơi với ai", "Rụt rè ít nói"]
 };
 
 let bigClassesDatabase = {};
@@ -819,14 +820,20 @@ updateUIReadOnlyState();
             const classObj = cls.data;
             const classIdStr = createSafeId(classKey);
             
-            const classSection = document.createElement("div");
-            classSection.className = "class-block-wrapper";
-            classSection.setAttribute("data-classname-box", classKey);
+           // Thay đổi đoạn code này trong hàm renderFullSystemUI:
+const classSection = document.createElement("div");
+classSection.className = "class-block-wrapper";
+classSection.setAttribute("data-classname-box", classKey);
+// Tính số lượng học sinh báo động (có class 'alarm-warning' khi render)
+const alarmStudents = classObj.students.filter(s => checkStudentAlarmState(s)).length;
+
             classSection.innerHTML = `
                 <div class="class-accordion-header" onclick="toggleClassAccordion(this)">
                     <div class="class-main-title">Lớp: ${classKey}</div>
                     <div class="class-schedule">${classObj.schedule || ""}</div>
-                    <div class="class-stats" id="stats-${classIdStr}">Sĩ số: ${classObj.students.length}</div>
+                   <div class="class-stats" id="stats-${classIdStr}">
+            Sĩ số: ${classObj.students.length} | 🚨 Báo động: <span style="color: white ;">${alarmStudents}</span>
+        </div>
                 </div>
                 <div class="class-panel">
                     <h3>Danh Sách Chi Tiết</h3><br>
@@ -963,6 +970,13 @@ function saveStudentEvaluationChanges(classKey, studentId) {
         }
 
         saveDatabaseState();
+// Thêm đoạn này sau khi đã lưu xong database
+const classIdStr = createSafeId(classKey);
+const alarmStudents = bigClassesDatabase[classKey].students.filter(s => checkStudentAlarmState(s)).length;
+const statsElem = document.getElementById(`stats-${classIdStr}`);
+if (statsElem) {
+    statsElem.innerHTML = `Sĩ số: ${bigClassesDatabase[classKey].students.length} | 🚨 Báo động: <span style="color: white ;">${alarmStudents}</span>`;
+}
 
 // --- CHÈN ĐOẠN NÀY VÀO ---
         // Gọi hàm kiểm tra và cập nhật viền báo động đỏ lên màn hình ngay lập tức
