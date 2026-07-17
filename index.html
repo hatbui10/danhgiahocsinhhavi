@@ -922,7 +922,7 @@ function renderStudentCardsHtml(classKey, students) {
                 <div class="student-detail-panel" onclick="event.stopPropagation();">
                     <div class="student-info-row" style="border: none; padding: 0; margin-bottom: 5px;">
                         <div class="student-actions-right">
-                            <button class="${promoteBtnClass}" onclick="promoteStudent('${classKey}', ${student.id})">${promoteBtnText}</button>
+                            <button class="${promoteBtnClass}" onclick="promoteStudent('${classKey}', ${student.id})" hidden>${promoteBtnText}</button>
                             <button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')" hidden>Xoá học sinh</button>
                         </div>
                     </div>
