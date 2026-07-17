@@ -841,9 +841,9 @@ function renderFullSystemUI() {
                 </div>
                 <div class="class-panel">
                     <h3>Danh Sách Chi Tiết</h3><br>
-                    <div class="add-student-box">
-                        <input type="text" id="inputName-${classIdStr}" placeholder="Nhập họ và tên học sinh mới...">
-                        <button class="btn-add" onclick="addNewStudentToClass('${classKey}')">+ Thêm học sinh</button>
+                    <div class="add-student-box" hidden>
+                        <input type="text" id="inputName-${classIdStr}" placeholder="Nhập họ và tên học sinh mới..." hidden>
+                        <button class="btn-add" onclick="addNewStudentToClass('${classKey}')" hidden>+ Thêm học sinh</button>
                     </div>
                     <div class="student-list" id="studentList-${classIdStr}">
                         ${renderStudentCardsHtml(classKey, classObj.students)}
@@ -901,7 +901,7 @@ function renderStudentCardsHtml(classKey, students) {
         const isAlarm = checkStudentAlarmState(student);
         const alarmClass = isAlarm ? "alarm-warning" : "";
 
-        // Kiểm tra xem Đánh giá ngữ pháp có là "Xuất sắc 9-10" hay không để hiển thị ngôi sao
+        // Kiểm tra xem Đánh giá ngữ pháp có ổnlà "Xuất sắc 9-10" hay không để hiển thị ngôi sao
         const isExcellent = student["eval_Đánh giá ngữ pháp"] === "Xuất sắc 9-10";
         const starMarkup = isExcellent ? `<span class="score-star" title="9-10 điểm ngữ pháp">⭐</span>` : '';
 
