@@ -109,7 +109,7 @@
         /* DANH SÁCH TIÊU CHÍ - KHUNG CHỨA FLEXBOX CHUNG */
         .eval-vertical-list { 
             display: flex; 
-            flex-direction: row;       /* Chuyển sang dạng hàng ngang để xếp cạnh nhau */
+            flex-direction: column;      /* Chuyển sang dạng hàng ngang để xếp cạnh nhau */
             flex-wrap: wrap;           /* Tự động xuống dòng khi hết chỗ */
             gap: 12px 15px;            /* Khoảng cách giữa các tiêu chí (dưới - ngang) */
             margin-top: 10px; 
@@ -515,17 +515,24 @@ const users = {
 
 
 const dropdownConfig = {
-    "Đánh giá ngữ pháp": ["", "Xuất sắc 9-10", "Khá 7-8", "Trung bình 5-6", "Dưới 5", "Mất gốc (1-2)"],
-    "Ý thức học bài": ["", "Làm và ôn bài đầy đủ", "Có buổi làm, có buổi còn thiếu", "Thường xuyên không làm", "Không bao giờ làm"],
-    "Thuộc từ mới": ["", "Tốt", "Khá", "Trung bình", "Yếu"],
-    "Đề xuất của giáo viên": ["", "Có thể học vượt lớp", "Giữ nguyên", "GV Không thể dạy được", "Hà Vi không nên nhận dạy HS"],
-    
-    "Khả năng nói": ["", "A", "B", "C", "D"],
-    "Khả năng nghe": ["", "A", "B", "C", "D"],
-    "Ý thức giờ học": ["", "Ngoan", "Còn thỉnh thoảng nói chuyện, làm việc riêng", "Nghịch nhưng cô nhắc vẫn nghe", "Tăng động, nghịch rất khó kiểm soát"],
-    "So với tháng trước": ["", "Tiến bộ nhanh", "Tiến bộ chậm","Như cũ", "Kém đi", "Báo động (Thụt lùi nghiêm trọng)"],
-    "Áp dụng cấu trúc": ["", "Thuộc và biết cách áp dụng công thức", "Hiểu nhưng vẫn còn chưa vững, vẫn còn nhầm khi áp dụng công thức", "Gặp khó khăn trong việc áp dụng công thức", "Không hiểu và không thể áp dụng được công thức"],
-    "Tâm lý": ["", "Thoải mái, vui vẻ", "Chán học muốn nghỉ", "Không chơi với ai", "Rụt rè ít nói"]
+    "Nhóm Kiến Thức": {
+        "Đánh giá ngữ pháp": ["", "Xuất sắc 9-10", "Khá 7-8", "Trung bình 5-6", "Dưới 5", "Mất gốc (1-2)"],
+        "Thuộc từ mới": ["", "Tốt", "Khá", "Trung bình", "Yếu"],
+        "Áp dụng cấu trúc": ["", "Thuộc và biết cách áp dụng công thức", "Hiểu nhưng vẫn còn chưa vững...", "Gặp khó khăn...", "Không hiểu..."]
+    },
+    "Nhóm Kỹ Năng": {
+        "Khả năng nói": ["", "A", "B", "C", "D"],
+        "Khả năng nghe": ["", "A", "B", "C", "D"]
+    },
+    "Nhóm Thái Độ": {
+        "Ý thức học bài": ["", "Làm và ôn bài đầy đủ", "Có buổi làm, có buổi thiếu", "Thường xuyên không làm", "Không bao giờ làm"],
+        "Ý thức giờ học": ["", "Ngoan", "Thỉnh thoảng nói chuyện", "Nghịch nhưng cô nhắc vẫn nghe", "Tăng động"],
+        "Tâm lý": ["", "Thoải mái, vui vẻ", "Chán học muốn nghỉ", "Không chơi với ai", "Rụt rè ít nói"]
+    },
+    "Nhóm Đánh Giá Chung": {
+        "So với tháng trước": ["", "Tiến bộ nhanh", "Tiến bộ chậm", "Như cũ", "Kém đi", "Báo động"],
+        "Đề xuất của giáo viên": ["", "Có thể học vượt lớp", "Giữ nguyên", "GV Không thể dạy được", "Hà Vi không nên nhận dạy HS"]
+    }
 };
 
 let bigClassesDatabase = {};
@@ -862,29 +869,43 @@ function renderStudentCardsHtml(classKey, students) {
         const cardId = `card-${classIdStr}-${student.id}`;
         const historyPanelId = `history-${classIdStr}-${student.id}`;
 
+
+
+
+       // --- ĐOẠN CODE CẦN THAY THẾ BẮT ĐẦU TỪ ĐÂY ---
         let dropdownsHtml = "";
-        let count = 1; // Khởi tạo bộ đếm số thứ tự
-        for (let key in dropdownConfig) {
-            let options = dropdownConfig[key];
-            let currentSelected = student[`eval_${key}`] || "";
+        let count = 1;
+
+        // Duyệt qua từng nhóm trong cấu trúc config mới
+        for (let groupName in dropdownConfig) {
+            dropdownsHtml += `<div class="group-title" style="margin-top:15px; border-bottom:1px solid #444; padding-bottom:5px; color:#ffd700; font-weight:bold; font-size: 0.9rem;">${groupName}</div>`;
             
-            let optionsHtml = options.map(opt => `
-                <option value="${opt}" ${opt === currentSelected ? 'selected' : ''}>${opt === "" ? "-- Trống --" : opt}</option>
-            `).join('');
+            // Duyệt qua các tiêu chí trong nhóm đó
+            for (let criterion in dropdownConfig[groupName]) {
+                let options = dropdownConfig[groupName][criterion];
+                let currentSelected = student[`eval_${criterion}`] || "";
+                
+                let optionsHtml = options.map(opt => `
+                    <option value="${opt}" ${opt === currentSelected ? 'selected' : ''}>${opt === "" ? "-- Trống --" : opt}</option>
+                `).join('');
 
-            // Tự động phân loại: Tiêu chí nào có tên dài hơn 15 ký tự là dài (long-item), ngược lại là ngắn (short-item)
-            const itemClass = key.length > 25 ? 'long-item' : 'short-item';
+                const itemClass = criterion.length > 25 ? 'long-item' : 'short-item';
 
-            dropdownsHtml += `
-                <div class="eval-item ${itemClass}">
-                    <span class="eval-label">${count}. ${key}:</span>
-                    <select class="note-select" data-eval-idx="${key}">
-                        ${optionsHtml}
-                    </select>
-                </div>
-            `;
-            count++; // Tăng số thứ tự lên 1 sau mỗi tiêu chí
+                dropdownsHtml += `
+                    <div class="eval-item ${itemClass}">
+                        <span class="eval-label">${count}. ${criterion}:</span>
+                        <select class="note-select" data-eval-idx="${criterion}">
+                            ${optionsHtml}
+                        </select>
+                    </div>
+                `;
+                count++;
+            }
         }
+        // --- KẾT THÚC ĐOẠN THAY THẾ ---
+
+
+
 
         let historyItemsHtml = '<li class="history-item" style="text-align:center;color:#666;">Chưa có lịch sử chỉnh sửa</li>';
         if (student.history && student.history.length > 0) {
@@ -1054,22 +1075,17 @@ function saveStudentEvaluationChanges(classKey, studentId) {
 }
 
 
-function checkStudentAlarmState(student) {
-    // Duyệt qua tất cả các tiêu chí có trong dropdownConfig
-    for (let key in dropdownConfig) {
-        const options = dropdownConfig[key]; // Lấy danh sách các lựa chọn của tiêu chí này
-        const currentValue = student[`eval_${key}`] || ""; // Giá trị học sinh đang được chọn
-        
-        // Tìm xem giá trị đang chọn nằm ở dòng thứ mấy (0, 1, 2, 3...)
-        const selectedIndex = options.indexOf(currentValue);
 
-        // Nếu dòng được chọn là dòng thứ 3 trở xuống (chỉ số index >= 2)
-        // (Bao gồm dòng 3, dòng 4, dòng 5, dòng 6... để báo động các mức học lực đi xuống hoặc tệ)
-        if (selectedIndex >= 3) {
-            return true; // Kích hoạt báo động ngay lập tức
+
+function checkStudentAlarmState(student) {
+    for (let groupName in dropdownConfig) {
+        for (let key in dropdownConfig[groupName]) {
+            const options = dropdownConfig[groupName][key];
+            const currentValue = student[`eval_${key}`] || "";
+            if (options.indexOf(currentValue) >= 3) return true;
         }
     }
-    return false; // Không có tiêu chí nào vi phạm mức báo động
+    return false;
 }
 
 
