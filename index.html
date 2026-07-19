@@ -433,9 +433,12 @@
         </div>
         
         <!-- Nút đăng nhập bảo vệ với z-index: 20 để tránh va chạm Pointer-events của Sao Băng -->
-        <button class="btn-login animate-btn" style="width: 30%; display: block; margin: 15px auto 0 auto; padding: 12px; font-weight: bold; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; border-radius: 6px; background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; border: none; cursor: pointer; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); transition: all 0.3s; position: relative; z-index: 20;" onmouseover="this.style.filter='brightness(1.1)'; this.style.boxShadow='0 0 20px rgba(255, 215, 0, 0.6)';" onmouseout="this.style.filter='brightness(1)'; this.style.boxShadow='0 0 15px rgba(255, 215, 0, 0.4)';" onclick="loginSystem()">
+        <button class="btn-login animate-btn" style="width: 30%; display: none; margin: 15px auto 0 auto; padding: 12px; font-weight: bold; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; border-radius: 6px; background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; border: none; cursor: pointer; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); transition: all 0.3s; position: relative; z-index: 20;" onmouseover="this.style.filter='brightness(1.1)'; this.style.boxShadow='0 0 20px rgba(255, 215, 0, 0.6)';" onmouseout="this.style.filter='brightness(1)'; this.style.boxShadow='0 0 15px rgba(255, 215, 0, 0.4)';" onclick="loginSystem()">
             ĐĂNG NHẬP 
         </button>
+        <button onclick="loginWithGoogle()" style="width: 30%; display: block; margin: 15px auto 0 auto; padding: 12px; font-weight: bold; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; border-radius: 6px; background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; border: none; cursor: pointer; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); transition: all 0.3s; position: relative; z-index: 20;" onmouseover="this.style.filter='brightness(1.1)'; this.style.boxShadow='0 0 20px rgba(255, 215, 0, 0.6)';" onmouseout="this.style.filter='brightness(1)'; this.style.boxShadow='0 0 15px rgba(255, 215, 0, 0.4)';" onclick="loginSystem()">
+    Đăng nhập = Google
+</button>
     </div>
 </div>
 
@@ -1249,47 +1252,73 @@ function updateUIReadOnlyState() {
 </script>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+    // 1. Nhập các thư viện Firebase cần thiết (Phải ở đầu file)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDbCF0pFsdXqD14Y-wjWLFoNCGfP1LBlD8",
-  authDomain: "tienganhhavi-12b54.firebaseapp.com",
-  projectId: "tienganhhavi-12b54",
-  storageBucket: "tienganhhavi-12b54.firebasestorage.app",
-  messagingSenderId: "208059039650",
-  appId: "1:208059039650:web:d272318418e01d0f50fcfb",
-  measurementId: "G-XPHJWRWSLZ"
-};
+    // 2. Cấu hình và Khởi tạo Firebase App
+    const firebaseConfig = {
+        apiKey: "AIzaSyDbCF0pFsdXqD14Y-wjWLFoNCGfP1LBlD8",
+        authDomain: "tienganhhavi-12b54.firebaseapp.com",
+        projectId: "tienganhhavi-12b54",
+        storageBucket: "tienganhhavi-12b54.firebasestorage.app",
+        messagingSenderId: "208059039650",
+        appId: "1:208059039650:web:d272318418e01d0f50fcfb",
+        measurementId: "G-XPHJWRWSLZ"
+    };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
-window.saveToFirebase = async function () { 
-    try { 
-        await setDoc(doc(db, "system", "database"), { 
-            database: bigClassesDatabase, 
-            filename: localStorage.getItem("big_classes_filename") || "", 
-            updatedAt: new Date().toISOString() 
-        }); 
-        console.log("Đã lưu Firebase"); 
-    } catch (err) { console.error("Lỗi lưu Firebase:", err); } 
-}
+    // 3. Hàm Đăng nhập Google
+    async function loginWithGoogle() {
+        try {
+            const result = await signInWithPopup(auth, provider);
+            window.currentUserEmail = result.user.email; 
+            
+            document.getElementById("loginBox").style.display = "none";
+            document.getElementById("mainApp").style.display = "block";
+            
+            // Tự động tải dữ liệu sau khi đăng nhập thành công
+            await window.loadFromFirebase();
+            alert("Đăng nhập thành công: " + result.user.email);
+        } catch (error) {
+            alert("Lỗi đăng nhập: " + error.message);
+        }
+    }
+    // Gán hàm vào window để HTML gọi được
+    window.loginWithGoogle = loginWithGoogle;
 
-window.loadFromFirebase = async function () { 
-    try { 
-        const docRef = doc(db, "system", "database"); 
-        const docSnap = await getDoc(docRef); 
-        if (docSnap.exists()) { 
-            const data = docSnap.data(); 
-            bigClassesDatabase = data.database || {}; 
-            localStorage.setItem("big_classes_database", JSON.stringify(bigClassesDatabase)); 
-            if (data.filename) { localStorage.setItem("big_classes_filename", data.filename); } 
-            renderFullSystemUI(); 
-            console.log("Đã tải dữ liệu từ Firebase"); 
-        } 
-    } catch (err) { console.error("Lỗi đọc Firebase:", err); } 
-}
+    // 4. Hàm Lưu dữ liệu lên Firebase
+    window.saveToFirebase = async function () { 
+        try { 
+            await setDoc(doc(db, "system", "database"), { 
+                database: bigClassesDatabase, 
+                filename: localStorage.getItem("big_classes_filename") || "", 
+                updatedAt: new Date().toISOString() 
+            }); 
+            console.log("Đã lưu Firebase"); 
+        } catch (err) { console.error("Lỗi lưu Firebase:", err); } 
+    }
+
+    // 5. Hàm Tải dữ liệu từ Firebase
+    window.loadFromFirebase = async function () { 
+        try { 
+            const docRef = doc(db, "system", "database"); 
+            const docSnap = await getDoc(docRef); 
+            if (docSnap.exists()) { 
+                const data = docSnap.data(); 
+                bigClassesDatabase = data.database || {}; 
+                localStorage.setItem("big_classes_database", JSON.stringify(bigClassesDatabase)); 
+                if (data.filename) { localStorage.setItem("big_classes_filename", data.filename); } 
+                renderFullSystemUI(); 
+                console.log("Đã tải dữ liệu từ Firebase"); 
+            } 
+        } catch (err) { console.error("Lỗi đọc Firebase:", err); } 
+    }
 </script>
 </body>
 </html>
