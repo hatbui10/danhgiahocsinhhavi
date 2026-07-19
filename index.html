@@ -529,10 +529,7 @@
     </div>
 
 
-<!-- Thêm vào btn-group-top -->
-<button class="custom-upload-btn" onclick="exportToExcel()" style="background: #00ff66; color: #000; border: 1px solid #00ff66;">
-    💾 Xuất File Excel
-</button>
+
 </div>
 
 <script>
@@ -987,6 +984,12 @@ function renderStudentCardsHtml(classKey, students) {
                         <div class="student-actions-right">
                             <button class="${promoteBtnClass}" onclick="promoteStudent('${classKey}', ${student.id})" hidden>${promoteBtnText}</button>
                             <button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')" hidden>Xoá học sinh</button>
+                            <!-- Chèn biến exportSingleBtn trực tiếp vào đây -->
+    <button class="btn-export-single" 
+            onclick="exportSingleStudent('${classKey}', ${student.id})" 
+            style="background: #333; color: #ffd700; border: 1px solid #ffd700; padding: 4px 8px; font-size: 0.7rem; cursor: pointer; border-radius: 4px;">
+        📄 Xuất Excel
+    </button>
                         </div>
                     </div>
 
