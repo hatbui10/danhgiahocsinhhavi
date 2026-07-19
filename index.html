@@ -1297,61 +1297,103 @@ function exportSingleStudent(classKey, studentId) {
         return;
     }
 
-    // Dữ liệu xuất
-    const row = {
-        "Lớp": classKey,
-        "Sheet": classData.sheet || "",
-        "Lịch học": classData.schedule || "",
-        "Họ và tên": student.name,
-        "Số điện thoại": student.phone || "",
-        "Đã tăng cấp": student.isPromoted ? "Có" : "Không"
-    };
 
-    // Xuất toàn bộ tiêu chí đánh giá
-    for (const groupName in dropdownConfig) {
-        for (const criterion in dropdownConfig[groupName]) {
-            row[criterion] = student[`eval_${criterion}`] || "";
-        }
+
+
+
+    
+ //=========================================
+// TẠO GIAO DIỆN ĐẸP CHO FILE EXCEL
+//=========================================
+
+const excelData = [];
+
+excelData.push([""]);
+excelData.push(["TRUNG TÂM ANH NGỮ"]);
+excelData.push(["PHIẾU ĐÁNH GIÁ HỌC VIÊN"]);
+excelData.push([`Ngày xuất: ${new Date().toLocaleString("vi-VN")}`]);
+excelData.push([""]);
+
+excelData.push(["👤 THÔNG TIN HỌC SINH"]);
+excelData.push(["Họ và tên", student.name]);
+excelData.push(["Lớp", classKey]);
+excelData.push(["Sheet", classData.sheet || ""]);
+excelData.push(["Lịch học", classData.schedule || ""]);
+excelData.push(["Số điện thoại", student.phone || ""]);
+excelData.push(["Đã tăng cấp", student.isPromoted ? "Có" : "Không"]);
+excelData.push([""]);
+
+excelData.push(["📚 ĐÁNH GIÁ CHI TIẾT"]);
+
+for (const groupName in dropdownConfig) {
+
+    excelData.push([""]);
+    excelData.push([`◆ ${groupName}`]);
+
+    for (const criterion in dropdownConfig[groupName]) {
+
+        excelData.push([
+            criterion,
+            student[`eval_${criterion}`] || ""
+        ]);
+
     }
 
-    // Lịch sử chỉnh sửa
-    if (student.history && student.history.length > 0) {
-
-        row["Lịch sử chỉnh sửa"] =
-            student.history
-                .map(h =>
-                    `${h.time} | ${h.user} | ${h.index}: ${h.old || "Trống"} → ${h.new || "Trống"}`
-                )
-                .join("\n");
-
-    } else {
-
-        row["Lịch sử chỉnh sửa"] = "";
-    }
-
-    // Tạo Workbook
-    const ws = XLSX.utils.json_to_sheet([row]);
-
-    // Tự động căn rộng cột
-    ws["!cols"] = Object.keys(row).map(key => ({
-        wch: Math.max(key.length + 2, 25)
-    }));
-
-    const wb = XLSX.utils.book_new();
-
-    XLSX.utils.book_append_sheet(wb, ws, "Đánh giá");
-
-    // Tên file
-    const safeName = student.name
-        .replace(/[\\/:*?"<>|]/g, "")
-        .trim();
-
-    XLSX.writeFile(
-        wb,
-        `${classKey}_${safeName}.xlsx`
-    );
 }
 
+excelData.push([""]);
+excelData.push(["📝 LỊCH SỬ CHỈNH SỬA"]);
+
+if (student.history && student.history.length) {
+
+    student.history.forEach(h => {
+
+        excelData.push([
+            h.time,
+            h.user,
+            h.index,
+            h.old || "",
+            "→",
+            h.new || ""
+        ]);
+
+    });
+
+} else {
+
+    excelData.push(["Chưa có lịch sử"]);
+
+}
+
+const ws = XLSX.utils.aoa_to_sheet(excelData);
+
+// Gộp các tiêu đề
+ws["!merges"] = [
+    XLSX.utils.decode_range("A2:F2"),
+    XLSX.utils.decode_range("A3:F3"),
+    XLSX.utils.decode_range("A6:F6"),
+    XLSX.utils.decode_range("A15:F15")
+];
+
+// Độ rộng cột
+ws["!cols"] = [
+    { wch: 28 },
+    { wch: 35 },
+    { wch: 25 },
+    { wch: 25 },
+    { wch: 8 },
+    { wch: 35 }
+];
+
+const wb = XLSX.utils.book_new();
+
+XLSX.utils.book_append_sheet(wb, ws, "Đánh giá");
+
+const safeName = student.name
+    .replace(/[\\/:*?"<>|]/g, "")
+    .trim();
+
+XLSX.writeFile(wb, `${classKey}_${safeName}.xlsx`);
 
 
 
