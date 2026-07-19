@@ -409,6 +409,30 @@
         transform: translateY(0);
     }   
 
+.glowing-title {
+    /* Màu vàng kim sáng */
+    background: linear-gradient(to right, #ffd700, #ffea00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+
+/* Làm khung sáng sủa và lung linh hơn */
+    .login-container {
+        background: linear-gradient(135deg, #1e2a44, #0f172a); /* Chuyển từ xanh đêm sang đen */
+        padding: 40px;
+        border-radius: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.2); /* Viền sáng mỏng */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
+                    0 0 20px rgba(66, 133, 244, 0.3); /* Đổ bóng sáng */
+        max-width: 400px;
+        margin: 0 auto;
+        color: white;
+    }
+
+
+
     </style>
 </head>
 <body>
@@ -440,17 +464,15 @@
     <div class="shooting-star meteor-5"></div>
     <div class="shooting-star meteor-6"></div>
 
-    <div class="starlight-content">
-        <h3 class="neon-title">
-            ĐÁNH GIÁ KẾT QUẢ HỌC TẬP HỌC SINH
-        </h3>
+    <div class="login-container">
+       <h3 class="glowing-title">Đánh giá kết quả học tập học sinh</h3>
         
         <!-- Ô nhập tài khoản -->
-        <input id="username" placeholder="Tên đăng nhập" style="width:50%; display: block;padding:12px; margin: 8px auto; background: #050508; border: 2px solid #333; color: #fff; border-radius: 6px; outline: none; transition: all 0.3s; position: relative; z-index: 10;" onfocus="this.style.borderColor='#ffd700'; this.style.boxShadow='0 0 8px rgba(255, 215, 0, 0.3)';" onblur="this.style.borderColor='#333'; this.style.boxShadow='none';">
+        <input id="username" placeholder="Tên đăng nhập" style="width:50%; display:none;padding:12px; margin: 8px auto; background: #050508; border: 2px solid #333; color: #fff; border-radius: 6px; outline: none; transition: all 0.3s; position: relative; z-index: 10;" onfocus="this.style.borderColor='#ffd700'; this.style.boxShadow='0 0 8px rgba(255, 215, 0, 0.3)';" onblur="this.style.borderColor='#333'; this.style.boxShadow='none';">
         
        
         <!-- Ô mật khẩu chỉ nhỏ 50% so với hộp lớn, con mắt nằm gọn bên trong -->
-        <div style="position: relative; margin: 8px auto; width: 50%; z-index: 10;">
+        <div style="position: relative; margin: 8px auto;display:none; width: 50%; z-index: 10;">
             <input id="password" type="password" placeholder="Mật khẩu" style="width: 100%; padding: 12px; padding-right: 42px; background: #050508; border: 2px solid #333; color: #fff; border-radius: 6px; outline: none; transition: all 0.3s; display: block;" onfocus="this.style.borderColor='#00f0ff'; this.style.boxShadow='0 0 8px rgba(0, 240, 255, 0.3)';" onblur="this.style.borderColor='#333'; this.style.boxShadow='none';">
             <span id="togglePasswordBtn" onclick="togglePasswordVisibility()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; transition: transform 0.2s;" onmousedown="this.style.transform='translateY(-50%) scale(0.95)'" onmouseup="this.style.transform='translateY(-50%) scale(1)'">
                 <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.4));">
