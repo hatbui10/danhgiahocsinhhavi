@@ -1065,11 +1065,25 @@ function saveStudentEvaluationChanges(classKey, studentId) {
 
 
 function checkStudentAlarmState(student) {
+    // Liệt kê chính xác tên các tiêu chí muốn báo động vào đây
+    const criteriaToWatch = [
+        "Đánh giá ngữ pháp", 
+        "Tâm lý học sinh",
+"Đề xuất giáo viên", 
+        "Ý thức giờ học"
+    ];
+
     for (let groupName in dropdownConfig) {
         for (let key in dropdownConfig[groupName]) {
-            const options = dropdownConfig[groupName][key];
-            const currentValue = student[`eval_${key}`] || "";
-            if (options.indexOf(currentValue) >= 3) return true;
+            // Chỉ kiểm tra nếu tiêu chí này nằm trong danh sách cần theo dõi
+            if (criteriaToWatch.includes(key)) {
+                const options = dropdownConfig[groupName][key];
+                const currentValue = student[`eval_${key}`] || "";
+                
+                // Logic: Nếu chọn vào các phương án từ vị trí thứ 3 trở đi (index >= 2 hoặc 3 tùy bạn)
+                // Ví dụ: index 3 thường là "Dưới 5" hoặc "Thường xuyên không làm"
+                if (options.indexOf(currentValue) >= 4) return true;
+            }
         }
     }
     return false;
