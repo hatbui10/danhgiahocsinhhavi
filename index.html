@@ -1043,6 +1043,13 @@ function promoteStudent(classKey, studentId) {
 }
 
 function saveStudentEvaluationChanges(classKey, studentId) {
+if(!window.isAdmin){
+
+    alert("Bạn chỉ có quyền xem.");
+
+    return;
+
+}
     let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId); 
     if (!student) return; 
 
@@ -1290,12 +1297,16 @@ function clearSystemCache() {
         try {
             const result = await signInWithPopup(auth, provider);
             window.currentUserEmail = result.user.email; 
+const adminSnap = await getDoc(doc(db, "admins", result.user.email));
+
+window.isAdmin = adminSnap.exists();
             
             document.getElementById("loginBox").style.display = "none";
             document.getElementById("mainApp").style.display = "block";
             
             // Tự động tải dữ liệu sau khi đăng nhập thành công
             await window.loadFromFirebase();
+updatePermissionUI();
             alert("Đăng nhập thành công: " + result.user.email);
         } catch (error) {
             alert("Lỗi đăng nhập: " + error.message);
@@ -1306,6 +1317,11 @@ function clearSystemCache() {
 
     // 4. Hàm Lưu dữ liệu lên Firebase
     window.saveToFirebase = async function () { 
+if(!window.isAdmin){
+
+    return;
+
+}
         try { 
             await setDoc(doc(db, "system", "database"), { 
                 database: bigClassesDatabase, 
@@ -1316,6 +1332,30 @@ function clearSystemCache() {
         } catch (err) { console.error("Lỗi lưu Firebase:", err); } 
     }
 
+
+function updatePermissionUI(){
+
+    document.querySelectorAll(".btn-save-eval").forEach(btn=>{
+
+        btn.disabled=!window.isAdmin;
+
+        btn.style.opacity=window.isAdmin?"1":"0.4";
+
+        btn.style.cursor=window.isAdmin?"pointer":"not-allowed";
+
+    });
+
+    document.querySelectorAll("select[data-eval-idx]").forEach(select=>{
+
+        select.disabled=!window.isAdmin;
+
+        select.style.opacity=window.isAdmin?"1":"0.5";
+
+        select.style.cursor=window.isAdmin?"pointer":"not-allowed";
+
+    });
+
+}
     // 5. Hàm Tải dữ liệu từ Firebase
     window.loadFromFirebase = async function () { 
         try { 
