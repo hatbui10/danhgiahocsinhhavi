@@ -265,27 +265,6 @@
             opacity: 0;
         }
 
-        /* Cập nhật lại chiều dài đuôi sao băng xuất hiện trong các hiệu ứng chuyển động */
-        @keyframes meteor-fall-1 {
-            0% { top: -10%; left: 30%; opacity: 0; width: 0px; }
-            3% { opacity: 1; width: 100px; } /* Khớp với chiều dài 100px ở trên */
-            8% { top: 70%; left: -15%; opacity: 0; width: 0px; }
-            100% { top: 70%; left: -15%; opacity: 0; }
-        }
-
-        @keyframes meteor-fall-2 {
-            0% { top: -10%; left: 65%; opacity: 0; width: 0px; }
-            3% { opacity: 1; width: 110px; } /* Cho sao băng này dài hơn một chút */
-            8% { top: 80%; left: 15%; opacity: 0; width: 0px; }
-            100% { top: 80%; left: 15%; opacity: 0; }
-        }
-
-        @keyframes meteor-fall-3 {
-            0% { top: -10%; left: 95%; opacity: 0; width: 0px; }
-            2% { opacity: 1; width: 120px; } /* Cho sao băng này dài nhất */
-            7% { top: 90%; left: 35%; opacity: 0; width: 0px; }
-            100% { top: 90%; left: 35%; opacity: 0; }
-        }
 
         /* Cấu hình thời gian rơi dồn dập và so le nhau */
         .meteor-1 {
@@ -515,7 +494,7 @@
         <div class="btn-group-top">
             <label for="excelFileInput" class="custom-upload-btn">📂 Tải lên File Excel</label>
             <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display:none;" onchange="startProcessingExcel(this)">
-            <button class="btn-danger-top" onclick="clearSystemCache()" style="display:none;">XÓA dữ liệu CŨ</button>
+            
         </div>
         <div id="fileStatusMessage" class="file-status">Chưa có dữ liệu học viên. Vui lòng chọn tệp Excel.</div>
     </div>
@@ -617,7 +596,7 @@ function loginSystem() {
         document.getElementById("loginBox").style.display = "none";
         document.getElementById("mainApp").style.display = "block";
         renderFullSystemUI();
-        updateUIReadOnlyState(); // <--- THÊM DÒNG NÀY VÀO
+       
         alert("✅ Đăng nhập thành công\nXin chào " + currentUser);
     } else {
         alert("❌ Sai tài khoản hoặc mật khẩu");
@@ -917,7 +896,7 @@ function renderFullSystemUI() {
             groupPanel.appendChild(classSection);
         });
     });
-    updateUIReadOnlyState();
+   
 }
 
 function renderStudentCardsHtml(classKey, students) {
@@ -1189,21 +1168,7 @@ function addNewStudentToClass(classKey) {
 
 
 function deleteStudentFromClass(classKey, studentId, studentName) { 
-    if (confirm(`Bạn có chắc chắn muốn XÓA học sinh [${studentName}]?`)) { 
-        const targetSheet = bigClassesDatabase[classKey].sheet; 
-        bigClassesDatabase[classKey].students = bigClassesDatabase[classKey].students.filter(s => s.id !== studentId); 
-        bigClassesDatabase[classKey].students.forEach((s, idx) => { s.id = idx + 1; }); 
-        
-        saveDatabaseState(); 
-        const classIdStr = createSafeId(classKey); 
-        const studentsList = bigClassesDatabase[classKey].students; 
-        
-        const alarmStudents = studentsList.filter(s => checkStudentAlarmState(s)).length;
-        const promotedStudents = studentsList.filter(s => s.isPromoted).length;
-        document.getElementById(`stats-${classIdStr}`).innerHTML = `Sĩ số: ${studentsList.length} | 🚨 Báo động: <span style="color: white ;">${alarmStudents}</span> | 🎓 Tăng cấp: <span style="color: #00ffaa; font-weight: bold;">${promotedStudents}</span>`; 
-        document.getElementById(`studentList-${classIdStr}`).innerHTML = renderStudentCardsHtml(classKey, studentsList); 
-        updateGroupStatsText(targetSheet); 
-    } 
+    
 }
 
 function updateGroupStatsText(sheetName) { 
@@ -1293,29 +1258,9 @@ function searchGlobalStudent() {
 function handleSearchKeyPress(event) { if (event.key === 'Enter') { searchGlobalStudent(); } }
 
 function clearSystemCache() { 
-    if (confirm("Xóa toàn bộ dữ liệu hiện tại trong trình duyệt?")) { 
-        localStorage.removeItem('big_classes_database'); 
-        localStorage.removeItem('big_classes_filename'); 
-        bigClassesDatabase = {}; 
-        renderFullSystemUI(); 
-        document.getElementById('fileStatusMessage').style.color = "#ffd700"; 
-        document.getElementById('fileStatusMessage').innerText = "Chưa có dữ liệu học viên. Vui lòng chọn tệp Excel."; 
-    } 
-}
-// Hàm khóa/mở khóa giao diện dựa trên trạng thái đăng nhập
-function updateUIReadOnlyState() {
-    const isLogged = (currentUser !== "Ẩn danh");
     
-    // Tìm tất cả các thành phần có thể chỉnh sửa
-    const inputs = document.querySelectorAll('.note-select, .add-student-box input, .add-student-box button');
-    const actionButtons = document.querySelectorAll('.btn-save-eval, .btn-delete, .btn-add, .btn-promote');
-
-    inputs.forEach(el => el.disabled = !isLogged);
-    actionButtons.forEach(el => {
-        el.style.pointerEvents = isLogged ? 'auto' : 'none';
-        el.style.opacity = isLogged ? '1' : '0.5';
-    });
 }
+
 </script>
 
 <script type="module">
