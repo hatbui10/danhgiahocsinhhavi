@@ -1279,83 +1279,45 @@ function clearSystemCache() {
     
 }
 
-// ===============================
-// XUẤT EXCEL CHO 1 HỌC SINH
-// ===============================
-function exportSingleStudent(classKey, studentId) {
-
-    const classData = bigClassesDatabase[classKey];
-    if (!classData) {
-        alert("Không tìm thấy lớp.");
+function exportToExcel() {
+    if (Object.keys(bigClassesDatabase).length === 0) {
+        alert("Chưa có dữ liệu để xuất!");
         return;
     }
 
-    const student = classData.students.find(s => s.id === studentId);
+    let exportData = [];
 
-    if (!student) {
-        alert("Không tìm thấy học sinh.");
-        return;
-    }
+    // Chuyển đổi dữ liệu sang định dạng phẳng (flat)
+    Object.keys(bigClassesDatabase).forEach(classKey => {
+        let classObj = bigClassesDatabase[classKey];
+        classObj.students.forEach(student => {
+            let row = {
+                "Lớp": classKey,
+                "Họ và Tên": student.name,
+                "Số điện thoại": student.phone,
+                "Đã tăng cấp": student.isPromoted ? "Có" : "Không"
+            };
 
-    // Dữ liệu xuất
-    const row = {
-        "Lớp": classKey,
-        "Sheet": classData.sheet || "",
-        "Lịch học": classData.schedule || "",
-        "Họ và tên": student.name,
-        "Số điện thoại": student.phone || "",
-        "Đã tăng cấp": student.isPromoted ? "Có" : "Không"
-    };
+            // Tự động thêm các tiêu chí đánh giá vào file
+            Object.keys(student).forEach(key => {
+                if (key.startsWith('eval_')) {
+                    let criterionName = key.replace('eval_', '');
+                    row[criterionName] = student[key];
+                }
+            });
+            exportData.push(row);
+        });
+    });
 
-    // Xuất toàn bộ tiêu chí đánh giá
-    for (const groupName in dropdownConfig) {
-        for (const criterion in dropdownConfig[groupName]) {
-            row[criterion] = student[`eval_${criterion}`] || "";
-        }
-    }
-
-    // Lịch sử chỉnh sửa
-    if (student.history && student.history.length > 0) {
-
-        row["Lịch sử chỉnh sửa"] =
-            student.history
-                .map(h =>
-                    `${h.time} | ${h.user} | ${h.index}: ${h.old || "Trống"} → ${h.new || "Trống"}`
-                )
-                .join("\n");
-
-    } else {
-
-        row["Lịch sử chỉnh sửa"] = "";
-    }
-
-    // Tạo Workbook
-    const ws = XLSX.utils.json_to_sheet([row]);
-
-    // Tự động căn rộng cột
-    ws["!cols"] = Object.keys(row).map(key => ({
-        wch: Math.max(key.length + 2, 25)
-    }));
-
+    // Tạo Worksheet và Workbook
+    const ws = XLSX.utils.json_to_sheet(exportData);
     const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "DanhSachHocVien");
 
-    XLSX.utils.book_append_sheet(wb, ws, "Đánh giá");
-
-    // Tên file
-    const safeName = student.name
-        .replace(/[\\/:*?"<>|]/g, "")
-        .trim();
-
-    XLSX.writeFile(
-        wb,
-        `${classKey}_${safeName}.xlsx`
-    );
+    // Xuất file
+    XLSX.writeFile(wb, "Danh_Sach_Hoc_Vien.xlsx");
+    alert("✅ Đã xuất file Excel thành công!");
 }
-
-
-
-
-
 </script>
 
 <script type="module">
