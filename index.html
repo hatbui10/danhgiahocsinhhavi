@@ -379,7 +379,35 @@
             color: #ff0055 !important;
         }
 
-       
+
+.google-container {
+        display: inline-block;
+        padding: 2px; /* Khoảng cách để tạo hiệu ứng viền */
+        border-radius: 6px;
+        background: linear-gradient(45deg, #4285F4, #34A853, #FBBC05, #EA4335); /* Màu viền cầu vồng */
+        cursor: pointer;
+        transition: all 0.4s ease;
+    }
+
+    .google-btn-inner {
+        background-color: #121212; /* Màu nền tối khớp với theme của bạn */
+        padding: 5px 15px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.4s ease;
+    }
+
+    /* Hiệu ứng lung linh khi di chuột vào */
+    .google-container:hover {
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+        transform: translateY(-2px);
+    }
+
+    .google-container:active {
+        transform: translateY(0);
+    }   
 
     </style>
 </head>
@@ -433,12 +461,29 @@
         </div>
         
         <!-- Nút đăng nhập bảo vệ với z-index: 20 để tránh va chạm Pointer-events của Sao Băng -->
-        <button class="btn-login animate-btn" style="width: 30%; display: none; margin: 15px auto 0 auto; padding: 12px; font-weight: bold; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; border-radius: 6px; background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; border: none; cursor: pointer; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); transition: all 0.3s; position: relative; z-index: 20;" onmouseover="this.style.filter='brightness(1.1)'; this.style.boxShadow='0 0 20px rgba(255, 215, 0, 0.6)';" onmouseout="this.style.filter='brightness(1)'; this.style.boxShadow='0 0 15px rgba(255, 215, 0, 0.4)';" onclick="loginSystem()">
+        <button class="btn-login animate-btn" style="width: 30%; display:none; margin: 15px auto 0 auto; padding: 12px; font-weight: bold; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; border-radius: 6px; background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; border: none; cursor: pointer; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); transition: all 0.3s; position: relative; z-index: 20;" onmouseover="this.style.filter='brightness(1.1)'; this.style.boxShadow='0 0 20px rgba(255, 215, 0, 0.6)';" onmouseout="this.style.filter='brightness(1)'; this.style.boxShadow='0 0 15px rgba(255, 215, 0, 0.4)';" onclick="loginSystem()">
             ĐĂNG NHẬP 
         </button>
-        <button onclick="loginWithGoogle()" style="width: 30%; display: block; margin: 15px auto 0 auto; padding: 12px; font-weight: bold; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; border-radius: 6px; background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; border: none; cursor: pointer; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); transition: all 0.3s; position: relative; z-index: 20;" onmouseover="this.style.filter='brightness(1.1)'; this.style.boxShadow='0 0 20px rgba(255, 215, 0, 0.6)';" onmouseout="this.style.filter='brightness(1)'; this.style.boxShadow='0 0 15px rgba(255, 215, 0, 0.4)';" onclick="loginSystem()">
-    Đăng nhập = Google
-</button>
+
+
+
+
+     <div style="display: flex; justify-content: center; align-items: center; width: 100%; margin: 20px 0;">
+    
+    <!-- Đoạn mã nút của bạn -->
+    <div class="google-container" onclick="loginWithGoogle()">
+        <div class="google-btn-inner">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" style="width: 20px; height: 20px;">
+            <span style="color: white; font-family: Arial, sans-serif; font-weight: bold; font-size: 14px;">Đăng nhập với Google</span>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
     </div>
 </div>
 
