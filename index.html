@@ -573,6 +573,7 @@ const dropdownConfig = {
 
 let bigClassesDatabase = {};
 let currentUser = "Ẩn danh";
+let currentUserEmail = "";
 
 function createSafeId(str) {
     if (!str) return "";
@@ -1016,6 +1017,7 @@ function promoteStudent(classKey, studentId) {
     if (!student.history) student.history = [];
     student.history.push({
         user: currentUser,
+email: currentUserEmail,
         index: "Tăng cấp lớp học",
         old: !student.isPromoted ? "Được tăng cấp" : "Hủy tăng cấp",
         new: student.isPromoted ? "Được tăng cấp" : "Hủy tăng cấp",
@@ -1073,6 +1075,7 @@ if(!window.isAdmin){
             hasChanges = true;
             student.history.push({
                 user: currentUser,
+email: currentUserEmail,
                 index: evalIndex,
                 old: oldValue,
                 new: newValue,
@@ -1297,6 +1300,13 @@ function clearSystemCache() {
         try {
             const result = await signInWithPopup(auth, provider);
             window.currentUserEmail = result.user.email; 
+currentUserEmail = result.user.email;
+
+currentUser = result.user.displayName || result.user.email;
+
+
+
+
 const adminSnap = await getDoc(doc(db, "admins", result.user.email));
 
 window.isAdmin = adminSnap.exists();
