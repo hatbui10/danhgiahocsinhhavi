@@ -327,20 +327,29 @@
             100% { top: 90%; left: 35%; opacity: 0; }
         }
 
-        .starlight-container {
-            position: relative;
-            margin-bottom: 25px;
-            border-radius: 12px;
-            background: rgba(0,0,0,0.2);
+        /* ================= KHUNG STAR ================= */
+.starlight-container {
+    position: relative;
+    width: 90%;
+    max-width: 210px;
+    margin: 20px auto;
+
+    padding: 6px;
+
+    border-radius: 14px;
+    overflow: hidden;
+    z-index: 1;
+
+    background: rgba(0,0,0,0.18);
     backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px); /* Nền đen cũ */
-            padding: 10px;
-            max-width: 300px;
-            overflow: hidden;
-            z-index: 1;
-            border: 1px solid rgba(255, 215, 0, 0.4);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.1), inset 0 0 15px rgba(0, 240, 255, 0.05);
-        }
+    -webkit-backdrop-filter: blur(8px);
+
+    border: 1px solid rgba(255,215,0,.35);
+    box-shadow:
+        0 0 12px rgba(255,215,0,.12),
+        inset 0 0 10px rgba(0,240,255,.05);
+}
+
 
         /* 🚨 HỆ THỐNG BÁO ĐỘNG CỰC MẠNH: ÉP ĐỔI NỀN ĐỎ & NHẤP NHÁY LIÊN TỤC */
         .student-card.alarm-warning {
@@ -366,56 +375,94 @@
         }
 
 
-.google-container {
-        display: inline-block;
-        padding: 2px; /* Khoảng cách để tạo hiệu ứng viền */
-        border-radius: 6px;
-        background: linear-gradient(45deg, #4285F4, #34A853, #FBBC05, #EA4335); /* Màu viền cầu vồng */
-        cursor: pointer;
-        transition: all 0.4s ease;
-    }
 
-    .google-btn-inner {
-        background-color: #121212; /* Màu nền tối khớp với theme của bạn */
-        padding: 5px 15px;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        transition: all 0.4s ease;
-    }
+/* ================= NÚT GOOGLE ================= */
+.google-container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
 
-    /* Hiệu ứng lung linh khi di chuột vào */
-    .google-container:hover {
-        box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
-        transform: translateY(-2px);
-    }
+    width:100%;
+    max-width:200px;
 
-    .google-container:active {
-        transform: translateY(0);
-    }   
+    margin:12px auto 0;
 
-.glowing-title {
-    /* Màu vàng kim sáng */
-    background: linear-gradient(to right, #ffd700, #ffea00);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    padding:2px;
+
+    border-radius:8px;
+
+    background:linear-gradient(45deg,#4285F4,#34A853,#FBBC05,#EA4335);
+
+    cursor:pointer;
+    transition:.3s;
+}
+
+.google-btn-inner{
+    width:100%;
+
+    background:#121212;
+
+    padding:8px 10px;
+
+    border-radius:6px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+
+    font-size:15px;
+    font-weight:bold;
+}
+
+.google-container:hover{
+    box-shadow:0 0 12px rgba(255,255,255,.4);
+    transform:translateY(-2px);
+}
+
+.google-container:active{
+    transform:translateY(0);
 }
 
 
+/* ================= TIÊU ĐỀ ================= */
+.glowing-title{
+    font-size:14px;
+    line-height:1.2;
+    margin-bottom:18px;
+
+    background:linear-gradient(to right,#ffd700,#ffea00);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    text-shadow:0 0 10px rgba(255,215,0,.5);
+
+    text-align:center;
+}
+
 /* Làm khung sáng sủa và lung linh hơn */
-    .login-container {
-        background: none; /* Chuyển từ xanh đêm sang đen */
-        padding: 5px;
-        border-radius: 20px;
-        border: 2px solid rgba(255, 255, 255, 0.2); /* Viền sáng mỏng */
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
-                    0 0 20px rgba(66, 133, 244, 0.3); /* Đổ bóng sáng */
-        max-width: 300px;
-        margin: 0 auto;
-        color: white;
-    }
+   /* ================= KHUNG ĐĂNG NHẬP ================= */
+.login-container{
+    width:100%;
+    max-width:150px;
+
+    margin:0 auto;
+    padding:12px;
+
+    text-align:center;
+
+    background:transparent;
+
+    border:1px solid rgba(255,255,255,.2);
+    border-radius:16px;
+
+    box-shadow:
+        0 0 12px rgba(0,0,0,.35),
+        0 0 8px rgba(66,133,244,.15);
+
+    color:#fff;
+}
+
 
 
 
