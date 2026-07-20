@@ -714,7 +714,11 @@ function startProcessingExcel(input) {
     progressBar.style.width = '0%';
     progressBar.innerText = '0%';
 
+
+console.log("Số lớp cũ:", Object.keys(bigClassesDatabase).length);
+console.log(bigClassesDatabase);
     const oldDatabase = JSON.parse(JSON.stringify(bigClassesDatabase));
+
     bigClassesDatabase = {};
     
     const reader = new FileReader();
