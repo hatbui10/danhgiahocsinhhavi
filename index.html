@@ -714,11 +714,7 @@ function startProcessingExcel(input) {
     progressBar.style.width = '0%';
     progressBar.innerText = '0%';
 
-
-console.log("Số lớp cũ:", Object.keys(bigClassesDatabase).length);
-console.log(bigClassesDatabase);
     const oldDatabase = JSON.parse(JSON.stringify(bigClassesDatabase));
-
     bigClassesDatabase = {};
     
     const reader = new FileReader();
@@ -752,9 +748,8 @@ console.log(bigClassesDatabase);
                     localStorage.setItem('big_classes_database', JSON.stringify(bigClassesDatabase));
                     localStorage.setItem('big_classes_filename', file.name);
                     
-                    // Thêm thông báo và lệnh tải lại trang
-alert("✅ Nạp thành công! Hệ thống sẽ tự làm mới để hiển thị dữ liệu.");
-
+                    await saveDatabaseState();
+                    renderFullSystemUI();
                     return;
                 }
 
