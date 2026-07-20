@@ -15,7 +15,7 @@
         h3 { color: #ff007f; text-shadow: 0 0 10px rgba(255, 0, 127, 0.5); font-size: 1.1rem; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
         
         /* 🔐 KHU VỰC ĐĂNG NHẬP / XÁC THỰC */
-        .auth-bar { display: flex; justify-content: space-between; align-items: center; background: #0d0d1a; border: 1px solid #00f0ff; border-radius: 6px; padding: 10px 15px; margin-bottom: 15px; font-size: 0.85rem; }
+        .auth-bar { display: flex; justify-content: space-between; align-items: center; background: #0d0d1a; border: 1px solid #00f0ff; border-radius: 6px; padding: 10px 15px; margin-bottom: px; font-size: 0.85rem; }
         .auth-btn { background: #00f0ff; color: #000; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
         .auth-btn-danger { background: #ff007f; color: #fff; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
         
@@ -142,9 +142,9 @@
             transform: scale(0.8); transition: transform 0.3s ease;
         }
         .custom-modal-overlay.show .custom-modal-box { transform: scale(1); }
-        .modal-title { color: #00ff66; font-size: 1.25rem; font-weight: bold; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
-        .modal-body { color: #e0e0e6; font-size: 0.95rem; margin-bottom: 20px; line-height: 1.5; text-align: left; white-space: pre-line; }
-        .modal-btn { background: #00ff66; color: #000; border: none; padding: 11px 30px; font-weight: bold; font-size: 0.9rem; border-radius: 4px; cursor: pointer; text-transform: uppercase; width: 100%; letter-spacing: 1px; box-shadow: 0 0 8px #00ff66; }
+        .modal-title { color: #00ff66; font-size: 1.25rem; font-weight: bold; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-body { color: #e0e0e6; font-size: 0.95rem; margin-bottom: 2px; line-height: 1.5; text-align: left; white-space: pre-line; }
+        .modal-btn { background: #00ff66; color: #000; border: none; padding: 5px 10px; font-weight: bold; font-size: 0.9rem; border-radius: 4px; cursor: pointer; text-transform: uppercase; width: 100%; letter-spacing: 1px; box-shadow: 0 0 8px #00ff66; }
     </style>
 </head>
 <body>
@@ -206,10 +206,11 @@
     <div class="custom-modal-box">
         <div class="modal-title">Đăng Nhập Giáo Viên</div>
         <div class="modal-body">
-            <input type="email" id="loginEmail" placeholder="Email giáo viên..." style="width:100%; padding:10px;  background:#050508; border:1px solid #333; color:#fff; border-radius:4px; box-sizing: border-box;">
+            <!-- Ô Email sát rạt phía trên -->
+            <input type="email" id="loginEmail" placeholder="Email giáo viên..." style="width:100%; padding:10px; margin-bottom: 0px; background:#050508; border:1px solid #333; color:#fff; border-radius:4px; box-sizing: border-box;">
             
-            <!-- Khung nhập mật khẩu với icon con mắt căn chuẩn giữa -->
-            <div style="position: relative; width: 100%; ;">
+            <!-- Khung nhập mật khẩu (dính sát ngay dưới ô email) -->
+            <div style="position: relative; width: 100%; margin-bottom: 15px;">
                 <input type="password" id="loginPassword" placeholder="Mật khẩu..." style="width:100%; padding:10px; padding-right: 42px; background:#050508; border:1px solid #333; color:#fff; border-radius:4px; box-sizing: border-box; outline: none;">
                 <span id="togglePasswordBtn" onclick="togglePasswordVisibility()" style="position: absolute; right: 10px; top: 0; bottom: 0; margin: auto; display: flex; align-items: center; justify-content: center; width: 28px; height: 100%; cursor: pointer; color: #00f0ff;" title="Ẩn/Hiện mật khẩu">
                     <!-- Icon Con Mắt Đóng (Mặc định) -->
@@ -220,12 +221,11 @@
                 </span>
             </div>
 
-            <button class="modal-btn" onclick="processLogin()">Xác Nhận Đăng Nhập</button>
+            <button class="modal-btn" onclick="processLogin()" style="margin-bottom: 10px;">Xác Nhận Đăng Nhập</button>
         </div>
-        <button class="modal-btn" style="background:#444; color:#fff; margin-top:5px; box-shadow:none;" onclick="closeLoginModal()">Hủy bỏ</button>
+        <button class="modal-btn" style="background:#444; color:#fff; box-shadow:none;" onclick="closeLoginModal()">Hủy bỏ</button>
     </div>
 </div>
-
 
 
 
@@ -414,6 +414,11 @@ function closeLoginModal() {
     document.getElementById('loginModalOverlay').classList.remove('show');
 }
 
+
+
+
+
+
 function startProcessingExcel(input) {
     if (!window.isLoggedIn) {
         alert("Bạn cần đăng nhập tài khoản giáo viên để thực hiện tính năng này!");
@@ -431,8 +436,9 @@ function startProcessingExcel(input) {
     progressBar.style.width = '0%';
     progressBar.innerText = '0%';
 
+    // Sao lưu dữ liệu cũ để lấy lại các ghi chú, đánh giá cũ
     let oldDatabase = JSON.parse(JSON.stringify(bigClassesDatabase));
-    bigClassesDatabase = {};
+    let updatedDatabase = {};
 
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -455,12 +461,15 @@ function startProcessingExcel(input) {
                     progressBar.style.width = '100%';
                     progressBar.innerText = '100% Hoàn thành';
                     
+                    // Cập nhật database chính bằng dữ liệu mới đã được kế thừa ghi chú cũ
+                    bigClassesDatabase = updatedDatabase;
+
                     let totalStudentsCount = 0;
                     Object.keys(bigClassesDatabase).forEach(classKey => {
                         totalStudentsCount += bigClassesDatabase[classKey].students.length;
                     });
                     
-                    const successMessage = `🎉 HỆ THỐNG ĐÃ CẬP NHẬT FILE MỚI THÀNH CÔNG!\n\n🔹 Tên tệp: ${file.name}\n🔹 Tổng số học viên tìm thấy: ${totalStudentsCount} học viên.`;
+                    const successMessage = `🎉 CẬP NHẬT THÀNH CÔNG!\n\n🔹 Tên tệp: ${file.name}\n🔹 Tổng số học viên: ${totalStudentsCount} học viên.\n(Đã xóa học sinh ngoài danh sách mới và giữ nguyên vẹn ghi chú/đánh giá của học sinh cũ).`;
                     
                     document.getElementById('fileStatusMessage').style.color = "#00ff66";
                     document.getElementById('fileStatusMessage').innerText = `✅ Nạp thành công! Tổng số ${totalStudentsCount} học viên.`;
@@ -518,22 +527,28 @@ function startProcessingExcel(input) {
                         if (readingStudents) {
                             if (cellB && !/^\d+$/.test(cellB) && cleanPhone.length >= 9 && cleanPhone.length <= 11) {
                                 let currentClassKey = detectedClassName;
-                                if (!bigClassesDatabase[currentClassKey]) {
-                                    bigClassesDatabase[currentClassKey] = { sheet: sheetName, schedule: detectedSchedule, students: [] };
+                                if (!updatedDatabase[currentClassKey]) {
+                                    updatedDatabase[currentClassKey] = { sheet: sheetName, schedule: detectedSchedule, students: [] };
                                 }
 
+                                // Kiểm tra xem học sinh này đã có trong dữ liệu cũ chưa để kế thừa lại đánh giá/ghi chú cũ
                                 let foundOldStudent = null;
-                                if (oldDatabase[currentClassKey] && oldDatabase[currentClassKey].students) {
-                                    foundOldStudent = oldDatabase[currentClassKey].students.find(s => 
-                                        s.name.trim().toLowerCase() === cellB.trim().toLowerCase() && 
-                                        s.phone === cleanPhone
-                                    );
-                                }
+                                Object.keys(oldDatabase).forEach(oldKey => {
+                                    if (oldDatabase[oldKey].students) {
+                                        let match = oldDatabase[oldKey].students.find(s => 
+                                            s.name.trim().toLowerCase() === cellB.trim().toLowerCase() && 
+                                            s.phone === cleanPhone
+                                        );
+                                        if (match) foundOldStudent = match;
+                                    }
+                                });
 
                                 if (foundOldStudent) {
-                                    bigClassesDatabase[currentClassKey].students.push(foundOldStudent);
+                                    // Giữ nguyên học sinh cũ cùng toàn bộ đánh giá/ghi chú cũ của họ
+                                    updatedDatabase[currentClassKey].students.push(foundOldStudent);
                                 } else {
-                                    bigClassesDatabase[currentClassKey].students.push({
+                                    // Nếu là học sinh mới hoàn toàn xuất hiện trong file Excel
+                                    updatedDatabase[currentClassKey].students.push({
                                         id: Date.now() + Math.random(), 
                                         name: cellB,
                                         phone: cleanPhone,
@@ -957,4 +972,4 @@ window.togglePasswordVisibility = function() {
 }
 </script>
 </body>
-</html>
+</html>S
