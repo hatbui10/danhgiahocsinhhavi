@@ -752,11 +752,9 @@ console.log(bigClassesDatabase);
                     localStorage.setItem('big_classes_database', JSON.stringify(bigClassesDatabase));
                     localStorage.setItem('big_classes_filename', file.name);
                     
-                  await saveDatabaseState();
+                    // Thêm thông báo và lệnh tải lại trang
+alert("✅ Nạp thành công! Hệ thống sẽ tự làm mới để hiển thị dữ liệu.");
 
-renderFullSystemUI();
-
-alert("✅ Nạp thành công!");
                     return;
                 }
 
@@ -798,16 +796,6 @@ alert("✅ Nạp thành công!");
                         if (readingStudents) {
                             if (cellB && !/^\d+$/.test(cellB) && cleanPhone.length >= 9 && cleanPhone.length <= 11) {
                                 let currentClassKey = detectedClassName;
-console.log(
-    "Đang đọc lớp:",
-    currentClassKey,
-    "Đã có:",
-    !!bigClassesDatabase[currentClassKey],
-    "Sĩ số hiện tại:",
-    bigClassesDatabase[currentClassKey]?.students.length || 0
-);
-
-
                                 if (!bigClassesDatabase[currentClassKey]) {
                                     bigClassesDatabase[currentClassKey] = { sheet: sheetName, schedule: detectedSchedule, students: [] };
                                 }
