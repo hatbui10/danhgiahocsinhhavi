@@ -1077,8 +1077,14 @@ function promoteStudent(classKey, studentId) {
     student.isPromoted = !student.isPromoted; // Đảo trạng thái tăng cấp
 
     let now = new Date();
-    let timeStr = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-    
+    let vietnamTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+
+let timeStr = vietnamTime.getUTCDate().toString().padStart(2, '0') + "/" + 
+              (vietnamTime.getUTCMonth() + 1).toString().padStart(2, '0') + " " + 
+              vietnamTime.getUTCHours().toString().padStart(2, '0') + ":" + 
+              vietnamTime.getUTCMinutes().toString().padStart(2, '0');
+
+
     if (!student.history) student.history = [];
     student.history.push({
         user: currentUser,
