@@ -9,11 +9,7 @@
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-image: url("https://hatbui10.github.io/danhgiahocsinhhavi/IMG_1784475752482_1784492455223.jpg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed; color: #e0e0e6; padding: 20px 8px; max-width: 600px; margin: 0 auto; }
+        body { background-color: #050508; color: #e0e0e6; padding: 20px 8px; max-width: 600px; margin: 0 auto; }
         
         h2 { text-align: center; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; color: #00f0ff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); font-size: 1.4rem; }
         h3 { color: #ff007f; text-shadow: 0 0 10px rgba(255, 0, 127, 0.5); font-size: 1.1rem; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
@@ -269,6 +265,27 @@
             opacity: 0;
         }
 
+        /* Cập nhật lại chiều dài đuôi sao băng xuất hiện trong các hiệu ứng chuyển động */
+        @keyframes meteor-fall-1 {
+            0% { top: -10%; left: 30%; opacity: 0; width: 0px; }
+            3% { opacity: 1; width: 100px; } /* Khớp với chiều dài 100px ở trên */
+            8% { top: 70%; left: -15%; opacity: 0; width: 0px; }
+            100% { top: 70%; left: -15%; opacity: 0; }
+        }
+
+        @keyframes meteor-fall-2 {
+            0% { top: -10%; left: 65%; opacity: 0; width: 0px; }
+            3% { opacity: 1; width: 110px; } /* Cho sao băng này dài hơn một chút */
+            8% { top: 80%; left: 15%; opacity: 0; width: 0px; }
+            100% { top: 80%; left: 15%; opacity: 0; }
+        }
+
+        @keyframes meteor-fall-3 {
+            0% { top: -10%; left: 95%; opacity: 0; width: 0px; }
+            2% { opacity: 1; width: 120px; } /* Cho sao băng này dài nhất */
+            7% { top: 90%; left: 35%; opacity: 0; width: 0px; }
+            100% { top: 90%; left: 35%; opacity: 0; }
+        }
 
         /* Cấu hình thời gian rơi dồn dập và so le nhau */
         .meteor-1 {
@@ -327,29 +344,17 @@
             100% { top: 90%; left: 35%; opacity: 0; }
         }
 
-        /* ================= KHUNG STAR ================= */
-.starlight-container {
-    position: relative;
-    width: 90%;
-    max-width: 110px;
-    margin: 0px auto;
-
-    padding: 3px;
-
-    border-radius: 14px;
-    overflow: hidden;
-    z-index: 1;
-
-    background: rgba(0,0,0,0.18);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-
-    border: 1px solid rgba(255,215,0,.35);
-    box-shadow:
-        0 0 12px rgba(255,215,0,.12),
-        inset 0 0 10px rgba(0,240,255,.05);
-}
-
+        .starlight-container {
+            position: relative;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            background: #06060c; /* Nền đen cũ */
+            padding: 30px;
+            overflow: hidden;
+            z-index: 1;
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.1), inset 0 0 15px rgba(0, 240, 255, 0.05);
+        }
 
         /* 🚨 HỆ THỐNG BÁO ĐỘNG CỰC MẠNH: ÉP ĐỔI NỀN ĐỎ & NHẤP NHÁY LIÊN TỤC */
         .student-card.alarm-warning {
@@ -374,97 +379,7 @@
             color: #ff0055 !important;
         }
 
-
-
-/* ================= NÚT GOOGLE ================= */
-.google-container{
-    display:flex;
-    justify-content:flex-start;
-    align-items:center;
-
-    width:90%;
-    max-width:100px;
-
-    margin:6px auto 0;
-
-    padding:2px;
-
-    border-radius:8px;
-
-    background:linear-gradient(45deg,#4285F4,#34A853,#FBBC05,#EA4335);
-
-    cursor:pointer;
-    transition:.3s;
-}
-
-.google-btn-inner{
-    width:100%;
-
-    background:#121212;
-
-    padding:4px 6px;
-
-    border-radius:6px;
-
-    display:flex;
-    justify-content:flex;
-    align-items:center;
-    gap:5px;
-
-    font-size:10px;
-    font-weight:bold;
-}
-
-.google-container:hover{
-    box-shadow:0 0 12px rgba(255,255,255,.4);
-    transform:translateY(-2px);
-}
-
-.google-container:active{
-    transform:translateY(0);
-}
-
-
-/* ================= TIÊU ĐỀ ================= */
-.glowing-title{
-    font-size:10px;
-    line-height:1.2;
-    margin-bottom:5px;
-
-    background:linear-gradient(to right,#ffd700,#ffea00);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-
-    text-shadow:0 0 10px rgba(255,215,0,.5);
-
-    text-align:center;
-}
-
-/* Làm khung sáng sủa và lung linh hơn */
-   /* ================= KHUNG ĐĂNG NHẬP ================= */
-.login-container{
-    width:100%;
-    max-width:100px;
-
-    margin:0 auto;
-    padding:5px;
-
-    text-align:center;
-
-    background:transparent;
-
-    border:1px solid rgba(255,255,255,.2);
-    border-radius:16px;
-
-    box-shadow:
-        0 0 12px rgba(0,0,0,.35),
-        0 0 8px rgba(66,133,244,.15);
-
-    color:#fff;
-}
-
-
-
+       
 
     </style>
 </head>
@@ -497,15 +412,17 @@
     <div class="shooting-star meteor-5"></div>
     <div class="shooting-star meteor-6"></div>
 
-    <div class="login-container">
-       <h3 class="glowing-title">Đánh giá kết quả học tập học sinh</h3>
+    <div class="starlight-content">
+        <h3 class="neon-title">
+            ĐÁNH GIÁ KẾT QUẢ HỌC TẬP HỌC SINH
+        </h3>
         
         <!-- Ô nhập tài khoản -->
-        <input id="username" placeholder="Tên đăng nhập" style="width:50%; display:none;padding:12px; margin: 8px auto; background: #050508; border: 2px solid #333; color: #fff; border-radius: 6px; outline: none; transition: all 0.3s; position: relative; z-index: 10;" onfocus="this.style.borderColor='#ffd700'; this.style.boxShadow='0 0 8px rgba(255, 215, 0, 0.3)';" onblur="this.style.borderColor='#333'; this.style.boxShadow='none';">
+        <input id="username" placeholder="Tên đăng nhập" style="width:50%; display: block;padding:12px; margin: 8px auto; background: #050508; border: 2px solid #333; color: #fff; border-radius: 6px; outline: none; transition: all 0.3s; position: relative; z-index: 10;" onfocus="this.style.borderColor='#ffd700'; this.style.boxShadow='0 0 8px rgba(255, 215, 0, 0.3)';" onblur="this.style.borderColor='#333'; this.style.boxShadow='none';">
         
        
         <!-- Ô mật khẩu chỉ nhỏ 50% so với hộp lớn, con mắt nằm gọn bên trong -->
-        <div style="position: relative; margin: 8px auto;display:none; width: 50%; z-index: 10;">
+        <div style="position: relative; margin: 8px auto; width: 50%; z-index: 10;">
             <input id="password" type="password" placeholder="Mật khẩu" style="width: 100%; padding: 12px; padding-right: 42px; background: #050508; border: 2px solid #333; color: #fff; border-radius: 6px; outline: none; transition: all 0.3s; display: block;" onfocus="this.style.borderColor='#00f0ff'; this.style.boxShadow='0 0 8px rgba(0, 240, 255, 0.3)';" onblur="this.style.borderColor='#333'; this.style.boxShadow='none';">
             <span id="togglePasswordBtn" onclick="togglePasswordVisibility()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; transition: transform 0.2s;" onmousedown="this.style.transform='translateY(-50%) scale(0.95)'" onmouseup="this.style.transform='translateY(-50%) scale(1)'">
                 <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.4));">
@@ -516,29 +433,9 @@
         </div>
         
         <!-- Nút đăng nhập bảo vệ với z-index: 20 để tránh va chạm Pointer-events của Sao Băng -->
-        <button class="btn-login animate-btn" style="width: 30%; display:none; margin: 15px auto 0 auto; padding: 12px; font-weight: bold; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; border-radius: 6px; background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; border: none; cursor: pointer; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); transition: all 0.3s; position: relative; z-index: 20;" onmouseover="this.style.filter='brightness(1.1)'; this.style.boxShadow='0 0 20px rgba(255, 215, 0, 0.6)';" onmouseout="this.style.filter='brightness(1)'; this.style.boxShadow='0 0 15px rgba(255, 215, 0, 0.4)';" onclick="loginSystem()">
+        <button class="btn-login animate-btn" style="width: 30%; display: block; margin: 15px auto 0 auto; padding: 12px; font-weight: bold; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; border-radius: 6px; background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; border: none; cursor: pointer; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); transition: all 0.3s; position: relative; z-index: 20;" onmouseover="this.style.filter='brightness(1.1)'; this.style.boxShadow='0 0 20px rgba(255, 215, 0, 0.6)';" onmouseout="this.style.filter='brightness(1)'; this.style.boxShadow='0 0 15px rgba(255, 215, 0, 0.4)';" onclick="loginSystem()">
             ĐĂNG NHẬP 
         </button>
-
-
-
-
-     <div style="display: flex; justify-content: center; align-items: center; width: 100%; margin: 20px 0;">
-    
-    <!-- Đoạn mã nút của bạn -->
-    <div class="google-container" onclick="loginWithGoogle()">
-        <div class="google-btn-inner">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" style="width: 15px; height: 15px;">
-            <span style="color: white; font-family: Arial, sans-serif; font-weight: bold; font-size: 8px;">Đăng nhập với Google</span>
-        </div>
-    </div>
-
-</div>
-
-
-
-
-
     </div>
 </div>
 
@@ -548,7 +445,7 @@
         <div class="btn-group-top">
             <label for="excelFileInput" class="custom-upload-btn">📂 Tải lên File Excel</label>
             <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display:none;" onchange="startProcessingExcel(this)">
-            
+            <button class="btn-danger-top" onclick="clearSystemCache()" style="display:none;">XÓA dữ liệu CŨ</button>
         </div>
         <div id="fileStatusMessage" class="file-status">Chưa có dữ liệu học viên. Vui lòng chọn tệp Excel.</div>
     </div>
@@ -581,8 +478,6 @@
     <div id="dynamicMainContainer">
         <div class="empty-alert">Danh sách trống. Giao diện sẽ được sinh ra sau khi bạn nạp file Excel!</div>
     </div>
-
-
 
 </div>
 
@@ -629,7 +524,6 @@ const dropdownConfig = {
 
 let bigClassesDatabase = {};
 let currentUser = "Ẩn danh";
-let currentUserEmail = "";
 
 function createSafeId(str) {
     if (!str) return "";
@@ -653,7 +547,7 @@ function loginSystem() {
         document.getElementById("loginBox").style.display = "none";
         document.getElementById("mainApp").style.display = "block";
         renderFullSystemUI();
-       
+        updateUIReadOnlyState(); // <--- THÊM DÒNG NÀY VÀO
         alert("✅ Đăng nhập thành công\nXin chào " + currentUser);
     } else {
         alert("❌ Sai tài khoản hoặc mật khẩu");
@@ -714,11 +608,7 @@ function startProcessingExcel(input) {
     progressBar.style.width = '0%';
     progressBar.innerText = '0%';
 
-
-console.log("Số lớp cũ:", Object.keys(bigClassesDatabase).length);
-console.log(bigClassesDatabase);
     const oldDatabase = JSON.parse(JSON.stringify(bigClassesDatabase));
-
     bigClassesDatabase = {};
     
     const reader = new FileReader();
@@ -752,9 +642,8 @@ console.log(bigClassesDatabase);
                     localStorage.setItem('big_classes_database', JSON.stringify(bigClassesDatabase));
                     localStorage.setItem('big_classes_filename', file.name);
                     
-                    // Thêm thông báo và lệnh tải lại trang
-alert("✅ Nạp thành công! Hệ thống sẽ tự làm mới để hiển thị dữ liệu.");
-renderFullSystemUI();
+                    await saveDatabaseState();
+                    renderFullSystemUI();
                     return;
                 }
 
@@ -958,7 +847,7 @@ function renderFullSystemUI() {
             groupPanel.appendChild(classSection);
         });
     });
-   
+    updateUIReadOnlyState();
 }
 
 function renderStudentCardsHtml(classKey, students) {
@@ -1034,9 +923,6 @@ function renderStudentCardsHtml(classKey, students) {
                 <div class="student-header-row">
                     <div class="student-meta">
                         <span class="student-name">${idx + 1}. ${student.name}${starMarkup}</span>
-<span id="lastUpdated-${classIdStr}-${student.id}" style="font-size: 0.7rem; color: #ffd700; margin-left: 10px;">
-    ${student.history && student.history.length > 0 ? "Sửa gần nhất: " + student.history[student.history.length-1].time : ""}
-</span>
                     </div>
                     <span class="student-arrow">▼</span>
                 </div>
@@ -1046,12 +932,6 @@ function renderStudentCardsHtml(classKey, students) {
                         <div class="student-actions-right">
                             <button class="${promoteBtnClass}" onclick="promoteStudent('${classKey}', ${student.id})" hidden>${promoteBtnText}</button>
                             <button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')" hidden>Xoá học sinh</button>
-                            <!-- Chèn biến exportSingleBtn trực tiếp vào đây -->
-    <button class="btn-export-single" 
-            onclick="exportSingleStudent('${classKey}', ${student.id})" 
-            style="background: #333; color: #ffd700; border: 1px solid #ffd700; padding: 4px 8px; font-size: 0.7rem; cursor: pointer; border-radius: 4px;">
-        📄 Xuất Excel
-    </button>
                         </div>
                     </div>
 
@@ -1082,18 +962,11 @@ function promoteStudent(classKey, studentId) {
     student.isPromoted = !student.isPromoted; // Đảo trạng thái tăng cấp
 
     let now = new Date();
-    let vietnamTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
-
-let timeStr = vietnamTime.getUTCDate().toString().padStart(2, '0') + "/" + 
-              (vietnamTime.getUTCMonth() + 1).toString().padStart(2, '0') + " " + 
-              vietnamTime.getUTCHours().toString().padStart(2, '0') + ":" + 
-              vietnamTime.getUTCMinutes().toString().padStart(2, '0');
-
-
+    let timeStr = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+    
     if (!student.history) student.history = [];
     student.history.push({
         user: currentUser,
-email: currentUserEmail,
         index: "Tăng cấp lớp học",
         old: !student.isPromoted ? "Được tăng cấp" : "Hủy tăng cấp",
         new: student.isPromoted ? "Được tăng cấp" : "Hủy tăng cấp",
@@ -1121,13 +994,6 @@ email: currentUserEmail,
 }
 
 function saveStudentEvaluationChanges(classKey, studentId) {
-if(!window.isAdmin){
-
-    alert("Bạn chỉ có quyền xem.");
-
-    return;
-
-}
     let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId); 
     if (!student) return; 
 
@@ -1151,7 +1017,6 @@ if(!window.isAdmin){
             hasChanges = true;
             student.history.push({
                 user: currentUser,
-email: currentUserEmail,
                 index: evalIndex,
                 old: oldValue,
                 new: newValue,
@@ -1190,11 +1055,6 @@ email: currentUserEmail,
             studentListContainer.innerHTML = renderStudentCardsHtml(classKey, bigClassesDatabase[classKey].students);
         }
 
-// THÊM ĐOẠN NÀY ĐỂ CẬP NHẬT GIAO DIỆN NGAY LẬP TỨC
-        const lastUpdatedSpan = document.getElementById(`lastUpdated-${classIdStr}-${studentId}`);
-        if (lastUpdatedSpan) {
-            lastUpdatedSpan.innerText = "Sửa gần nhất: " + timeStr;
-        }
         alert(`💾 Đã cập nhật và lưu đánh giá cho học viên [${student.name}] thành công!`);
     } else {
         alert("Thông báo: Bạn chưa thực hiện thay đổi tiêu chí nào.");
@@ -1205,25 +1065,11 @@ email: currentUserEmail,
 
 
 function checkStudentAlarmState(student) {
-    // Liệt kê chính xác tên các tiêu chí muốn báo động vào đây
-    const criteriaToWatch = [
-        "Đánh giá ngữ pháp", 
-        "Tâm lý học sinh",
-"Đề xuất giáo viên", 
-        "Ý thức giờ học"
-    ];
-
     for (let groupName in dropdownConfig) {
         for (let key in dropdownConfig[groupName]) {
-            // Chỉ kiểm tra nếu tiêu chí này nằm trong danh sách cần theo dõi
-            if (criteriaToWatch.includes(key)) {
-                const options = dropdownConfig[groupName][key];
-                const currentValue = student[`eval_${key}`] || "";
-                
-                // Logic: Nếu chọn vào các phương án từ vị trí thứ 3 trở đi (index >= 2 hoặc 3 tùy bạn)
-                // Ví dụ: index 3 thường là "Dưới 5" hoặc "Thường xuyên không làm"
-                if (options.indexOf(currentValue) >= 4) return true;
-            }
+            const options = dropdownConfig[groupName][key];
+            const currentValue = student[`eval_${key}`] || "";
+            if (options.indexOf(currentValue) >= 3) return true;
         }
     }
     return false;
@@ -1259,7 +1105,21 @@ function addNewStudentToClass(classKey) {
 
 
 function deleteStudentFromClass(classKey, studentId, studentName) { 
-    
+    if (confirm(`Bạn có chắc chắn muốn XÓA học sinh [${studentName}]?`)) { 
+        const targetSheet = bigClassesDatabase[classKey].sheet; 
+        bigClassesDatabase[classKey].students = bigClassesDatabase[classKey].students.filter(s => s.id !== studentId); 
+        bigClassesDatabase[classKey].students.forEach((s, idx) => { s.id = idx + 1; }); 
+        
+        saveDatabaseState(); 
+        const classIdStr = createSafeId(classKey); 
+        const studentsList = bigClassesDatabase[classKey].students; 
+        
+        const alarmStudents = studentsList.filter(s => checkStudentAlarmState(s)).length;
+        const promotedStudents = studentsList.filter(s => s.isPromoted).length;
+        document.getElementById(`stats-${classIdStr}`).innerHTML = `Sĩ số: ${studentsList.length} | 🚨 Báo động: <span style="color: white ;">${alarmStudents}</span> | 🎓 Tăng cấp: <span style="color: #00ffaa; font-weight: bold;">${promotedStudents}</span>`; 
+        document.getElementById(`studentList-${classIdStr}`).innerHTML = renderStudentCardsHtml(classKey, studentsList); 
+        updateGroupStatsText(targetSheet); 
+    } 
 }
 
 function updateGroupStatsText(sheetName) { 
@@ -1349,204 +1209,73 @@ function searchGlobalStudent() {
 function handleSearchKeyPress(event) { if (event.key === 'Enter') { searchGlobalStudent(); } }
 
 function clearSystemCache() { 
+    if (confirm("Xóa toàn bộ dữ liệu hiện tại trong trình duyệt?")) { 
+        localStorage.removeItem('big_classes_database'); 
+        localStorage.removeItem('big_classes_filename'); 
+        bigClassesDatabase = {}; 
+        renderFullSystemUI(); 
+        document.getElementById('fileStatusMessage').style.color = "#ffd700"; 
+        document.getElementById('fileStatusMessage').innerText = "Chưa có dữ liệu học viên. Vui lòng chọn tệp Excel."; 
+    } 
+}
+// Hàm khóa/mở khóa giao diện dựa trên trạng thái đăng nhập
+function updateUIReadOnlyState() {
+    const isLogged = (currentUser !== "Ẩn danh");
     
+    // Tìm tất cả các thành phần có thể chỉnh sửa
+    const inputs = document.querySelectorAll('.note-select, .add-student-box input, .add-student-box button');
+    const actionButtons = document.querySelectorAll('.btn-save-eval, .btn-delete, .btn-add, .btn-promote');
+
+    inputs.forEach(el => el.disabled = !isLogged);
+    actionButtons.forEach(el => {
+        el.style.pointerEvents = isLogged ? 'auto' : 'none';
+        el.style.opacity = isLogged ? '1' : '0.5';
+    });
 }
-
-// ===============================
-// XUẤT EXCEL CHO 1 HỌC SINH
-// ===============================
-function exportSingleStudent(classKey, studentId) {
-
-    const classData = bigClassesDatabase[classKey];
-    if (!classData) {
-        alert("Không tìm thấy lớp.");
-        return;
-    }
-
-    const student = classData.students.find(s => s.id === studentId);
-
-    if (!student) {
-        alert("Không tìm thấy học sinh.");
-        return;
-    }
-
-    // Dữ liệu xuất
-    const row = {
-        "Lớp": classKey,
-        "Sheet": classData.sheet || "",
-        "Lịch học": classData.schedule || "",
-        "Họ và tên": student.name,
-        "Số điện thoại": student.phone || "",
-        "Đã tăng cấp": student.isPromoted ? "Có" : "Không"
-    };
-
-    // Xuất toàn bộ tiêu chí đánh giá
-    for (const groupName in dropdownConfig) {
-        for (const criterion in dropdownConfig[groupName]) {
-            row[criterion] = student[`eval_${criterion}`] || "";
-        }
-    }
-
-    // Lịch sử chỉnh sửa
-    if (student.history && student.history.length > 0) {
-
-        row["Lịch sử chỉnh sửa"] =
-            student.history
-                .map(h =>
-                    `${h.time} | ${h.user} | ${h.index}: ${h.old || "Trống"} → ${h.new || "Trống"}`
-                )
-                .join("\n");
-
-    } else {
-
-        row["Lịch sử chỉnh sửa"] = "";
-    }
-
-    // Tạo Workbook
-    const ws = XLSX.utils.json_to_sheet([row]);
-
-    // Tự động căn rộng theo tiêu đề và dữ liệu
-const widths = Object.keys(row).map(key => {
-
-    const value = String(row[key] || "");
-
-    return {
-        wch: Math.max(key.length, value.length) + 3
-    };
-
-});
-
-ws["!cols"] = widths;
-
-const wb = XLSX.utils.book_new();
-
-XLSX.utils.book_append_sheet(wb, ws, "Đánh giá");
-
-    // Tên file
-    const safeName = student.name
-        .replace(/[\\/:*?"<>|]/g, "")
-        .trim();
-
-    XLSX.writeFile(
-        wb,
-        `${classKey}_${safeName}.xlsx`
-    );
-}
-
-
-
-
-
 </script>
 
 <script type="module">
-    // 1. Nhập các thư viện Firebase cần thiết (Phải ở đầu file)
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-    // 2. Cấu hình và Khởi tạo Firebase App
-    const firebaseConfig = {
-        apiKey: "AIzaSyDbCF0pFsdXqD14Y-wjWLFoNCGfP1LBlD8",
-        authDomain: "tienganhhavi-12b54.firebaseapp.com",
-        projectId: "tienganhhavi-12b54",
-        storageBucket: "tienganhhavi-12b54.firebasestorage.app",
-        messagingSenderId: "208059039650",
-        appId: "1:208059039650:web:d272318418e01d0f50fcfb",
-        measurementId: "G-XPHJWRWSLZ"
-    };
+const firebaseConfig = {
+  apiKey: "AIzaSyDbCF0pFsdXqD14Y-wjWLFoNCGfP1LBlD8",
+  authDomain: "tienganhhavi-12b54.firebaseapp.com",
+  projectId: "tienganhhavi-12b54",
+  storageBucket: "tienganhhavi-12b54.firebasestorage.app",
+  messagingSenderId: "208059039650",
+  appId: "1:208059039650:web:d272318418e01d0f50fcfb",
+  measurementId: "G-XPHJWRWSLZ"
+};
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    // 3. Hàm Đăng nhập Google
-    async function loginWithGoogle() {
-        try {
-            const result = await signInWithPopup(auth, provider);
-            window.currentUserEmail = result.user.email; 
-currentUserEmail = result.user.email;
-
-currentUser = result.user.displayName || result.user.email;
-
-
-
-
-const adminSnap = await getDoc(doc(db, "admins", result.user.email));
-
-window.isAdmin = adminSnap.exists();
-            
-            document.getElementById("loginBox").style.display = "none";
-            document.getElementById("mainApp").style.display = "block";
-            
-            // Tự động tải dữ liệu sau khi đăng nhập thành công
-            await window.loadFromFirebase();
-updatePermissionUI();
-            alert("Đăng nhập thành công: " + result.user.email);
-        } catch (error) {
-            alert("Lỗi đăng nhập: " + error.message);
-        }
-    }
-    // Gán hàm vào window để HTML gọi được
-    window.loginWithGoogle = loginWithGoogle;
-
-    // 4. Hàm Lưu dữ liệu lên Firebase
-    window.saveToFirebase = async function () { 
-if(!window.isAdmin){
-
-    return;
-
+window.saveToFirebase = async function () { 
+    try { 
+        await setDoc(doc(db, "system", "database"), { 
+            database: bigClassesDatabase, 
+            filename: localStorage.getItem("big_classes_filename") || "", 
+            updatedAt: new Date().toISOString() 
+        }); 
+        console.log("Đã lưu Firebase"); 
+    } catch (err) { console.error("Lỗi lưu Firebase:", err); } 
 }
-        try { 
-            await setDoc(doc(db, "system", "database"), { 
-                database: bigClassesDatabase, 
-                filename: localStorage.getItem("big_classes_filename") || "", 
-                updatedAt: new Date().toISOString() 
-            }); 
-            console.log("Đã lưu Firebase"); 
-        } catch (err) { console.error("Lỗi lưu Firebase:", err); } 
-    }
 
-
-function updatePermissionUI(){
-
-    document.querySelectorAll(".btn-save-eval").forEach(btn=>{
-
-        btn.disabled=!window.isAdmin;
-
-        btn.style.opacity=window.isAdmin?"1":"0.4";
-
-        btn.style.cursor=window.isAdmin?"pointer":"not-allowed";
-
-    });
-
-    document.querySelectorAll("select[data-eval-idx]").forEach(select=>{
-
-        select.disabled=!window.isAdmin;
-
-        select.style.opacity=window.isAdmin?"1":"0.5";
-
-        select.style.cursor=window.isAdmin?"pointer":"not-allowed";
-
-    });
-
+window.loadFromFirebase = async function () { 
+    try { 
+        const docRef = doc(db, "system", "database"); 
+        const docSnap = await getDoc(docRef); 
+        if (docSnap.exists()) { 
+            const data = docSnap.data(); 
+            bigClassesDatabase = data.database || {}; 
+            localStorage.setItem("big_classes_database", JSON.stringify(bigClassesDatabase)); 
+            if (data.filename) { localStorage.setItem("big_classes_filename", data.filename); } 
+            renderFullSystemUI(); 
+            console.log("Đã tải dữ liệu từ Firebase"); 
+        } 
+    } catch (err) { console.error("Lỗi đọc Firebase:", err); } 
 }
-    // 5. Hàm Tải dữ liệu từ Firebase
-    window.loadFromFirebase = async function () { 
-        try { 
-            const docRef = doc(db, "system", "database"); 
-            const docSnap = await getDoc(docRef); 
-            if (docSnap.exists()) { 
-                const data = docSnap.data(); 
-                bigClassesDatabase = data.database || {}; 
-                localStorage.setItem("big_classes_database", JSON.stringify(bigClassesDatabase)); 
-                if (data.filename) { localStorage.setItem("big_classes_filename", data.filename); } 
-                renderFullSystemUI(); 
-                console.log("Đã tải dữ liệu từ Firebase"); 
-            } 
-        } catch (err) { console.error("Lỗi đọc Firebase:", err); } 
-    }
 </script>
 </body>
 </html>
