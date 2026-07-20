@@ -796,6 +796,16 @@ location.reload();
                         if (readingStudents) {
                             if (cellB && !/^\d+$/.test(cellB) && cleanPhone.length >= 9 && cleanPhone.length <= 11) {
                                 let currentClassKey = detectedClassName;
+console.log(
+    "Đang đọc lớp:",
+    currentClassKey,
+    "Đã có:",
+    !!bigClassesDatabase[currentClassKey],
+    "Sĩ số hiện tại:",
+    bigClassesDatabase[currentClassKey]?.students.length || 0
+);
+
+
                                 if (!bigClassesDatabase[currentClassKey]) {
                                     bigClassesDatabase[currentClassKey] = { sheet: sheetName, schedule: detectedSchedule, students: [] };
                                 }
