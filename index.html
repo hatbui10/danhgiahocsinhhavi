@@ -1029,6 +1029,9 @@ function renderStudentCardsHtml(classKey, students) {
                 <div class="student-header-row">
                     <div class="student-meta">
                         <span class="student-name">${idx + 1}. ${student.name}${starMarkup}</span>
+<span id="lastUpdated-${classIdStr}-${student.id}" style="font-size: 0.7rem; color: #ffd700; margin-left: 10px;">
+    ${student.history && student.history.length > 0 ? "Sửa gần nhất: " + student.history[student.history.length-1].time : ""}
+</span>
                     </div>
                     <span class="student-arrow">▼</span>
                 </div>
@@ -1176,6 +1179,11 @@ email: currentUserEmail,
             studentListContainer.innerHTML = renderStudentCardsHtml(classKey, bigClassesDatabase[classKey].students);
         }
 
+// THÊM ĐOẠN NÀY ĐỂ CẬP NHẬT GIAO DIỆN NGAY LẬP TỨC
+        const lastUpdatedSpan = document.getElementById(`lastUpdated-${classIdStr}-${studentId}`);
+        if (lastUpdatedSpan) {
+            lastUpdatedSpan.innerText = "Sửa gần nhất: " + timeStr;
+        }
         alert(`💾 Đã cập nhật và lưu đánh giá cho học viên [${student.name}] thành công!`);
     } else {
         alert("Thông báo: Bạn chưa thực hiện thay đổi tiêu chí nào.");
