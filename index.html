@@ -752,9 +752,11 @@ console.log(bigClassesDatabase);
                     localStorage.setItem('big_classes_database', JSON.stringify(bigClassesDatabase));
                     localStorage.setItem('big_classes_filename', file.name);
                     
-                    // Thêm thông báo và lệnh tải lại trang
-alert("✅ Nạp thành công! Hệ thống sẽ tự làm mới để hiển thị dữ liệu.");
-location.reload();
+                  await saveDatabaseState();
+
+renderFullSystemUI();
+
+alert("✅ Nạp thành công!");
                     return;
                 }
 
