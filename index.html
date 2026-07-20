@@ -14,6 +14,11 @@
         h2 { text-align: center; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; color: #00f0ff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); font-size: 1.4rem; }
         h3 { color: #ff007f; text-shadow: 0 0 10px rgba(255, 0, 127, 0.5); font-size: 1.1rem; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
         
+        /* 🔐 KHU VỰC ĐĂNG NHẬP / XÁC THỰC */
+        .auth-bar { display: flex; justify-content: space-between; align-items: center; background: #0d0d1a; border: 1px solid #00f0ff; border-radius: 6px; padding: 10px 15px; margin-bottom: 15px; font-size: 0.85rem; }
+        .auth-btn { background: #00f0ff; color: #000; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
+        .auth-btn-danger { background: #ff007f; color: #fff; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
+        
         /* 📂 KHU VỰC TẢI FILE */
         .upload-card { background: #0a0a14; border: 1px solid #ffd700; border-radius: 6px; padding: 15px 10px; margin-bottom: 15px; box-shadow: 0 0 10px rgba(255, 215, 0, 0.1); }
         .upload-card p { font-size: 0.85rem; color: #aaa; text-align: center; margin-bottom: 12px; }
@@ -114,6 +119,14 @@
         
         .empty-alert { text-align: center; padding: 40px 10px; color: #555; font-style: italic; font-size: 0.95rem; }
 
+        /* Toast Notification */
+        .toast-msg {
+            position: fixed; bottom: 20px; right: 20px; background: #00ff66; color: #000;
+            padding: 10px 20px; border-radius: 4px; font-weight: bold; z-index: 10000;
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.5); opacity: 0; transition: opacity 0.3s;
+        }
+        .toast-msg.show { opacity: 1; }
+
         /* 🔔 HỘP THOẠI THÔNG BÁO NỔI (MODAL POPUP) */
         .custom-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -132,22 +145,20 @@
         .modal-title { color: #00ff66; font-size: 1.25rem; font-weight: bold; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
         .modal-body { color: #e0e0e6; font-size: 0.95rem; margin-bottom: 20px; line-height: 1.5; text-align: left; white-space: pre-line; }
         .modal-btn { background: #00ff66; color: #000; border: none; padding: 11px 30px; font-weight: bold; font-size: 0.9rem; border-radius: 4px; cursor: pointer; text-transform: uppercase; width: 100%; letter-spacing: 1px; box-shadow: 0 0 8px #00ff66; }
-   
-
- .toast-msg {
-    position: fixed; bottom: 20px; right: 20px; background: #00ff66; color: #000;
-    padding: 10px 20px; border-radius: 4px; font-weight: bold; z-index: 10000;
-    box-shadow: 0 0 10px rgba(0, 255, 102, 0.5); opacity: 0; transition: opacity 0.3s;
-}
-.toast-msg.show { opacity: 1; }
-
-</style>
+    </style>
 </head>
 <body>
 
 <h2>HỆ THỐNG QUẢN LÝ ĐIỂM DANH ĐỘNG</h2>
 
-<div class="upload-card">
+<!-- THANH TRẠNG THÁI ĐĂNG NHẬP -->
+<div class="auth-bar" id="authBarContainer">
+    <span id="authStatusText">🔒 Chế độ Chỉ xem (Khách)</span>
+    <button class="auth-btn" id="authActionButton" onclick="openLoginModal()">Đăng nhập GV</button>
+</div>
+
+<!-- KHU VỰC TẢI FILE (Chỉ hiện khi đăng nhập) -->
+<div class="upload-card" id="adminUploadCard" style="display: none;">
     <div class="btn-group-top">
         <label for="excelFileInput" class="custom-upload-btn">📂 Tải lên File Excel</label>
         <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;" onchange="startProcessingExcel(this)">
@@ -187,6 +198,19 @@
     <div class="empty-alert">Danh sách trống. Hệ thống sẽ tự động vẽ giao diện HTML sau khi bạn nạp file Excel thành công!</div>
 </div>
 
+<!-- GIAO DIỆN MODAL ĐĂNG NHẬP -->
+<div class="custom-modal-overlay" id="loginModalOverlay">
+    <div class="custom-modal-box">
+        <div class="modal-title">Đăng Nhập Giáo Viên</div>
+        <div class="modal-body">
+            <input type="email" id="loginEmail" placeholder="Email giáo viên..." style="width:100%; padding:10px; margin-bottom:10px; background:#050508; border:1px solid #333; color:#fff; border-radius:4px;">
+            <input type="password" id="loginPassword" placeholder="Mật khẩu..." style="width:100%; padding:10px; margin-bottom:15px; background:#050508; border:1px solid #333; color:#fff; border-radius:4px;">
+            <button class="modal-btn" onclick="processLogin()">Xác Nhận Đăng Nhập</button>
+        </div>
+        <button class="modal-btn" style="background:#444; color:#fff; margin-top:5px; box-shadow:none;" onclick="closeLoginModal()">Hủy bỏ</button>
+    </div>
+</div>
+
 <!-- GIAO DIỆN POPUP THÔNG BÁO NỔI -->
 <div class="custom-modal-overlay" id="customNotificationModal">
     <div class="custom-modal-box">
@@ -196,12 +220,10 @@
     </div>
 </div>
 
-
-
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDbCF0pFsdXqD14Y-wjWLFoNCGfP1LBlD8",
@@ -215,8 +237,61 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+
+// Biến lưu trạng thái quyền chỉnh sửa toàn cục
+window.isLoggedIn = false;
+
+// Theo dõi trạng thái đăng nhập từ Firebase
+onAuthStateChanged(auth, (user) => {
+    const authStatusText = document.getElementById("authStatusText");
+    const authActionButton = document.getElementById("authActionButton");
+    const adminUploadCard = document.getElementById("adminUploadCard");
+
+    if (user) {
+        window.isLoggedIn = true;
+        authStatusText.innerHTML = `🟢 Đã đăng nhập: <strong style="color:#00ff66;">${user.email}</strong>`;
+        authActionButton.innerText = "Đăng Xuất";
+        authActionButton.className = "auth-btn-danger";
+        authActionButton.setAttribute("onclick", "processLogout()");
+        adminUploadCard.style.display = "block";
+    } else {
+        window.isLoggedIn = false;
+        authStatusText.innerHTML = `🔒 Chế độ Chỉ xem (Khách)`;
+        authActionButton.innerText = "Đăng nhập GV";
+        authActionButton.className = "auth-btn";
+        authActionButton.setAttribute("onclick", "openLoginModal()");
+        adminUploadCard.style.display = "none";
+    }
+    // Vẽ lại giao diện để cập nhật quyền khóa/mở nút bấm
+    if (Object.keys(bigClassesDatabase).length > 0) {
+        renderFullSystemUI();
+    }
+});
+
+window.processLogin = async function() {
+    const email = document.getElementById("loginEmail").value.trim();
+    const pass = document.getElementById("loginPassword").value;
+    try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        closeLoginModal();
+        showToast("Đăng nhập thành công!");
+    } catch (error) {
+        alert("Đăng nhập thất bại: " + error.message);
+    }
+}
+
+window.processLogout = async function() {
+    try {
+        await signOut(auth);
+        showToast("Đã đăng xuất tài khoản!");
+    } catch (error) {
+        console.error(error);
+    }
+}
 
 window.saveToFirebase = async function () { 
+    if (!window.isLoggedIn) return; // Chặn nếu chưa đăng nhập
     try { 
         await setDoc(doc(db, "system", "database"), { 
             database: bigClassesDatabase, 
@@ -243,13 +318,10 @@ window.loadFromFirebase = async function () {
 }
 </script>
 
-
-
 <script>
 const targetSheets = ["SV", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "DH25", "DH26"];
 let bigClassesDatabase = {};
 
-// Cấu hình nhóm tiêu chí đánh giá phân loại mới theo yêu cầu
 const dropdownConfig = {
     "Trong giờ học": {
         "Đánh giá ngữ pháp": ["", "Xuất sắc 9-10", "Khá 7-8", "Trung bình 5-6", "Dưới 5", "Mất gốc (1-2)"],
@@ -288,20 +360,11 @@ window.onload = async function () {
 }
 
 async function saveDatabaseState() {
+    if (!window.isLoggedIn) return;
     localStorage.setItem('big_classes_database', JSON.stringify(bigClassesDatabase));
     if (window.saveToFirebase) {
         try { await window.saveToFirebase(); } catch(e) {}
     }
-}
-
-// BẬT/TẮT POPUP THÔNG BÁO NỔI MỚI THÊM
-function showNotificationModal(title, message) {
-    document.getElementById('modalTitle').innerText = title;
-    document.getElementById('modalBody').innerText = message;
-    document.getElementById('customNotificationModal').classList.add('show');
-}
-function closeNotificationModal() {
-    document.getElementById('customNotificationModal').classList.remove('show');
 }
 
 function showToast(message) {
@@ -316,18 +379,27 @@ function showToast(message) {
     }, 2000);
 }
 
+function showNotificationModal(title, message) {
+    document.getElementById('modalTitle').innerText = title;
+    document.getElementById('modalBody').innerText = message;
+    document.getElementById('customNotificationModal').classList.add('show');
+}
+function closeNotificationModal() {
+    document.getElementById('customNotificationModal').classList.remove('show');
+}
 
-
-
-
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-
-
+function openLoginModal() {
+    document.getElementById('loginModalOverlay').classList.add('show');
+}
+function closeLoginModal() {
+    document.getElementById('loginModalOverlay').classList.remove('show');
+}
 
 function startProcessingExcel(input) {
+    if (!window.isLoggedIn) {
+        alert("Bạn cần đăng nhập tài khoản giáo viên để thực hiện tính năng này!");
+        return;
+    }
     const file = input.files[0];
     if (!file) return;
 
@@ -340,7 +412,6 @@ function startProcessingExcel(input) {
     progressBar.style.width = '0%';
     progressBar.innerText = '0%';
 
-    // GIỮ LẠI DATABASE CŨ ĐỂ ĐỐI CHẤT VÀ KẾ THỪA ĐÁNH GIÁ (TRÁNH MẤT DỮ LIỆU CŨ)
     let oldDatabase = JSON.parse(JSON.stringify(bigClassesDatabase));
     bigClassesDatabase = {};
 
@@ -352,7 +423,7 @@ function startProcessingExcel(input) {
             
             const sheetsToProcess = workbook.SheetNames.filter(name => targetSheets.includes(name.trim()));
             if (sheetsToProcess.length === 0) {
-                alert("Không tìm thấy các sheet mục tiêu (SV, 12, 11... DH26) trong file Excel của bạn!");
+                alert("Không tìm thấy các sheet mục tiêu trong file Excel!");
                 progressContainer.style.display = 'none';
                 return;
             }
@@ -370,17 +441,16 @@ function startProcessingExcel(input) {
                         totalStudentsCount += bigClassesDatabase[classKey].students.length;
                     });
                     
-                    const successMessage = `🎉 HỆ THỐNG ĐÃ CẬP NHẬT FILE MỚI THÀNH CÔNG!\n\n🔹 Tên tệp: ${file.name}\n🔹 Tổng số học viên tìm thấy: ${totalStudentsCount} học viên.\n\nToàn bộ danh sách lớp và các đánh giá cũ của học viên đã được bảo lưu hoàn chỉnh!`;
+                    const successMessage = `🎉 HỆ THỐNG ĐÃ CẬP NHẬT FILE MỚI THÀNH CÔNG!\n\n🔹 Tên tệp: ${file.name}\n🔹 Tổng số học viên tìm thấy: ${totalStudentsCount} học viên.`;
                     
                     document.getElementById('fileStatusMessage').style.color = "#00ff66";
-                    document.getElementById('fileStatusMessage').innerText = `✅ Nạp thành công! Tìm thấy tổng cộng ${totalStudentsCount} học viên.`;
+                    document.getElementById('fileStatusMessage').innerText = `✅ Nạp thành công! Tổng số ${totalStudentsCount} học viên.`;
                     
                     localStorage.setItem('big_classes_database', JSON.stringify(bigClassesDatabase));
                     localStorage.setItem('big_classes_filename', file.name);
                     
                     await saveDatabaseState();
                     renderFullSystemUI();
-                    
                     showNotificationModal("CẬP NHẬT HOÀN TẤT", successMessage);
                     return;
                 }
@@ -394,7 +464,6 @@ function startProcessingExcel(input) {
                 const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false });
                 
                 if (rows.length > 0) {
-                    const colAIndex = 0;
                     const colBIndex = 1;
                     const colPIndex = 16;
 
@@ -405,10 +474,8 @@ function startProcessingExcel(input) {
 
                     rows.forEach((row) => {
                         if (!row) return;
-
                         let cellB = row[colBIndex] ? row[colBIndex].toString().trim() : "";
                         let cellP = row[colPIndex] ? row[colPIndex].toString().trim() : "";
-
                         let cellB_lower = cellB.toLowerCase();
                         let cleanPhone = cellP.replace(/[^0-9]/g, "");
                     
@@ -423,9 +490,7 @@ function startProcessingExcel(input) {
                         const isSchedule = /^t[2-7]/i.test(cellB) || /^cn/i.test(cellB) || /18h|19h|20h/i.test(cellB) || cellB.includes("THỨ");
 
                         if (isSchedule) {
-                            if (previousText) {
-                                detectedClassName = previousText;
-                            }
+                            if (previousText) { detectedClassName = previousText; }
                             detectedSchedule = cellB;
                             readingStudents = true;
                             return;
@@ -434,12 +499,10 @@ function startProcessingExcel(input) {
                         if (readingStudents) {
                             if (cellB && !/^\d+$/.test(cellB) && cleanPhone.length >= 9 && cleanPhone.length <= 11) {
                                 let currentClassKey = detectedClassName;
-
                                 if (!bigClassesDatabase[currentClassKey]) {
                                     bigClassesDatabase[currentClassKey] = { sheet: sheetName, schedule: detectedSchedule, students: [] };
                                 }
 
-                                // KIỂM TRA XEM HỌC SINH ĐÃ TỒN TẠI TRONG DỮ LIỆU CŨ (HOẶC LỚP CŨ) CHƯA
                                 let foundOldStudent = null;
                                 if (oldDatabase[currentClassKey] && oldDatabase[currentClassKey].students) {
                                     foundOldStudent = oldDatabase[currentClassKey].students.find(s => 
@@ -448,11 +511,9 @@ function startProcessingExcel(input) {
                                     );
                                 }
 
-                                // Nếu học sinh đã tồn tại trước đó -> Kế thừa lại toàn bộ đánh giá cũ
                                 if (foundOldStudent) {
                                     bigClassesDatabase[currentClassKey].students.push(foundOldStudent);
                                 } else {
-                                    // Nếu là học sinh mới hoàn toàn -> Tạo mới với đánh giá trống
                                     bigClassesDatabase[currentClassKey].students.push({
                                         id: Date.now() + Math.random(), 
                                         name: cellB,
@@ -468,13 +529,10 @@ function startProcessingExcel(input) {
                                 return;
                             }
                         } else {
-                            if (cellB && cleanPhone.length < 9) {
-                                previousText = cellB;
-                            }
+                            if (cellB && cleanPhone.length < 9) { previousText = cellB; }
                         }
                     });
                 }
-                
                 currentSheetIdx++;
                 setTimeout(parseSheetStep, 10);
             }
@@ -487,14 +545,6 @@ function startProcessingExcel(input) {
     };
     reader.readAsArrayBuffer(file);
 }
-
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-
-
-
 
 function toggleClassAccordion(headerElement) {
     headerElement.parentElement.classList.toggle('active');
@@ -577,6 +627,14 @@ function renderFullSystemUI() {
             const absent = students.filter(s => s.status === 'absent').length;
             const present = total - absent;
 
+            // Nếu chưa đăng nhập thì ẩn khung thêm học sinh mới
+            const addStudentBoxHtml = window.isLoggedIn ? `
+                <div class="add-student-box">
+                    <input type="text" id="inputName-${classKey.replace(/\s+/g, '-')}" placeholder="Dòng 1: Nhập họ và tên...">
+                    <input type="tel" id="inputPhone-${classKey.replace(/\s+/g, '-')}" placeholder="Dòng 2: Nhập số điện thoại...">
+                    <button class="btn-add" onclick="addNewStudentToClass('${classKey}')">+ Thêm vào danh sách</button>
+                </div>` : '';
+
             const classSection = document.createElement("div");
             classSection.className = "class-block-wrapper";
             classSection.setAttribute("data-classname-box", classKey);
@@ -591,12 +649,7 @@ function renderFullSystemUI() {
                 <div class="class-panel">
                     <h3>Danh Sách Chi Tiết</h3>
                     <br>
-                    
-                    <div class="add-student-box">
-                        <input type="text" id="inputName-${classKey.replace(/\s+/g, '-')}" placeholder="Dòng 1: Nhập họ và tên...">
-                        <input type="tel" id="inputPhone-${classKey.replace(/\s+/g, '-')}" placeholder="Dòng 2: Nhập số điện thoại...">
-                        <button class="btn-add" onclick="addNewStudentToClass('${classKey}')">+ Thêm vào danh sách</button>
-                    </div>
+                    ${addStudentBoxHtml}
                     
                     <div class="absent-section">
                         <div class="absent-header">
@@ -624,8 +677,10 @@ function renderAbsentRowsHtml(students) {
     return absentStudents.map(s => `<li>• ${s.name} ${s.note ? '(' + s.note + ')' : '(Chưa rõ lý do)'}</li>`).join('');
 }
 
-// HÀM VẼ THÀNH VIÊN TÍCH HỢP TOÀN BỘ DROPDOWN TIÊU CHÍ ĐÁNH GIÁ PHÂN LOẠI MỚI
 function renderStudentCardsHtml(classKey, students) {
+    const disabledAttr = window.isLoggedIn ? '' : 'disabled';
+    const readonlyAttr = window.isLoggedIn ? '' : 'readonly';
+
     return students.map((student, idx) => {
         const cardId = `card-${classKey.replace(/\s+/g, '-')}-${student.id}`;
 
@@ -642,7 +697,7 @@ function renderStudentCardsHtml(classKey, students) {
                 dynamicCriteriaHtml += `
                     <div style="display: flex; justify-content: space-between; align-items: center; gap: 6px;">
                         <span style="font-size: 0.75rem; color: #bbb; flex: 1; text-align: left;">${criterion}:</span>
-                        <select class="note-select" style="flex: 1.3; padding: 3px; font-size: 0.75rem;" 
+                        <select class="note-select" style="flex: 1.3; padding: 3px; font-size: 0.75rem;" ${disabledAttr}
                                 onchange="updateStudentEvaluation('${classKey}', ${student.id}, '${criterion.replace(/'/g, "\\'")}', this.value)">
                             ${options.map(opt => `<option value="${opt}" ${savedValue === opt ? 'selected' : ''}>${opt || '--'}</option>`).join('')}
                         </select>
@@ -652,6 +707,7 @@ function renderStudentCardsHtml(classKey, students) {
         }
 
         const statusClass = student.status === 'absent' ? 'status-absent' : 'status-present';
+        const deleteButtonHtml = window.isLoggedIn ? `<button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')">Xoá</button>` : '';
 
         return `
             <div class="student-card ${statusClass}" id="${cardId}">
@@ -662,14 +718,14 @@ function renderStudentCardsHtml(classKey, students) {
                     </div>
                     <div class="student-actions-right">
                         <button class="btn-call" onclick="window.location.href='tel:${student.phone}'">Gọi</button>
-                        <button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')">Xoá</button>
+                        ${deleteButtonHtml}
                     </div>
                 </div>
                 
                 <div class="student-controls-row">
-                    <button class="btn-action btn-present ${student.status === 'present' ? 'active' : ''}" onclick="updateStudentStatus('${classKey}', ${student.id}, 'present')">CÓ MẶT</button>
-                    <button class="btn-action btn-absent ${student.status === 'absent' ? 'active' : ''}" onclick="updateStudentStatus('${classKey}', ${student.id}, 'absent')">VẮNG</button>
-                    <input type="text" class="note-select" style="flex: 1.5; padding: 8px 5px;" placeholder="Ghi chú vắng..." value="${student.note || ''}" onchange="updateStudentNote('${classKey}', ${student.id}, this.value)">
+                    <button class="btn-action btn-present ${student.status === 'present' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'present')">CÓ MẶT</button>
+                    <button class="btn-action btn-absent ${student.status === 'absent' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'absent')">VẮNG</button>
+                    <input type="text" class="note-select" style="flex: 1.5; padding: 8px 5px;" placeholder="Ghi chú vắng..." value="${student.note || ''}" ${readonlyAttr} onchange="updateStudentNote('${classKey}', ${student.id}, this.value)">
                 </div>
 
                 ${dynamicCriteriaHtml}
@@ -678,15 +734,14 @@ function renderStudentCardsHtml(classKey, students) {
     }).join('');
 }
 
-
 function updateStudentStatus(classKey, studentId, status) {
+    if (!window.isLoggedIn) { alert("Vui lòng đăng nhập để thay đổi trạng thái!"); return; }
     let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
     if (student) {
         student.status = status;
         saveDatabaseState();
         showToast("Đã chuyển sang: " + (status === 'present' ? 'Có mặt' : 'Vắng'));
         
-        // Cập nhật lại giao diện
         const classKeyId = classKey.replace(/\s+/g, '-');
         const studentsArr = bigClassesDatabase[classKey].students;
         const total = studentsArr.length;
@@ -699,33 +754,30 @@ function updateStudentStatus(classKey, studentId, status) {
     }
 }
 
-
-
 function updateStudentNote(classKey, studentId, value) {
+    if (!window.isLoggedIn) return;
     let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
     if (student) {
         student.note = value;
         saveDatabaseState();
-		showToast("Đã lưu ghi chú!");
+        showToast("Đã lưu ghi chú!");
         const classKeyId = classKey.replace(/\s+/g, '-');
         document.getElementById(`absentList-${classKeyId}`).innerHTML = renderAbsentRowsHtml(bigClassesDatabase[classKey].students);
     }
 }
 
-
-
 function updateStudentEvaluation(classKey, studentId, criterionName, value) {
+    if (!window.isLoggedIn) { alert("Vui lòng đăng nhập để đánh giá!"); return; }
     let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
     if (student) {
-        student[criterionName] = value; // Đã loại bỏ dòng lỗi 'status'
+        student[criterionName] = value;
         saveDatabaseState();
         showToast("Đã cập nhật: " + criterionName);
     }
 }
 
-
-
 function addNewStudentToClass(classKey) {
+    if (!window.isLoggedIn) return;
     const classKeyId = classKey.replace(/\s+/g, '-');
     const nameInput = document.getElementById(`inputName-${classKeyId}`);
     const phoneInput = document.getElementById(`inputPhone-${classKeyId}`);
@@ -754,10 +806,11 @@ function addNewStudentToClass(classKey) {
     const present = total - absent;
     document.getElementById(`stats-${classKeyId}`).innerText = 'Sĩ số: ' + total + ' | Có mặt: ' + present + ' | Vắng: ' + absent;
     document.getElementById(`studentList-${classKeyId}`).innerHTML = renderStudentCardsHtml(classKey, studentsArr);
+    showToast("Đã thêm học sinh mới!");
 }
 
-
 function deleteStudentFromClass(classKey, studentId, studentName) {
+    if (!window.isLoggedIn) { alert("Vui lòng đăng nhập để xóa!"); return; }
     if (confirm(`Bạn chắc chắn muốn xoá học viên "${studentName}" không?`)) {
         bigClassesDatabase[classKey].students = bigClassesDatabase[classKey].students.filter(s => s.id !== studentId);
         saveDatabaseState();
@@ -771,6 +824,7 @@ function deleteStudentFromClass(classKey, studentId, studentName) {
         document.getElementById(`stats-${classKeyId}`).innerText = 'Sĩ số: ' + total + ' | Có mặt: ' + present + ' | Vắng: ' + absent;
         document.getElementById(`absentList-${classKeyId}`).innerHTML = renderAbsentRowsHtml(studentsArr);
         document.getElementById(`studentList-${classKeyId}`).innerHTML = renderStudentCardsHtml(classKey, studentsArr);
+        showToast("Đã xóa học viên!");
     }
 }
 
@@ -786,7 +840,7 @@ function copyAbsentReport(classKey) {
         });
     }
     navigator.clipboard.writeText(msg).then(() => {
-        alert("Đã sao chép báo cáo vắng lớp " + classKey);
+        showToast("Đã sao chép báo cáo vắng!");
     });
 }
 
@@ -848,6 +902,7 @@ function focusToCard(classKey, studentId) {
 }
 
 function clearSystemCache() {
+    if (!window.isLoggedIn) { alert("Bạn cần đăng nhập để thực hiện tính năng này!"); return; }
     if (confirm("Bạn có chắc chắn muốn xóa dữ liệu cũ không?")) {
         localStorage.clear();
         bigClassesDatabase = {};
@@ -855,6 +910,7 @@ function clearSystemCache() {
         document.getElementById('fileStatusMessage').innerText = "Chưa có dữ liệu học viên. Vui lòng chọn tệp Excel.";
         document.getElementById('searchResultBox').style.display = 'none';
         renderFullSystemUI();
+        showToast("Đã xóa dữ liệu hệ thống!");
     }
 }
 </script>
