@@ -584,19 +584,46 @@ function togglePasswordVisibility() {
 
 
 window.onload = async function () {
+
     try {
-        if (typeof window.loadFromFirebase === 'function') {
+
+        if (typeof window.loadFromFirebase === "function") {
+
             await window.loadFromFirebase();
+
         } else {
+
             const cachedData = localStorage.getItem("big_classes_database");
-            if (cachedData) { bigClassesDatabase = JSON.parse(cachedData); }
+
+            if (cachedData) {
+
+                bigClassesDatabase = JSON.parse(cachedData);
+
+            }
+
         }
-    } catch (e) {
+
+    } catch(e){
+
         const cachedData = localStorage.getItem("big_classes_database");
-        if (cachedData) { bigClassesDatabase = JSON.parse(cachedData); }
+
+        if(cachedData){
+
+            bigClassesDatabase = JSON.parse(cachedData);
+
+        }
+
     }
+
+    if(Object.keys(bigClassesDatabase).length){
+
+        renderFullSystemUI();
+
+    }
+
     document.getElementById("mainApp").style.display = "none";
     document.getElementById("loginBox").style.display = "block";
+
 };
 
 function startProcessingExcel(input) {
@@ -717,9 +744,17 @@ function startProcessingExcel(input) {
                                         targetStudent.history = matchedOldStudent.history || [];
                                         targetStudent.isPromoted = matchedOldStudent.isPromoted || false;
                                         // Khôi phục chính xác các đánh giá cũ theo tên tiêu chí tiếng Việt
-                                        for (let key in dropdownConfig) {
-                                            targetStudent[`eval_${key}`] = matchedOldStudent[`eval_${key}`] || "";
-                                        }
+
+                                       for (const group in dropdownConfig){
+
+    for(const criterion in dropdownConfig[group]){
+
+        targetStudent[`eval_${criterion}`] =
+            matchedOldStudent[`eval_${criterion}`] || "";
+
+    }
+
+}
                                     }
                                 }
 
