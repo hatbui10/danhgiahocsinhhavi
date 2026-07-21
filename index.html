@@ -251,7 +251,19 @@
     box-shadow:none;
 }
 
+.student-update-info{
 
+    margin-top:4px;
+
+    font-size:11px;
+
+    color:#9fdcff;
+
+    line-height:1.4;
+
+    font-style:italic;
+
+}
 
 
 
@@ -437,17 +449,34 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
+
+
 window.processLogin = async function() {
+
     const email = document.getElementById("loginEmail").value.trim();
     const pass = document.getElementById("loginPassword").value;
+
     try {
+
         await signInWithEmailAndPassword(auth, email, pass);
+
+        // Lưu email giáo viên
+        window.currentTeacherEmail = email;
+
         closeLoginModal();
+
         showToast("Đăng nhập thành công!");
+
     } catch (error) {
+
         alert("Đăng nhập thất bại: " + error.message);
+
     }
+
 }
+
+
+
 
 window.processLogout = async function() {
     try {
@@ -893,13 +922,22 @@ function renderStudentCardsHtml(classKey, students) {
         }
 
         const statusClass = student.status === 'absent' ? 'status-absent' : 'status-present';
-        const deleteButtonHtml = window.isLoggedIn ? `<button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')">Xoá</button>` : '';
+        const deleteButtonHtml = window.isLoggedIn ? `<button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')"style="display: none;">Xoá</button>` : '';
 
         return `
             <div class="student-card ${statusClass}" id="${cardId}">
                 <div class="student-info-row">
                     <div class="student-meta">
                         <span class="student-name">${idx + 1}. ${student.name}</span>
+  <div class="student-update-info">
+
+        👤 GV: ${student.lastEditor || "-"}
+
+        <br>
+
+        🕒 ${student.lastUpdated || "--:--:--"}
+
+    </div>
                         <span class="student-phone" style="display: none;">SĐT: ${displayPhone(student.phone)}</span>
                     </div>
                     <div class="student-actions-right">
@@ -952,15 +990,53 @@ function updateStudentNote(classKey, studentId, value) {
     }
 }
 
+
+
 function updateStudentEvaluation(classKey, studentId, criterionName, value) {
-    if (!window.isLoggedIn) { alert("Vui lòng đăng nhập để đánh giá!"); return; }
-    let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
-    if (student) {
-        student[criterionName] = value;
-        saveDatabaseState();
-        showToast("Đã cập nhật: " + criterionName);
+
+    if (!window.isLoggedIn) {
+        alert("Vui lòng đăng nhập để đánh giá!");
+        return;
     }
+
+    let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
+
+    if (!student) return;
+
+    // Lưu tiêu chí
+    student[criterionName] = value;
+
+    // Lưu email giáo viên
+   
+student.lastEditor = window.currentTeacherEmail || "Không xác định";
+
+
+    // Lưu thời gian
+    const now = new Date();
+
+   student.lastUpdated = now.toLocaleString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+});
+console.log(student.lastUpdated);
+
+    // Lưu Firebase
+    saveDatabaseState();
+
+    showToast("Đã cập nhật: " + criterionName);
+
+    // Cập nhật lại giao diện
+    const classKeyId = classKey.replace(/\s+/g, "-");
+
+    document.getElementById(`studentList-${classKeyId}`).innerHTML =
+        renderStudentCardsHtml(classKey, bigClassesDatabase[classKey].students);
 }
+
+
 
 function addNewStudentToClass(classKey) {
     if (!window.isLoggedIn) return;
