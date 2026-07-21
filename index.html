@@ -9,12 +9,8 @@
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-      body { background-image: url("https://hatbui10.github.io/danhgiahocsinhhavi/IMG_1784475752482_1784492455223.jpg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed; color: #e0e0e6; padding: 20px 8px; max-width: 600px; margin: 0 auto; }
-
+        body { background-color: #050508; color: #e0e0e6; padding: 20px 8px; max-width: 600px; margin: 0 auto; }
+        
         h2 { text-align: center; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; color: #00f0ff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); font-size: 1.4rem; }
         h3 { color: #ff007f; text-shadow: 0 0 10px rgba(255, 0, 127, 0.5); font-size: 1.1rem; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
         
@@ -131,143 +127,25 @@
         }
         .toast-msg.show { opacity: 1; }
 
-       .custom-modal-overlay{
-    position:fixed;
-    inset:0;
-    display:flex;
-    justify-content:center;
-   align-items:flex-start;
-    background:rgba(0,0,0,.85);
-    opacity:0;
-    pointer-events:none;
-    transition:.3s;
-    z-index:9999;
-}
-
-.custom-modal-overlay.show{
-    opacity:1;
-    pointer-events:auto;
-}
-
-.custom-modal-box{
-    width:420px;
-    max-width:90%;
-    background:#0d0d21;
-    border:2px solid #00ff66;
-    border-radius:8px;
-    padding:22px 18px;
-    box-shadow:0 0 25px rgba(0,255,102,.4);
-    transform:scale(.8);
-    transition:.3s;
-}
-
-.custom-modal-overlay.show .custom-modal-box{
-    transform:scale(1);
-}
-
-.modal-title{
-    color:#00ff66;
-    font-size:1.25rem;
-    font-weight:bold;
-    text-transform:uppercase;
-    letter-spacing:1px;
-    text-align:center;
-    margin-bottom:12px;
-}
-
-.modal-body{
-    display:flex;
-    flex-direction:column;
-    gap:5px;              /* Khoảng cách Email ↔ Password chỉ 5px */
-}
-
-.login-input{
-    width:100%;
-    padding:10px;
-    background:#050508;
-    border:1px solid #333;
-    color:#fff;
-    border-radius:4px;
-    box-sizing:border-box;
-    outline:none;
-}
-
-.password-wrapper{
-    position:relative;
-    width:100%;
-}
-
-.password-wrapper .login-input{
-    padding-right:42px;
-}
-
-#togglePasswordBtn{
-    position:absolute;
-    right:10px;
-    top:50%;
-    transform:translateY(-50%);
-    width:28px;
-    height:28px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    color:#00f0ff;
-}
-
-.modal-btn{
-    width:40%;
-    padding:10px;
-    margin-top:10px;
-    border:none;
-    border-radius:4px;
-    background:#00ff66;
-    color:#000;
-    font-weight:bold;
-    cursor:pointer;
-    text-transform:uppercase;
-    box-shadow:0 0 8px #00ff66;
-}
-
-.modal-btn.cancel{
-    background:#444;
-    color:#fff;
-    box-shadow:none;
-}
-.modal-actions{
-    display:flex;
-    gap:10px;
-    margin-top:10px;
-}
-
-.modal-actions .modal-btn{
-    flex:1;
-    margin:0;
-}
-
-.modal-btn.cancel{
-    background:#444;
-    color:#fff;
-    box-shadow:none;
-}
-
-.student-update-info{
-
-    margin-top:4px;
-
-    font-size:11px;
-
-    color:#9fdcff;
-
-    line-height:1.4;
-
-    font-style:italic;
-
-}
-
-
-
- </style>
+        /* 🔔 HỘP THOẠI THÔNG BÁO NỔI (MODAL POPUP) */
+        .custom-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center;
+            align-items: center; z-index: 9999; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .custom-modal-overlay.show { opacity: 1; pointer-events: auto; }
+        .custom-modal-box {
+            background: #0d0d21; border: 2px solid #00ff66; border-radius: 8px;
+            padding: 22px 18px; max-width: 90%; width: 420px; text-align: center;
+            box-shadow: 0 0 25px rgba(0, 255, 102, 0.4);
+            transform: scale(0.8); transition: transform 0.3s ease;
+        }
+        .custom-modal-overlay.show .custom-modal-box { transform: scale(1); }
+        .modal-title { color: #00ff66; font-size: 1.25rem; font-weight: bold; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-body { color: #e0e0e6; font-size: 0.95rem; margin-bottom: 2px; line-height: 1.5; text-align: left; white-space: pre-line; }
+        .modal-btn { background: #00ff66; color: #000; border: none; padding: 5px 10px; font-weight: bold; font-size: 0.9rem; border-radius: 4px; cursor: pointer; text-transform: uppercase; width: 100%; letter-spacing: 1px; box-shadow: 0 0 8px #00ff66; }
+    </style>
 </head>
 <body>
 
@@ -284,7 +162,7 @@
     <div class="btn-group-top">
         <label for="excelFileInput" class="custom-upload-btn">📂 Tải lên File Excel</label>
         <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;" onchange="startProcessingExcel(this)">
-        <button class="btn-danger-top" onclick="clearSystemCache()" style="display: none;"> XÓA dữ liệu CŨ</button>
+        <button class="btn-danger-top" onclick="clearSystemCache()"> XÓA dữ liệu CŨ</button>
     </div>
     <div id="fileStatusMessage" class="file-status">Chưa có dữ liệu học viên. Vui lòng chọn tệp Excel.</div>
 </div>
@@ -325,70 +203,31 @@
 
 <!-- GIAO DIỆN MODAL ĐĂNG NHẬP -->
 <div class="custom-modal-overlay" id="loginModalOverlay">
-
     <div class="custom-modal-box">
-
-        <div class="modal-title">
-            Đăng Nhập Giáo Viên
-        </div>
-
+        <div class="modal-title">Đăng Nhập Giáo Viên</div>
         <div class="modal-body">
-
-            <input
-                type="email"
-                id="loginEmail"
-                class="login-input"
-                placeholder="Email giáo viên...">
-
-            <div class="password-wrapper">
-
-                <input
-                    type="password"
-                    id="loginPassword"
-                    class="login-input"
-                    placeholder="Mật khẩu...">
-
-                <span
-                    id="togglePasswordBtn"
-                    onclick="togglePasswordVisibility()"
-                    title="Ẩn/Hiện mật khẩu">
-
-                    <svg id="eyeIconSvg"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round">
-
+            <!-- Ô Email sát rạt phía trên -->
+            <input type="email" id="loginEmail" placeholder="Email giáo viên..." style="width:100%; padding:10px; margin-bottom: 0px; background:#050508; border:1px solid #333; color:#fff; border-radius:4px; box-sizing: border-box;">
+            
+            <!-- Khung nhập mật khẩu (dính sát ngay dưới ô email) -->
+            <div style="position: relative; width: 100%; margin-bottom: 15px;">
+                <input type="password" id="loginPassword" placeholder="Mật khẩu..." style="width:100%; padding:10px; padding-right: 42px; background:#050508; border:1px solid #333; color:#fff; border-radius:4px; box-sizing: border-box; outline: none;">
+                <span id="togglePasswordBtn" onclick="togglePasswordVisibility()" style="position: absolute; right: 10px; top: 0; bottom: 0; margin: auto; display: flex; align-items: center; justify-content: center; width: 28px; height: 100%; cursor: pointer; color: #00f0ff;" title="Ẩn/Hiện mật khẩu">
+                    <!-- Icon Con Mắt Đóng (Mặc định) -->
+                    <svg id="eyeIconSvg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-
                         <line x1="1" y1="1" x2="23" y2="23"></line>
-
                     </svg>
-
                 </span>
-
             </div>
 
-          <div class="modal-actions">
-
-    <button class="modal-btn" onclick="processLogin()">
-        Đăng Nhập
-    </button>
-
-    <button class="modal-btn cancel" onclick="closeLoginModal()">
-        Hủy bỏ
-    </button>
-
+            <button class="modal-btn" onclick="processLogin()" style="margin-bottom: 10px;">Xác Nhận Đăng Nhập</button>
+        </div>
+        <button class="modal-btn" style="background:#444; color:#fff; box-shadow:none;" onclick="closeLoginModal()">Hủy bỏ</button>
+    </div>
 </div>
 
-</div>
 
-</div>
 
 
 <!-- GIAO DIỆN POPUP THÔNG BÁO NỔI -->
@@ -449,34 +288,17 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-
-
 window.processLogin = async function() {
-
     const email = document.getElementById("loginEmail").value.trim();
     const pass = document.getElementById("loginPassword").value;
-
     try {
-
         await signInWithEmailAndPassword(auth, email, pass);
-
-        // Lưu email giáo viên
-        window.currentTeacherEmail = email;
-
         closeLoginModal();
-
         showToast("Đăng nhập thành công!");
-
     } catch (error) {
-
         alert("Đăng nhập thất bại: " + error.message);
-
     }
-
 }
-
-
-
 
 window.processLogout = async function() {
     try {
@@ -539,7 +361,10 @@ const dropdownConfig = {
 };
 
 function displayPhone(p) { 
-   
+    if(!p || p === 'Chưa có' || p === 'undefined') return 'Chưa có';
+    let c = p.toString().replace(/\s+/g, ''); 
+    if(c.length === 10) return c.substring(0,4) + ' ' + c.substring(4,7) + ' ' + c.substring(7);
+    return p; 
 }
 
 window.onload = async function () {
@@ -755,12 +580,6 @@ function startProcessingExcel(input) {
     reader.readAsArrayBuffer(file);
 }
 
-
-
-
-
-
-
 function toggleClassAccordion(headerElement) {
     headerElement.parentElement.classList.toggle('active');
 }
@@ -857,8 +676,8 @@ function renderFullSystemUI() {
             classSection.innerHTML = `
                 <div class="class-accordion-header" onclick="toggleClassAccordion(this)">
                     <div class="class-main-title">Lớp: ${classKey}</div>
-                    <div class="class-schedule" style="display: none;">${classObj.schedule || ""}</div>
-                    <div class="class-stats" id="stats-${classKey.replace(/\s+/g, '-')}" style="display: none;">Sĩ số: ${total} | Có mặt: ${present} | Vắng: ${absent}</div>
+                    <div class="class-schedule">${classObj.schedule || ""}</div>
+                    <div class="class-stats" id="stats-${classKey.replace(/\s+/g, '-')}">Sĩ số: ${total} | Có mặt: ${present} | Vắng: ${absent}</div>
                 </div>
                 
                 <div class="class-panel">
@@ -866,7 +685,7 @@ function renderFullSystemUI() {
                     <br>
                     ${addStudentBoxHtml}
                     
-                    <div class="absent-section" style="display: none;">
+                    <div class="absent-section">
                         <div class="absent-header">
                             <span class="absent-title">DANH SÁCH VẮNG HÔM NAY</span>
                             <button class="copy-btn" onclick="copyAbsentReport('${classKey}')">Copy</button>
@@ -922,33 +741,24 @@ function renderStudentCardsHtml(classKey, students) {
         }
 
         const statusClass = student.status === 'absent' ? 'status-absent' : 'status-present';
-        const deleteButtonHtml = window.isLoggedIn ? `<button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')"style="display: none;">Xoá</button>` : '';
+        const deleteButtonHtml = window.isLoggedIn ? `<button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')">Xoá</button>` : '';
 
         return `
             <div class="student-card ${statusClass}" id="${cardId}">
                 <div class="student-info-row">
                     <div class="student-meta">
                         <span class="student-name">${idx + 1}. ${student.name}</span>
-  <div class="student-update-info">
-
-        👤 GV: ${student.lastEditor || "-"}
-
-        <br>
-
-        🕒 ${student.lastUpdated || "--:--:--"}
-
-    </div>
                         <span class="student-phone" style="display: none;">SĐT: ${displayPhone(student.phone)}</span>
                     </div>
                     <div class="student-actions-right">
-                        <button class="btn-call" onclick="window.location.href='tel:${student.phone}'" style="display: none;">Gọi</button>
+                        <button class="btn-call" onclick="window.location.href='tel:${student.phone}'">Gọi</button>
                         ${deleteButtonHtml}
                     </div>
                 </div>
                 
                 <div class="student-controls-row">
-                    <button class="btn-action btn-present ${student.status === 'present' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'present')" style="display: none;">CÓ MẶT</button>
-                    <button class="btn-action btn-absent ${student.status === 'absent' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'absent')"style="display: none;">VẮNG</button>
+                    <button class="btn-action btn-present ${student.status === 'present' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'present')">CÓ MẶT</button>
+                    <button class="btn-action btn-absent ${student.status === 'absent' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'absent')">VẮNG</button>
                     <input type="text" class="note-select" style="flex: 1.5; padding: 8px 5px;" placeholder="Ghi chú vắng..." value="${student.note || ''}" ${readonlyAttr} onchange="updateStudentNote('${classKey}', ${student.id}, this.value)">
                 </div>
 
@@ -990,53 +800,15 @@ function updateStudentNote(classKey, studentId, value) {
     }
 }
 
-
-
 function updateStudentEvaluation(classKey, studentId, criterionName, value) {
-
-    if (!window.isLoggedIn) {
-        alert("Vui lòng đăng nhập để đánh giá!");
-        return;
-    }
-
+    if (!window.isLoggedIn) { alert("Vui lòng đăng nhập để đánh giá!"); return; }
     let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
-
-    if (!student) return;
-
-    // Lưu tiêu chí
-    student[criterionName] = value;
-
-    // Lưu email giáo viên
-   
-student.lastEditor = window.currentTeacherEmail || "Không xác định";
-
-
-    // Lưu thời gian
-    const now = new Date();
-
-   student.lastUpdated = now.toLocaleString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit"
-});
-console.log(student.lastUpdated);
-
-    // Lưu Firebase
-    saveDatabaseState();
-
-    showToast("Đã cập nhật: " + criterionName);
-
-    // Cập nhật lại giao diện
-    const classKeyId = classKey.replace(/\s+/g, "-");
-
-    document.getElementById(`studentList-${classKeyId}`).innerHTML =
-        renderStudentCardsHtml(classKey, bigClassesDatabase[classKey].students);
+    if (student) {
+        student[criterionName] = value;
+        saveDatabaseState();
+        showToast("Đã cập nhật: " + criterionName);
+    }
 }
-
-
 
 function addNewStudentToClass(classKey) {
     if (!window.isLoggedIn) return;
@@ -1200,4 +972,4 @@ window.togglePasswordVisibility = function() {
 }
 </script>
 </body>
-</html>S
+</html>
