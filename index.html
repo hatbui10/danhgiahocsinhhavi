@@ -510,10 +510,7 @@ const dropdownConfig = {
 };
 
 function displayPhone(p) { 
-    if(!p || p === 'Chưa có' || p === 'undefined') return 'Chưa có';
-    let c = p.toString().replace(/\s+/g, ''); 
-    if(c.length === 10) return c.substring(0,4) + ' ' + c.substring(4,7) + ' ' + c.substring(7);
-    return p; 
+   
 }
 
 window.onload = async function () {
@@ -729,6 +726,12 @@ function startProcessingExcel(input) {
     reader.readAsArrayBuffer(file);
 }
 
+
+
+
+
+
+
 function toggleClassAccordion(headerElement) {
     headerElement.parentElement.classList.toggle('active');
 }
@@ -825,8 +828,8 @@ function renderFullSystemUI() {
             classSection.innerHTML = `
                 <div class="class-accordion-header" onclick="toggleClassAccordion(this)">
                     <div class="class-main-title">Lớp: ${classKey}</div>
-                    <div class="class-schedule">${classObj.schedule || ""}</div>
-                    <div class="class-stats" id="stats-${classKey.replace(/\s+/g, '-')}">Sĩ số: ${total} | Có mặt: ${present} | Vắng: ${absent}</div>
+                    <div class="class-schedule" style="display: none;">${classObj.schedule || ""}</div>
+                    <div class="class-stats" id="stats-${classKey.replace(/\s+/g, '-')}" style="display: none;">Sĩ số: ${total} | Có mặt: ${present} | Vắng: ${absent}</div>
                 </div>
                 
                 <div class="class-panel">
@@ -834,7 +837,7 @@ function renderFullSystemUI() {
                     <br>
                     ${addStudentBoxHtml}
                     
-                    <div class="absent-section">
+                    <div class="absent-section" style="display: none;">
                         <div class="absent-header">
                             <span class="absent-title">DANH SÁCH VẮNG HÔM NAY</span>
                             <button class="copy-btn" onclick="copyAbsentReport('${classKey}')">Copy</button>
@@ -900,14 +903,14 @@ function renderStudentCardsHtml(classKey, students) {
                         <span class="student-phone" style="display: none;">SĐT: ${displayPhone(student.phone)}</span>
                     </div>
                     <div class="student-actions-right">
-                        <button class="btn-call" onclick="window.location.href='tel:${student.phone}'">Gọi</button>
+                        <button class="btn-call" onclick="window.location.href='tel:${student.phone}'" style="display: none;">Gọi</button>
                         ${deleteButtonHtml}
                     </div>
                 </div>
                 
                 <div class="student-controls-row">
-                    <button class="btn-action btn-present ${student.status === 'present' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'present')">CÓ MẶT</button>
-                    <button class="btn-action btn-absent ${student.status === 'absent' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'absent')">VẮNG</button>
+                    <button class="btn-action btn-present ${student.status === 'present' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'present')" style="display: none;">CÓ MẶT</button>
+                    <button class="btn-action btn-absent ${student.status === 'absent' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'absent')"style="display: none;">VẮNG</button>
                     <input type="text" class="note-select" style="flex: 1.5; padding: 8px 5px;" placeholder="Ghi chú vắng..." value="${student.note || ''}" ${readonlyAttr} onchange="updateStudentNote('${classKey}', ${student.id}, this.value)">
                 </div>
 
