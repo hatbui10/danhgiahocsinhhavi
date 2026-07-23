@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bộ Lọc Học Viên Điểm Danh Chia Lớp</title>
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <style>
@@ -934,7 +934,7 @@ function renderStudentCardsHtml(classKey, students) {
                     
                     <div style="display: flex; align-items: center; gap: 10px; font-size: 0.72rem; color: #a0a0a0; margin-top: 1px;" id="time-info-${classKey.replace(/\s+/g, '-')}-${student.id}">
                         <span class="student-editor">✏️ ${student.lastModifiedBy || 'Chưa rõ'}</span>
-                        <span style="color: #00f0ff;">⏱ ${student.lastUpdated || 'Chưa cập nhật'}</span>
+                     <span style="color: #00f0ff;"><i class="fa-solid fa-clock"></i> ${student.lastUpdated || 'Chưa cập nhật'}</span>
                     </div>
                     
                     <span class="student-phone" style="display: none;">SĐT: ${displayPhone(student.phone)}</span>
