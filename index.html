@@ -314,7 +314,7 @@
 </div>
 
 <!-- KHU VỰC TẢI FILE (Chỉ hiện khi đăng nhập) -->
-<div class="upload-card" id="adminUploadCard"  z-index: 999; margin: 15px 0; background: rgba(13, 13, 26, 0.95); padding: 15px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.6); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15);">
+<div class="upload-card" id="adminUploadCard" style="z-index: 999; margin: 15px 0; background: rgba(13, 13, 26, 0.95); padding: 15px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.6); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15);">
     <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
         
         <!-- Nút tải lên File Excel -->
@@ -457,7 +457,10 @@ const currentTeacher = localStorage.getItem("currentTeacherId") || user.email;
         authActionButton.className = "auth-btn";
         authActionButton.setAttribute("onclick", "openLoginModal()");
         adminUploadCard.style.display = "none";
+// 🔐 ẨN KHUNG TẢI FILE VÀ SAO LƯU KHI CHƯA ĐĂNG NHẬP
+        adminUploadCard.style.display = "none";
     }
+
     // Vẽ lại giao diện để cập nhật quyền khóa/mở nút bấm
     if (Object.keys(bigClassesDatabase).length > 0) {
         renderFullSystemUI();
