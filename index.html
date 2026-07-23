@@ -398,6 +398,9 @@ function showToast(message) {
     }, 2000);
 }
 
+
+
+
 function showNotificationModal(title, message) {
     document.getElementById('modalTitle').innerText = title;
     document.getElementById('modalBody').innerText = message;
@@ -553,7 +556,8 @@ function startProcessingExcel(input) {
                                         name: cellB,
                                         phone: cleanPhone,
                                         status: "present",
-                                        note: ""
+                                        note: "",
+                                        lastUpdated: getCurrentTimeString() // Ghi nhận thời gian lúc thêm
                                     });
                                 }
                                 return;
@@ -580,13 +584,19 @@ function startProcessingExcel(input) {
     reader.readAsArrayBuffer(file);
 }
 
+
+
 function toggleClassAccordion(headerElement) {
     headerElement.parentElement.classList.toggle('active');
 }
 
+
+
 function toggleGroupAccordion(headerElement) {
     headerElement.parentElement.classList.toggle('active');
 }
+
+
 
 function getGroupKeyBySheet(sheetName) {
     const s = sheetName.trim();
@@ -596,6 +606,12 @@ function getGroupKeyBySheet(sheetName) {
     if (["DH25", "DH26"].includes(s)) return { key: "DAI_HOC", name: "Khối Đại Học (DH25-26)" };
     return { key: "KHAC", name: "Khối Khác / Sinh Viên" };
 }
+
+
+
+
+
+
 
 function renderFullSystemUI() {
     const mainContainer = document.getElementById("dynamicMainContainer");
@@ -705,11 +721,17 @@ function renderFullSystemUI() {
     });
 }
 
+
+
+
 function renderAbsentRowsHtml(students) {
     const absentStudents = students.filter(s => s.status === 'absent');
     if (absentStudents.length === 0) return '<li><em>Chưa có học sinh vắng</em></li>';
     return absentStudents.map(s => `<li>• ${s.name} ${s.note ? '(' + s.note + ')' : '(Chưa rõ lý do)'}</li>`).join('');
 }
+
+
+
 
 function renderStudentCardsHtml(classKey, students) {
     const disabledAttr = window.isLoggedIn ? '' : 'disabled';
@@ -748,6 +770,10 @@ function renderStudentCardsHtml(classKey, students) {
                 <div class="student-info-row">
                     <div class="student-meta">
                         <span class="student-name">${idx + 1}. ${student.name}</span>
+
+                        <span style="font-size: 0.7rem; color: #00f0ff; background: rgba(0,240,255,0.1); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(0,240,255,0.3);">
+            ⏱ ${student.lastUpdated || 'Chưa cập nhật'}
+        </span>
                         <span class="student-phone" style="display: none;">SĐT: ${displayPhone(student.phone)}</span>
                     </div>
                     <div class="student-actions-right">
@@ -768,11 +794,15 @@ function renderStudentCardsHtml(classKey, students) {
     }).join('');
 }
 
+
+
+
 function updateStudentStatus(classKey, studentId, status) {
     if (!window.isLoggedIn) { alert("Vui lòng đăng nhập để thay đổi trạng thái!"); return; }
     let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
     if (student) {
         student.status = status;
+        student.lastUpdated = getCurrentTimeString(); // Cập nhật thời gian
         saveDatabaseState();
         showToast("Đã chuyển sang: " + (status === 'present' ? 'Có mặt' : 'Vắng'));
         
@@ -788,11 +818,14 @@ function updateStudentStatus(classKey, studentId, status) {
     }
 }
 
+
+
 function updateStudentNote(classKey, studentId, value) {
     if (!window.isLoggedIn) return;
     let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
     if (student) {
         student.note = value;
+        student.lastUpdated = getCurrentTimeString(); // Cập nhật thời gian
         saveDatabaseState();
         showToast("Đã lưu ghi chú!");
         const classKeyId = classKey.replace(/\s+/g, '-');
@@ -800,15 +833,28 @@ function updateStudentNote(classKey, studentId, value) {
     }
 }
 
+
+
 function updateStudentEvaluation(classKey, studentId, criterionName, value) {
     if (!window.isLoggedIn) { alert("Vui lòng đăng nhập để đánh giá!"); return; }
     let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
     if (student) {
         student[criterionName] = value;
+        student.lastUpdated = getCurrentTimeString(); // Cập nhật thời gian mới
         saveDatabaseState();
         showToast("Đã cập nhật: " + criterionName);
+        
+        // Bổ sung dòng vẽ lại danh sách thẻ để hiện thời gian ngay cạnh tên học sinh
+        const classKeyId = classKey.replace(/\s+/g, '-');
+        document.getElementById(`studentList-${classKeyId}`).innerHTML = renderStudentCardsHtml(classKey, bigClassesDatabase[classKey].students);
     }
 }
+
+
+
+
+
+
 
 function addNewStudentToClass(classKey) {
     if (!window.isLoggedIn) return;
@@ -828,12 +874,20 @@ function addNewStudentToClass(classKey) {
         name: name,
         phone: phone || "Chưa có",
         status: "present",
-        note: ""
+        note: "",
+        lastUpdated: "" // Thêm trường lưu thời gian
     });
 
     nameInput.value = "";
     phoneInput.value = "";
     saveDatabaseState();
+
+
+
+
+
+
+
 
     const total = studentsArr.length;
     const absent = studentsArr.filter(s => s.status === 'absent').length;
@@ -842,6 +896,7 @@ function addNewStudentToClass(classKey) {
     document.getElementById(`studentList-${classKeyId}`).innerHTML = renderStudentCardsHtml(classKey, studentsArr);
     showToast("Đã thêm học sinh mới!");
 }
+
 
 function deleteStudentFromClass(classKey, studentId, studentName) {
     if (!window.isLoggedIn) { alert("Vui lòng đăng nhập để xóa!"); return; }
@@ -862,6 +917,9 @@ function deleteStudentFromClass(classKey, studentId, studentName) {
     }
 }
 
+
+
+
 function copyAbsentReport(classKey) {
     const students = bigClassesDatabase[classKey].students;
     const absentArr = students.filter(s => s.status === 'absent');
@@ -878,9 +936,15 @@ function copyAbsentReport(classKey) {
     });
 }
 
+
+
+
 function handleSearchKeyPress(event) {
     if (event.key === "Enter") searchGlobalStudent();
 }
+
+
+
 
 function searchGlobalStudent() {
     const query = document.getElementById("globalSearchInput").value.trim().toLowerCase();
@@ -913,6 +977,10 @@ function searchGlobalStudent() {
     resultBox.style.display = "block";
 }
 
+
+
+
+
 function focusToCard(classKey, studentId) {
     const clsObj = bigClassesDatabase[classKey];
     if (!clsObj) return;
@@ -935,6 +1003,10 @@ function focusToCard(classKey, studentId) {
     }, 150);
 }
 
+
+
+
+
 function clearSystemCache() {
     if (!window.isLoggedIn) { alert("Bạn cần đăng nhập để thực hiện tính năng này!"); return; }
     if (confirm("Bạn có chắc chắn muốn xóa dữ liệu cũ không?")) {
@@ -947,6 +1019,21 @@ function clearSystemCache() {
         showToast("Đã xóa dữ liệu hệ thống!");
     }
 }
+
+
+
+function getCurrentTimeString() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    return `${hours}:${minutes} ${day}/${month}`;
+}
+
+
+
+
 
 window.togglePasswordVisibility = function() {
     const passwordInput = document.getElementById("loginPassword");
