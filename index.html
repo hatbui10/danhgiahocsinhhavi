@@ -340,10 +340,11 @@ onAuthStateChanged(auth, (user) => {
     const authStatusText = document.getElementById("authStatusText");
     const authActionButton = document.getElementById("authActionButton");
     const adminUploadCard = document.getElementById("adminUploadCard");
+const currentTeacher = localStorage.getItem("currentTeacherId") || user.email;
 
     if (user) {
         window.isLoggedIn = true;
-        authStatusText.innerHTML = `🟢 Đã đăng nhập: <strong style="color:#00ff66;">${user.email}</strong>`;
+       authStatusText.innerHTML = `🟢 Đã đăng nhập: <strong style="color:#00ff66;">${currentTeacher}</strong>`;
         authActionButton.innerText = "Đăng Xuất";
         authActionButton.className = "auth-btn-danger";
         authActionButton.setAttribute("onclick", "processLogout()");
@@ -369,32 +370,46 @@ window.processLogin = async function() {
     const inputPass = document.getElementById("loginPassword").value;
     
     // --- ĐẶT ID VÀ MẬT KHẨU CHUNG CHO MỌI NGƯỜI GÕ ---
-    const MASTER_ID = "gv";       // Mọi người gõ ID này (ví dụ: gv)
-    const MASTER_PASS = "123";    // Mật khẩu ngắn tùy ý (ví dụ: 3 ký tự: 123)
+   const MASTER_ID = [
+  "mydo140502@gmail.com",
+  "ntthaoabi1012@gmail.com",
+  "nguyenthuha2321@gmail.com",
+  "nguyenthuphuong130295@gmail.com",
+  "maikhanhly1602@gmail.com",
+  "lunalovegood4697@gmail.com",
+  "pttan28@gmail.com",
+  "phuongphuong.np4@gmail.com",
+  "hongnhung1093@gmail.com",
+  "Ngothuhang92@gmail.com",
+  "leminhphuong232003@gmail.com",
+  "lethamstar@gmail.com",
+  "lophoctienganhhavi@gmail.com",
+  "tuan49xd5@gmail.com"
+];     // Thêm gv4, gv5 nếu cần
+    const MASTER_PASS = "123";    
 
-    // Kiểm tra xem người dùng có gõ đúng ID và Mật khẩu chung không
-    if (inputId !== MASTER_ID || inputPass !== MASTER_PASS) {
+    if (!MASTER_ID.includes(inputId) || inputPass !== MASTER_PASS) {
         alert("ID hoặc Mật khẩu chung không đúng!");
         return;
     }
 
     try {
-        // Tự động trỏ về tài khoản Firebase thật của bạn
         const systemEmail = "cvbv674@gmail.com"; 
-        
-        // Mẹo: Vì Firebase yêu cầu mật khẩu phải từ 6 ký tự trở lên, 
-        // ta nối mật khẩu ngắn của bạn với một đoạn đuôi (ví dụ: "_havi") 
-        // để hệ thống Firebase chấp nhận.
         const firebasePass = MASTER_PASS + "_havi"; 
 
         await signInWithEmailAndPassword(auth, systemEmail, firebasePass);
         
+        // --- LƯU ID GIÁO VIÊN VÀO BỘ NHỚ TRÌNH DUYỆT ---
+        localStorage.setItem("currentTeacherId", inputId);
+        
         closeLoginModal();
-        showToast("Đăng nhập thành công!");
+        showToast("Đăng nhập thành công với tên: " + inputId);
     } catch (error) {
         alert("Lỗi đăng nhập: " + error.message + "\n(Hãy chắc chắn bạn đã làm theo Bước 2 bên dưới).");
     }
 }
+
+
 
 
 window.processLogout = async function() {
@@ -417,6 +432,8 @@ window.saveToFirebase = async function () {
         console.log("Đã lưu Firebase"); 
     } catch (err) { console.error("Lỗi lưu Firebase:", err); } 
 }
+
+
 
 window.loadFromFirebase = async function () { 
     try { 
@@ -1069,7 +1086,7 @@ function updateStudentStatus(classKey, studentId, status) {
     if (student) {
         student.status = status;
         student.lastUpdated = getCurrentTimeString(); // Cập nhật thời gian
-        student.lastModifiedBy = auth.currentUser ? auth.currentUser.email : "Giáo viên"; // Ghi nhận tên người sửa
+        student.lastModifiedBy = localStorage.getItem("currentTeacherId") || "Giáo viên"; // Ghi nhận tên người sửa
         saveDatabaseState();
         showToast("Đã chuyển sang: " + (status === 'present' ? 'Có mặt' : 'Vắng'));
         
@@ -1093,7 +1110,7 @@ function updateStudentNote(classKey, studentId, value) {
     if (student) {
         student.note = value;
         student.lastUpdated = getCurrentTimeString(); // Cập nhật thời gian
-        student.lastModifiedBy = auth.currentUser ? auth.currentUser.email : "Giáo viên"; // Ghi nhận tên người sửa
+        student.lastModifiedBy =localStorage.getItem("currentTeacherId") || "Giáo viên"; // Ghi nhận tên người sửa
         saveDatabaseState();
         showToast("Đã lưu ghi chú!");
 
@@ -1110,7 +1127,7 @@ function updateStudentEvaluation(classKey, studentId, criterionName, value) {
     if (student) {
         student[criterionName] = value;
         student.lastUpdated = getCurrentTimeString(); // Lấy thời gian mới
-        student.lastModifiedBy = auth.currentUser ? auth.currentUser.email : "Giáo viên"; // Lấy tên người sửa mới
+        student.lastModifiedBy = localStorage.getItem("currentTeacherId") || "Giáo viên"; // Lấy tên người sửa mới
         saveDatabaseState();
         showToast("Đã cập nhật: " + criterionName);
         
