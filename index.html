@@ -786,7 +786,7 @@ function renderFullSystemUI() {
         groupSection.innerHTML = `
             <div class="group-accordion-header" onclick="toggleGroupAccordion(this)">
                 <div class="group-main-title">${group.name}</div>
-                <div class="group-stats" id="group-stats-${gKey}">Tổng số lớp: ${group.classes.length} | Học sinh: ${group.totalStudents}</div>
+                <div class="group-stats" id="group-stats-${gKey}" style="display:none">Tổng số lớp: ${group.classes.length} | Học sinh: ${group.totalStudents}</div>
             </div>
             <div class="group-panel" id="group-panel-${gKey}"></div>
         `;
@@ -900,10 +900,11 @@ function renderStudentCardsHtml(classKey, students) {
 <span class="student-name">${idx + 1}. ${student.name} ${getStudentBadges(student)}</span>
             
             <!-- Gom chung Người sửa và Thời gian vào 1 hàng ngang, cách nhau bằng dấu chấm hoặc khoảng trắng -->
-            <div style="display: flex; align-items: center; gap: 10px; font-size: 0.72rem; color: #a0a0a0; margin-top: 1px;">
-                <span class="student-editor">✏️ ${student.lastModifiedBy || 'Chưa rõ'}</span>
-                <span style="color: #00f0ff;">⏱ ${student.lastUpdated || 'Chưa cập nhật'}</span>
-            </div>
+            <!-- Thêm id động vào đây -->
+<div style="display: flex; align-items: center; gap: 10px; font-size: 0.72rem; color: #a0a0a0; margin-top: 1px;" id="time-info-${classKey.replace(/\s+/g, '-')}-${student.id}">
+    <span class="student-editor">✏️ ${student.lastModifiedBy || 'Chưa rõ'}</span>
+    <span style="color: #00f0ff;">⏱ ${student.lastUpdated || 'Chưa cập nhật'}</span>
+</div>
             
             <span class="student-phone" style="display: none;">SĐT: ${displayPhone(student.phone)}</span>
         </div>
@@ -965,8 +966,9 @@ function updateStudentNote(classKey, studentId, value) {
         student.lastModifiedBy = auth.currentUser ? auth.currentUser.email : "Giáo viên"; // Ghi nhận tên người sửa
         saveDatabaseState();
         showToast("Đã lưu ghi chú!");
-        const classKeyId = classKey.replace(/\s+/g, '-');
-        document.getElementById(`absentList-${classKeyId}`).innerHTML = renderAbsentRowsHtml(bigClassesDatabase[classKey].students);
+
+
+        
     }
 }
 
@@ -977,17 +979,22 @@ function updateStudentEvaluation(classKey, studentId, criterionName, value) {
     let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
     if (student) {
         student[criterionName] = value;
-        student.lastUpdated = getCurrentTimeString(); // Cập nhật thời gian mới
-        student.lastModifiedBy = auth.currentUser ? auth.currentUser.email : "Giáo viên"; // Ghi nhận tên người sửa
+        student.lastUpdated = getCurrentTimeString(); // Lấy thời gian mới
+        student.lastModifiedBy = auth.currentUser ? auth.currentUser.email : "Giáo viên"; // Lấy tên người sửa mới
         saveDatabaseState();
         showToast("Đã cập nhật: " + criterionName);
         
-        // Bổ sung dòng vẽ lại danh sách thẻ để hiện thời gian ngay cạnh tên học sinh
+        // 🌟 CẬP NHẬT TRỰC TIẾP LÊN GIAO DIỆN MÀ KHÔNG LÀM THẺ BỊ THU LẠI
         const classKeyId = classKey.replace(/\s+/g, '-');
-        document.getElementById(`studentList-${classKeyId}`).innerHTML = renderStudentCardsHtml(classKey, bigClassesDatabase[classKey].students);
+        const timeInfoElement = document.getElementById(`time-info-${classKeyId}-${studentId}`);
+        if (timeInfoElement) {
+            timeInfoElement.innerHTML = `
+                <span class="student-editor">✏️ ${student.lastModifiedBy}</span>
+                <span style="color: #00f0ff;">⏱ ${student.lastUpdated}</span>
+            `;
+        }
     }
 }
-
 
 
 
