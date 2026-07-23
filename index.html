@@ -14,7 +14,7 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-attachment: fixed; color: #e0e0e6; padding: 20px 8px; max-width: 600px; margin: 0 auto; }
+   color: #e0e0e6; padding: 20px 8px; max-width: 600px; margin: 0 auto; }
         
         h2 { text-align: center; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; color: #00f0ff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); font-size: 1.4rem; }
         h3 { color: #ff007f; text-shadow: 0 0 10px rgba(255, 0, 127, 0.5); font-size: 1.1rem; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
@@ -223,7 +223,12 @@
 </head>
 <body>
 
-<h2>HỆ THỐNG QUẢN LÝ ĐIỂM DANH ĐỘNG</h2>
+<h2>HỆ THỐNG QUẢN LÝ ĐÁNH GIÁ HỌC SINH </h2>
+
+
+
+
+
 
 <!-- THANH TRẠNG THÁI ĐĂNG NHẬP -->
 <div class="auth-bar" id="authBarContainer">
@@ -232,9 +237,27 @@
 </div>
 
 <!-- KHU VỰC TẢI FILE (Chỉ hiện khi đăng nhập) -->
-<div class="upload-card" id="adminUploadCard" style="display: none;">
-    <div class="btn-group-top">
-        <label for="excelFileInput" class="custom-upload-btn">📂 Tải lên File Excel</label>
+<div class="upload-card" id="adminUploadCard" style="display: none; position: sticky; top: 20px; z-index: 999; margin: 15px 0; background: rgba(13, 13, 26, 0.95); padding: 15px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.6); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15);">
+    <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+        
+        <!-- Nút tải lên File Excel -->
+        <div style="display: flex; justify-content: center; width: 100%;">
+            <label for="excelFileInput" class="custom-upload-btn" style="cursor: pointer; text-align: center; width: 100%; box-sizing: border-box;">📂 Tải lên File Excel</label>
+        </div>
+
+        <!-- Hai nút Sao lưu và Khôi phục nằm cùng 1 hàng bên dưới -->
+        <div style="display: flex; gap: 10px; width: 100%;">
+            <button onclick="backupAllData()" title="Sao lưu toàn bộ dữ liệu ra file" style="flex: 1; background: #28a745; color: #fff; padding: 10px 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 4px; transition: 0.2s;">
+                💾 Sao lưu
+            </button>
+            <button onclick="restoreAllDataPrompt()" title="Khôi phục dữ liệu từ file" style="flex: 1; background: #ffc107; color: #000; padding: 10px 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 4px; transition: 0.2s;">
+                📂 Khôi phục
+            </button>
+        </div>
+
+   
+
+
         <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;" onchange="startProcessingExcel(this)">
         <button class="btn-danger-top" onclick="clearSystemCache()" style="display: none;"> XÓA dữ liệu CŨ</button>
     </div>
@@ -373,6 +396,7 @@ window.processLogin = async function() {
     // --- ĐẶT ID VÀ MẬT KHẨU CHUNG CHO MỌI NGƯỜI GÕ ---
    const MASTER_ID = [
   "mydo140502@gmail.com",
+"m@gmail.com",
   "ntthaoabi1012@gmail.com",
   "nguyenthuha2321@gmail.com",
   "nguyenthuphuong130295@gmail.com",
@@ -489,6 +513,7 @@ const sosKeywords = [
     "GV Không thể dạy được", 
     "Hà Vi không nên nhận dạy HS",
     "Dưới 5",
+"Tăng động",
     "Mất gốc (1-2)",
     "Yếu"
 ];
@@ -886,6 +911,12 @@ function renderFullSystemUI() {
             classSection.innerHTML = `
                 <div class="class-accordion-header" onclick="toggleClassAccordion(this)">
                     <div class="class-main-title">Lớp: ${classKey}</div>
+
+                   <div class="class-backup-actions" style="margin: 10px 0; display: flex; gap: 8px;">
+    <button onclick="backupSingleClass('${classKey}')" style="background: #17a2b8; color: #fff; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">💾 Sao lưu lớp này</button>
+    <button onclick="restoreSingleClassPrompt('${classKey}')" style="background: #e0a800; color: #000; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">📂 Khôi phục lớp này</button>
+</div>
+
 
                   <span style="font-size: 0.8rem; font-weight: normal; margin-left: 8px; color: #ffd700;">
                             (Tổng số ⭐: ${starCount} | <span style="color: #ff007f; font-weight: bold;">Tổng số SOS: ${sosCount}</span>)
@@ -1504,6 +1535,65 @@ function autofitColumns(worksheet, data) {
     worksheet['!cols'] = colWidths;
 }
 
+// Hàm tải toàn bộ dữ liệu bigClassesDatabase thành 1 file .json dự phòng về máy
+function backupAllData() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(bigClassesDatabase, null, 2));
+    const downloadAnchor = document.createElement('a');
+    const dateObj = new Date();
+    const dateString = `${dateObj.getDate()}-${dateObj.getMonth() + 1}-${dateObj.getFullYear()}`;
+    
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `Du_phong_danh_gia_hoc_sinh_${dateString}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+}
+
+// Hàm mở cửa sổ chọn file JSON để khôi phục lại dữ liệu
+function restoreAllDataPrompt() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            try {
+                const restoredData = JSON.parse(event.target.result);
+                if (restoredData && typeof restoredData === 'object') {
+                    if (confirm("Cảnh báo: Thao tác này sẽ ghi đè toàn bộ dữ liệu hiện tại bằng bản sao lưu. Bạn có chắc chắn muốn khôi phục?")) {
+                        bigClassesDatabase = restoredData;
+                        
+                        // Lưu lại vào LocalStorage của trình duyệt
+                        if (typeof saveToLocalStorage === 'function') {
+                            saveToLocalStorage();
+                        } else {
+                            localStorage.setItem('bigClassesDatabase', JSON.stringify(bigClassesDatabase));
+                        }
+                        
+                        alert("Khôi phục dữ liệu thành công! Giao diện sẽ được tải lại.");
+                        location.reload(); // Tải lại trang để cập nhật giao diện
+                    }
+                } else {
+                    alert("File dự phòng không hợp lệ!");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Lỗi khi đọc file JSON dự phòng!");
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+
+
+
+
 </script>
+
 </body>
 </html>
