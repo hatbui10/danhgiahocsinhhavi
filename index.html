@@ -420,7 +420,7 @@ const dropdownConfig = {
         "Đánh giá ngữ pháp": ["", "Xuất sắc 9-10", "Khá 7-8", "Trung bình 5-6", "Dưới 5", "Mất gốc (1-2)"],
         "Đánh giá khả năng nói": ["", "A", "B", "C", "D"],
         "Đánh giá khả năng nghe": ["", "A", "B", "C", "D"],
-        "Ý thức giờ học": ["", "Ngoan và hợp tác","Ngoan nhưng không tương tác","Hay làm việc riêng","Nghịch nhiều nhưng cố nhắc vẫn nghe", "Mất tập trung", "Nói chuyện nhiều/tự do","Chán học muốn nghỉ","Tự kỷ","Dễ khóc","Áp lực thành tích", "Tăng động"]
+        "Ý thức giờ học": ["", "Ngoan và hợp tác","Ngoan nhưng không tương tác","Hay làm việc riêng","Nghịch nhiều nhưng cố nhắc vẫn nghe", "Mất tập trung","Bắt nạt bạn","Nói bậy","Hay thắc mắc", "Không thích học nhiều","Thích khen nịnh","Nói chuyện nhiều/tự do","Chán học muốn nghỉ","Tự kỷ","Dễ khóc","Áp lực thành tích", "Tăng động"]
        
     },
     "Ý thức ôn bài ở nhà": {
@@ -995,7 +995,7 @@ function renderStudentCardsHtml(classKey, students) {
                 type="text"
                 class="note-select"
                 style="flex: 1.5; padding: 8px 5px;"
-                placeholder="Ghi chú: quên vở, đồ dùng, ăn vặt, nói bậy, đánh bạn, sức khoẻ yếu, tự kỷ, mắt kém..."
+                placeholder="Ghi chú: quên vở, đồ dùng, ăn vặt, sức khoẻ yếu, tự kỷ, mắt kém..."
                 value="${student.note || ''}"
                 ${readonlyAttr}
                 onclick="event.stopPropagation()"
