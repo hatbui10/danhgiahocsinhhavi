@@ -822,6 +822,10 @@ function renderFullSystemUI() {
 
         const groupPanel = groupSection.querySelector(".group-panel");
 
+
+
+
+
         group.classes.forEach(cls => {
             const classKey = cls.key;
             const classObj = cls.data;
@@ -830,6 +834,24 @@ function renderFullSystemUI() {
             const total = students.length;
             const absent = students.filter(s => s.status === 'absent').length;
             const present = total - absent;
+
+
+                // 🌟 TÍNH SỐ LƯỢNG HỌC SINH CÓ SAO VÀ SOS TRONG LỚP
+            let starCount = 0;
+            let sosCount = 0;
+            students.forEach(student => {
+                let hasSOS = false;
+                let hasStar = false;
+                for (let key in student) {
+                    let val = student[key];
+                    if (typeof val === 'string') {
+                        if (sosKeywords.some(keyword => val.includes(keyword))) hasSOS = true;
+                        if (starKeywords.some(keyword => val.includes(keyword))) hasStar = true;
+                    }
+                }
+                if (hasSOS) sosCount++;
+                if (hasStar) starCount++;
+            });
 
             // Nếu chưa đăng nhập thì ẩn khung thêm học sinh mới
             const addStudentBoxHtml = window.isLoggedIn ? `
@@ -846,6 +868,11 @@ function renderFullSystemUI() {
             classSection.innerHTML = `
                 <div class="class-accordion-header" onclick="toggleClassAccordion(this)">
                     <div class="class-main-title">Lớp: ${classKey}</div>
+
+                  <span style="font-size: 0.8rem; font-weight: normal; margin-left: 8px; color: #ffd700;">
+                            (Tổng số ⭐: ${starCount} | <span style="color: #ff007f; font-weight: bold;">Tổng số SOS: ${sosCount}</span>)
+                        </span>
+
                     <div class="class-schedule"style= "display :none;">${classObj.schedule || ""}</div>
                     <div class="class-stats" id="stats-${classKey.replace(/\s+/g, '-')}" style= "display :none;">Sĩ số: ${total} | Có mặt: ${present} | Vắng: ${absent}</div>
                 </div>
