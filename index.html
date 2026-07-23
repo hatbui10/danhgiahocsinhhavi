@@ -257,6 +257,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+window.auth = getAuth(app); // <-- Thêm window. vào trước auth
 
 // Biến lưu trạng thái quyền chỉnh sửa toàn cục
 window.isLoggedIn = false;
@@ -768,14 +769,18 @@ function renderStudentCardsHtml(classKey, students) {
         return `
             <div class="student-card ${statusClass}" id="${cardId}">
                 <div class="student-info-row">
+
+
                     <div class="student-meta">
                         <span class="student-name">${idx + 1}. ${student.name}</span>
-
-                        <span style="font-size: 0.7rem; color: #00f0ff; background: rgba(0,240,255,0.1); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(0,240,255,0.3);">
-            ⏱ ${student.lastUpdated || 'Chưa cập nhật'}
-        </span>
+                        <!-- Tên người sửa đặt phía trên thời gian cập nhật -->
+                        <span class="student-editor" style="font-size: 0.75rem; color: #a0a0a0;">✏️ Người sửa: ${student.lastModifiedBy || 'Chưa rõ'}</span>
+                        <span style="font-size: 0.7rem; color: #00f0ff; background: rgba(0,240,255,0.1); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(0,240,255,0.3);">⏱ ${student.lastUpdated || 'Chưa cập nhật'} </span>
                         <span class="student-phone" style="display: none;">SĐT: ${displayPhone(student.phone)}</span>
                     </div>
+
+
+
                     <div class="student-actions-right">
                         <button class="btn-call" onclick="window.location.href='tel:${student.phone}'"style= "display :none;">Gọi</button>
                         ${deleteButtonHtml}
@@ -803,6 +808,7 @@ function updateStudentStatus(classKey, studentId, status) {
     if (student) {
         student.status = status;
         student.lastUpdated = getCurrentTimeString(); // Cập nhật thời gian
+        student.lastModifiedBy = auth.currentUser ? auth.currentUser.email : "Giáo viên"; // Ghi nhận tên người sửa
         saveDatabaseState();
         showToast("Đã chuyển sang: " + (status === 'present' ? 'Có mặt' : 'Vắng'));
         
@@ -826,6 +832,7 @@ function updateStudentNote(classKey, studentId, value) {
     if (student) {
         student.note = value;
         student.lastUpdated = getCurrentTimeString(); // Cập nhật thời gian
+        student.lastModifiedBy = auth.currentUser ? auth.currentUser.email : "Giáo viên"; // Ghi nhận tên người sửa
         saveDatabaseState();
         showToast("Đã lưu ghi chú!");
         const classKeyId = classKey.replace(/\s+/g, '-');
@@ -841,6 +848,7 @@ function updateStudentEvaluation(classKey, studentId, criterionName, value) {
     if (student) {
         student[criterionName] = value;
         student.lastUpdated = getCurrentTimeString(); // Cập nhật thời gian mới
+        student.lastModifiedBy = auth.currentUser ? auth.currentUser.email : "Giáo viên"; // Ghi nhận tên người sửa
         saveDatabaseState();
         showToast("Đã cập nhật: " + criterionName);
         
