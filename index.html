@@ -990,10 +990,6 @@ function renderFullSystemUI() {
                 <div class="class-accordion-header" onclick="toggleClassAccordion(this)">
                     <div class="class-main-title">Lớp: ${classKey}</div>
 
-                   <div class="class-backup-actions" style="margin: 10px 0; display: flex; gap: 8px;">
-    <button onclick="backupSingleClass('${classKey}')" style="background: #17a2b8; color: #fff; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">💾 Sao lưu lớp này</button>
-    <button onclick="restoreSingleClassPrompt('${classKey}')" style="background: #e0a800; color: #000; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">📂 Khôi phục lớp này</button>
-</div>
 
 
                   <span style="font-size: 0.8rem; font-weight: normal; margin-left: 8px; color: #ffd700;">
@@ -1005,8 +1001,15 @@ function renderFullSystemUI() {
                 </div>
                 
                 <div class="class-panel" >
+
+  <div class="class-backup-actions" style="margin: 10px 0; display: flex; gap: 8px;">
+    <button onclick="backupSingleClass('${classKey}')" style="background: #17a2b8; color: #fff; padding: 5px 10px; border: none; border-radius: 15px; cursor: pointer; font-size: 15px;">💾 Sao lưu lớp này</button>
+    <button onclick="restoreSingleClassPrompt('${classKey}')" style="background: #e0a800; color: #000; padding: 5px 10px; border: none; border-radius: 15px; cursor: pointer; font-size: 15px;">📂 Khôi phục lớp này</button>
+</div>
                     <h3>Danh Sách Chi Tiết</h3>
                     <br>
+
+                 
                     ${addStudentBoxHtml}
                     
                     <div class="absent-section" style= "display :none;">
@@ -1667,7 +1670,71 @@ function restoreAllDataPrompt() {
     input.click();
 }
 
+// Hàm sao lưu riêng 1 lớp thành file JSON
+function backupSingleClass(classKey) {
+    const classData = bigClassesDatabase[classKey];
+    if (!classData) {
+        alert("Không tìm thấy dữ liệu của lớp này!");
+        return;
+    }
 
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(classData, null, 2));
+    const downloadAnchor = document.createElement('a');
+    
+    // Đặt tên file theo mã hoặc tên lớp để dễ phân biệt
+    const safeClassName = classKey.replace(/[^a-zA-Z0-9]/g, '_');
+    const dateObj = new Date();
+    const dateString = `${dateObj.getDate()}-${dateObj.getMonth() + 1}-${dateObj.getFullYear()}`;
+    
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `Du_phong_lop_${safeClassName}_${dateString}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+}
+
+// Hàm khôi phục dữ liệu riêng cho 1 lớp từ file JSON dự phòng
+function restoreSingleClassPrompt(classKey) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            try {
+                const restoredClassData = JSON.parse(event.target.result);
+                // Kiểm tra xem file JSON có cấu trúc hợp lệ của một lớp không (ví dụ có chứa mảng học sinh hoặc thông tin lớp)
+                if (restoredClassData && typeof restoredClassData === 'object') {
+                    if (confirm(`Cảnh báo: Thao tác này sẽ ghi đè toàn bộ dữ liệu hiện tại của lớp "${classKey}" bằng bản sao lưu. Bạn có chắc chắn muốn tiếp tục?`)) {
+                        
+                        // Gán đè dữ liệu cho đúng lớp đó
+                        bigClassesDatabase[classKey] = restoredClassData;
+                        
+                        // Lưu lại vào LocalStorage
+                        if (typeof saveToLocalStorage === 'function') {
+                            saveToLocalStorage();
+                        } else {
+                            localStorage.setItem('bigClassesDatabase', JSON.stringify(bigClassesDatabase));
+                        }
+                        
+                        alert("Khôi phục dữ liệu lớp thành công! Giao diện sẽ được tải lại.");
+                        location.reload(); // Tải lại trang để cập nhật giao diện
+                    }
+                } else {
+                    alert("File dự phòng của lớp không hợp lệ!");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Lỗi khi đọc file JSON dự phòng của lớp!");
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
 
 
 
