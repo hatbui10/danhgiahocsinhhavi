@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
+
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
        body { background-image: url("https://hatbui10.github.io/danhgiahocsinhhavi/IMG_1784475752482_1784492455223.jpg");
@@ -1039,9 +1040,10 @@ function renderStudentCardsHtml(classKey, students) {
 
     <!-- Phần nội dung Accordion -->
     <div class="student-body-content" onclick="event.stopPropagation()">
+           
 
         <div class="student-controls-row">
-
+          <button class="btn-action" style="background: #008040; color: #fff; margin-top: 8px;" onclick="exportSingleStudentExcel('${classKey}', ${JSON.stringify(student).replace(/"/g, '&quot;')})">📊 Xuất Excel học sinh này</button>
             <button
                 class="btn-action btn-present ${student.status === 'present' ? 'active' : ''}"
                 ${disabledAttr}
@@ -1391,6 +1393,117 @@ window.updateStudentCheckboxEvaluation = function(classKey, studentId, criterion
         }
     }
 }
+
+
+/* 📊 XUẤT EXCEL TỰ ĐỘNG CĂN ĐỘ RỘNG CỘT VÀ QUÉT TOÀN BỘ TIÊU CHÍ */
+
+// 1. Xuất Excel cho 1 học sinh
+function exportSingleStudentExcel(classKey, student) {
+    let baseHeaders = ["STT", "Họ và tên", "SĐT", "Trạng thái", "Người sửa", "Thời gian cập nhật", "Ghi chú"];
+    
+    const ignoredKeys = ['id', 'name', 'phone', 'status', 'note', 'lastModifiedBy', 'lastUpdated'];
+    let criteriaKeys = Object.keys(student).filter(key => !ignoredKeys.includes(key));
+    let headers = [...baseHeaders, ...criteriaKeys];
+
+    let rowData = [
+        1,
+        student.name || '',
+        student.phone || '',
+        student.status === 'present' ? 'Có mặt' : (student.status === 'absent' ? 'Vắng' : 'Chưa điểm danh'),
+        student.lastModifiedBy || 'Chưa rõ',
+        student.lastUpdated || 'Chưa cập nhật',
+        student.note || ''
+    ];
+
+    criteriaKeys.forEach(key => {
+        rowData.push(student[key] || '');
+    });
+
+    // Tạo dữ liệu dạng mảng 2 chiều
+    let data = [headers, rowData];
+    let worksheet = XLSX.utils.aoa_to_sheet(data);
+
+    // 📐 Tự động tính toán và căn độ rộng cột theo nội dung dài nhất
+    autofitColumns(worksheet, data);
+
+    let workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "HocSinh");
+
+    const filename = `Tieu_chi_${(student.name || 'hoc_sinh').replace(/\s+/g, '_')}_${classKey}.xlsx`;
+    XLSX.writeFile(workbook, filename);
+}
+
+// 2. Xuất Excel cho cả lớp
+function exportClassExcel(classKey, students) {
+    if (!students || students.length === 0) {
+        alert("Danh sách lớp trống!");
+        return;
+    }
+
+    let baseHeaders = ["STT", "Họ và tên", "SĐT", "Trạng thái", "Người sửa", "Thời gian cập nhật", "Ghi chú"];
+    
+    const ignoredKeys = ['id', 'name', 'phone', 'status', 'note', 'lastModifiedBy', 'lastUpdated'];
+    let criteriaSet = new Set();
+    students.forEach(student => {
+        Object.keys(student).forEach(key => {
+            if (!ignoredKeys.includes(key)) {
+                criteriaSet.add(key);
+            }
+        });
+    });
+    let criteriaKeys = Array.from(criteriaSet);
+
+    let headers = [...baseHeaders, ...criteriaKeys];
+    let rows = [headers];
+
+    students.forEach((student, idx) => {
+        let rowData = [
+            idx + 1,
+            student.name || '',
+            student.phone || '',
+            student.status === 'present' ? 'Có mặt' : (student.status === 'absent' ? 'Vắng' : 'Chưa điểm danh'),
+            student.lastModifiedBy || 'Chưa rõ',
+            student.lastUpdated || 'Chưa cập nhật',
+            student.note || ''
+        ];
+
+        criteriaKeys.forEach(key => {
+            rowData.push(student[key] || '');
+        });
+
+        rows.push(rowData);
+    });
+
+    let worksheet = XLSX.utils.aoa_to_sheet(rows);
+
+    // 📐 Tự động tính toán và căn độ rộng cột theo nội dung dài nhất
+    autofitColumns(worksheet, rows);
+
+    let workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "DanhSachLop");
+
+    const filename = `Danh_sach_Tieu_chi_Lop_${classKey.replace(/\s+/g, '_')}.xlsx`;
+    XLSX.writeFile(workbook, filename);
+}
+
+// Hàm phụ trợ đo độ dài chữ để set kích thước cột Excel không bị tràn/bị ẩn dấu ###
+function autofitColumns(worksheet, data) {
+    let objectMaxLength = [];
+    data.forEach(row => {
+        row.forEach((cell, colIndex) => {
+            let value = cell ? cell.toString() : '';
+            // Cộng thêm khoảng trống đệm tính thẩm mỹ
+            let length = value.length + 3; 
+            if (!objectMaxLength[colIndex] || length > objectMaxLength[colIndex]) {
+                objectMaxLength[colIndex] = length;
+            }
+        });
+    });
+
+    let colWidths = objectMaxLength.map(w => ({ wch: Math.max(w, 10) })); // Đặt độ rộng tối thiểu là 10
+    worksheet['!cols'] = colWidths;
+}
+
 </script>
 </body>
 </html>
