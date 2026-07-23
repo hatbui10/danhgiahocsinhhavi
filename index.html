@@ -416,7 +416,7 @@ const dropdownConfig = {
         "Đánh giá ngữ pháp": ["", "Xuất sắc 9-10", "Khá 7-8", "Trung bình 5-6", "Dưới 5", "Mất gốc (1-2)"],
         "Đánh giá khả năng nói": ["", "A", "B", "C", "D"],
         "Đánh giá khả năng nghe": ["", "A", "B", "C", "D"],
-        "Ý thức giờ học": ["", "Ngoan", "Thỉnh thoảng nói chuyện", "Nghịch nhưng cô nhắc vẫn nghe", "Tăng động"]
+        "Ý thức giờ học": ["", "Ngoan và hợp tác","Ngoan nhưng không tương tác","Hay làm việc riêng","Nghịch nhiều nhưng cố nhắc vẫn nghe", "Mất tập trung", "Nói chuyện nhiều/tự do","Chán học muốn nghỉ","Tự kỷ","Dễ khóc","Áp lực thành tích", "Tăng động"]
        
     },
     "Ý thức ôn bài ở nhà": {
@@ -883,20 +883,21 @@ function renderStudentCardsHtml(classKey, students) {
                     const savedValuesArr = savedValue ? savedValue.split(', ') : [];
                     
                     dynamicCriteriaHtml += `
-                        <div style="margin-top: 4px; padding-left: 4px;">
-                            <span style="font-size: 0.75rem; color: #bbb; display: block; margin-bottom: 2px;">${criterion}:</span>
-                    `;
+        <div style="margin-top: 4px; padding-left: 4px;">
+            <span style="font-size: 0.75rem; color: #bbb; display: block; margin-bottom: 4px;">${criterion}:</span>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 8px;">
+    `;
                     
                     options.forEach(opt => {
                         if (!opt) return;
                         const isChecked = savedValuesArr.includes(opt) ? 'checked' : '';
                         dynamicCriteriaHtml += `
-                            <label style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: #bbb; cursor: pointer; text-align: left; margin-bottom: 3px;">
-                                <input type="checkbox" value="${opt}" ${isChecked} ${disabledAttr}
-                                       onchange="updateStudentCheckboxEvaluation('${classKey}', ${student.id}, '${criterion.replace(/'/g, "\\'")}', this)">
-                                ${opt}
-                            </label>
-                        `;
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: #bbb; cursor: pointer; text-align: left; margin-bottom: 2px;">
+                <input type="checkbox" value="${opt}" ${isChecked} ${disabledAttr}
+                       onchange="updateStudentCheckboxEvaluation('${classKey}', ${student.id}, '${criterion.replace(/'/g, "\\'")}', this)">
+                <span>${opt}</span>
+            </label>
+        `;
                     });
                     
                     dynamicCriteriaHtml += `</div>`;
