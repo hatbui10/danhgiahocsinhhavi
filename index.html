@@ -920,7 +920,7 @@ function renderStudentCardsHtml(classKey, students) {
         <div class="student-controls-row">
             <button class="btn-action btn-present ${student.status === 'present' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'present')" style="display: none;">CÓ MẶT</button>
             <button class="btn-action btn-absent ${student.status === 'absent' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'absent')" style="display: none;">VẮNG</button>
-            <input type="text" class="note-select" style="flex: 1.5; padding: 8px 5px;" placeholder="Ghi chú ..." value="${student.note || ''}" ${readonlyAttr} onclick="event.stopPropagation()" onchange="updateStudentNote('${classKey}', ${student.id}, this.value)">
+           <input type="text" class="note-select" style="flex: 1.5; padding: 8px 5px;" placeholder="Ghi chú: quên vở, đồ dùng, ăn vặt, nói bậy, đánh bạn, sức khoẻ yếu, tự kỷ, mắt kém..." value="${student.note || ''}" ${readonlyAttr} onclick="event.stopPropagation()" onchange="updateStudentNote('${classKey}', ${student.id}, this.value)">
         </div>
 
         ${dynamicCriteriaHtml}
