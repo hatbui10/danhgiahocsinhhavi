@@ -4,16 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bộ Lọc Học Viên Điểm Danh Chia Lớp</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-       body { background-image: url("https://hatbui10.github.io/danhgiahocsinhhavi/IMG_1784475752482_1784492455223.jpg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed; color: #e0e0e6; padding: 20px 8px; max-width: 600px; margin: 0 auto; }
+        body { background-color: #050508; color: #e0e0e6; padding: 20px 8px; max-width: 600px; margin: 0 auto; }
         
         h2 { text-align: center; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; color: #00f0ff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); font-size: 1.4rem; }
         h3 { color: #ff007f; text-shadow: 0 0 10px rgba(255, 0, 127, 0.5); font-size: 1.1rem; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
@@ -420,8 +416,8 @@ const dropdownConfig = {
         "Đánh giá ngữ pháp": ["", "Xuất sắc 9-10", "Khá 7-8", "Trung bình 5-6", "Dưới 5", "Mất gốc (1-2)"],
         "Đánh giá khả năng nói": ["", "A", "B", "C", "D"],
         "Đánh giá khả năng nghe": ["", "A", "B", "C", "D"],
-        "Ý thức giờ học": ["", "Ngoan và hợp tác","Ngoan nhưng không tương tác","Hay làm việc riêng","Nghịch nhiều nhưng cố nhắc vẫn nghe", "Mất tập trung", "Nói chuyện nhiều/tự do","Chán học muốn nghỉ","Tự kỷ","Dễ khóc","Áp lực thành tích", "Tăng động"]
-       
+        "Ý thức giờ học": ["", "Ngoan", "Thỉnh thoảng nói chuyện", "Nghịch nhưng cô nhắc vẫn nghe", "Tăng động"],
+        "Tâm lý học sinh": ["", "Thoải mái, vui vẻ", "Chán học muốn nghỉ", "Không chơi với ai", "Rụt rè ít nói"]
     },
     "Ý thức ôn bài ở nhà": {
         "Thuộc từ mới": ["", "Tốt", "Khá", "Trung bình", "Yếu"],
@@ -429,7 +425,6 @@ const dropdownConfig = {
         "Thuộc ngữ pháp": ["", "Thuộc và biết cách áp dụng công thức", "Hiểu nhưng vẫn còn chưa vững...", "Gặp khó khăn...", "Không hiểu..."]
     },
     "Nhóm Đánh Giá Chung": {
-        "Độ chuyên cần ": ["", "Đi học cơ bản đầy đủ", "Thỉnh thoảng nghỉ", "Đi học ngắt quãng nhiều buổi"],
         "So với tháng trước": ["", "Tiến bộ nhanh", "Tiến bộ chậm", "Như cũ", "Kém đi", "Báo động"],
         "Đề xuất của giáo viên": ["", "Có thể học vượt lớp", "Giữ nguyên", "GV Không thể dạy được", "Hà Vi không nên nhận dạy HS"]
     }
@@ -874,93 +869,68 @@ function renderStudentCardsHtml(classKey, students) {
         let dynamicCriteriaHtml = '';
         for (const [groupName, criteria] of Object.entries(dropdownConfig)) {
             dynamicCriteriaHtml += `
-                <div style="margin-top: 8px; border-top: 1px dashed rgba(0, 240, 255, 0.15); padding-top: 6px;" onclick="event.stopPropagation()">
+                <div style="margin-top: 8px; border-top: 1px dashed rgba(0, 240, 255, 0.15); padding-top: 6px; onclick="event.stopPropagation()">
                     <strong style="color: #ffd700; font-size: 0.75rem; text-transform: uppercase;">${groupName}</strong>
                     <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
             `;
             
             for (const [criterion, options] of Object.entries(criteria)) {
                 const savedValue = student[criterion] || '';
-
-                // 🌟 NẾU LÀ "Ý thức giờ học" THÌ HIỂN THỊ DẠNG CHECKBOX
-                if (criterion === "Ý thức giờ học") {
-                    const savedValuesArr = savedValue ? savedValue.split(', ') : [];
-                    
-                    dynamicCriteriaHtml += `
-        <div style="margin-top: 4px; padding-left: 4px;">
-            <span style="font-size: 0.75rem; color: #bbb; display: block; margin-bottom: 4px;">${criterion}:</span>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 8px;">
-    `;
-                    
-                    options.forEach(opt => {
-                        if (!opt) return;
-                        const isChecked = savedValuesArr.includes(opt) ? 'checked' : '';
-                        dynamicCriteriaHtml += `
-            <label style="display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: #bbb; cursor: pointer; text-align: left; margin-bottom: 2px;">
-                <input type="checkbox" value="${opt}" ${isChecked} ${disabledAttr}
-                       onchange="updateStudentCheckboxEvaluation('${classKey}', ${student.id}, '${criterion.replace(/'/g, "\\'")}', this)">
-                <span>${opt}</span>
-            </label>
-        `;
-                    });
-                    
-                    dynamicCriteriaHtml += `</div>`;
-                } 
-                // 🌟 CÁC TIÊU CHÍ KHÁC GIỮ NGUYÊN DẠNG DROPDOWN
-                else {
-                    dynamicCriteriaHtml += `
-                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 4px;">
-                            <span style="font-size: 0.75rem; color: #bbb; flex: 1; text-align: left;">${criterion}:</span>
-                            <select class="note-select" style="flex: 1.3; padding: 3px; font-size: 0.75rem;" ${disabledAttr}
-                                    onchange="updateStudentEvaluation('${classKey}', ${student.id}, '${criterion.replace(/'/g, "\\'")}', this.value)">
-                                ${options.map(o => `<option value="${o}" ${savedValue === o ? 'selected' : ''}>${o || '--'}</option>`).join('')}
-                            </select>
-                        </div>
-                    `;
-                }
+                dynamicCriteriaHtml += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 6px; onclick="event.stopPropagation()">
+                        <span style="font-size: 0.75rem; color: #bbb; flex: 1; text-align: left;">${criterion}:</span>
+                        <select class="note-select" style="flex: 1.3; padding: 3px; font-size: 0.75rem;" ${disabledAttr}
+                                onchange="updateStudentEvaluation('${classKey}', ${student.id}, '${criterion.replace(/'/g, "\\'")}', this.value)">
+                            ${options.map(opt => `<option value="${opt}" ${savedValue === opt ? 'selected' : ''}>${opt || '--'}</option>`).join('')}
+                        </select>
+                    </div>`;
             }
             dynamicCriteriaHtml += `</div></div>`;
         }
 
         const statusClass = student.status === 'absent' ? 'status-absent' : 'status-present';
-        const deleteButtonHtml = window.isLoggedIn ? `<button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')" style="display: none;">Xoá</button>` : '';
+        const deleteButtonHtml = window.isLoggedIn ? `<button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')"style= "display :none;">Xoá</button>` : '';
 
         return `
           <div class="student-card ${statusClass}" id="${cardId}">
-            <!-- Phần tiêu đề học sinh -->
-            <div class="student-card-header" onclick="toggleStudentCard(this)">
-                <div class="student-meta" style="display: flex; flex-direction: column; gap: 0px;">
-                    <span class="student-name">${idx + 1}. ${student.name} ${getStudentBadges(student)}</span>
-                    
-                    <div style="display: flex; align-items: center; gap: 10px; font-size: 0.72rem; color: #a0a0a0; margin-top: 1px;" id="time-info-${classKey.replace(/\s+/g, '-')}-${student.id}">
-                        <span class="student-editor">✏️ ${student.lastModifiedBy || 'Chưa rõ'}</span>
-                     <span style="color: #00f0ff;"><i class="fa-solid fa-clock"></i> ${student.lastUpdated || 'Chưa cập nhật'}</span>
-                    </div>
-                    
-                    <span class="student-phone" style="display: none;">SĐT: ${displayPhone(student.phone)}</span>
-                </div>
-                
-                <div class="student-actions-right" onclick="event.stopPropagation()">
-                    <button class="btn-call" onclick="window.location.href='tel:${student.phone}'" style="display: none;">Gọi</button>
-                    ${deleteButtonHtml}
-                </div>
-            </div>
+    <!-- Phần tiêu đề học sinh -->
+    <div class="student-card-header" onclick="toggleStudentCard(this)">
+        <div class="student-meta" style="display: flex; flex-direction: column; gap: 0px;">
+         
+<span class="student-name">${idx + 1}. ${student.name} ${getStudentBadges(student)}</span>
+            
+            <!-- Gom chung Người sửa và Thời gian vào 1 hàng ngang, cách nhau bằng dấu chấm hoặc khoảng trắng -->
+            <!-- Thêm id động vào đây -->
+<div style="display: flex; align-items: center; gap: 10px; font-size: 0.72rem; color: #a0a0a0; margin-top: 1px;" id="time-info-${classKey.replace(/\s+/g, '-')}-${student.id}">
+    <span class="student-editor">✏️ ${student.lastModifiedBy || 'Chưa rõ'}</span>
+    <span style="color: #00f0ff;">⏱ ${student.lastUpdated || 'Chưa cập nhật'}</span>
+</div>
+            
+            <span class="student-phone" style="display: none;">SĐT: ${displayPhone(student.phone)}</span>
+        </div>
+        
+        <div class="student-actions-right" onclick="event.stopPropagation()">
+            <button class="btn-call" onclick="window.location.href='tel:${student.phone}'" style="display: none;">Gọi</button>
+            ${deleteButtonHtml}
+        </div>
+    </div>
 
-            <!-- Phần nội dung chi tiết bên trong Accordion -->
-            <div class="student-body-content" onclick="event.stopPropagation()">
+    <!-- Phần nội dung chi tiết bên trong Accordion -->
+    <div class="student-body-content" onclick="event.stopPropagation()">
                 <div class="student-controls-row">
                     <button class="btn-action btn-present ${student.status === 'present' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'present')" style="display: none;">CÓ MẶT</button>
                     <button class="btn-action btn-absent ${student.status === 'absent' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'absent')" style="display: none;">VẮNG</button>
-                   <input type="text" class="note-select" style="flex: 1.5; padding: 8px 5px;" placeholder="Ghi chú: quên vở, đồ dùng, ăn vặt, nói bậy, đánh bạn, sức khoẻ yếu, tự kỷ, mắt kém..." value="${student.note || ''}" ${readonlyAttr} onclick="event.stopPropagation()" onchange="updateStudentNote('${classKey}', ${student.id}, this.value)">
-        </div>
+                    <input type="text" class="note-select" style="flex: 1.5; padding: 8px 5px;" placeholder="Ghi chú: quên vở, đồ dùng, ăn vặt, nói bậy, đánh bạn, sức khoẻ yếu, tự kỷ, mắt kém..." value="${student.note || ''}" ${readonlyAttr} onclick="event.stopPropagation()" onchange="updateStudentNote('${classKey}', ${student.id}, this.value)">
                 </div>
 
                 ${dynamicCriteriaHtml}
             </div>
         </div>
+
         `;
     }).join('');
 }
+
 
 
 
@@ -1237,42 +1207,6 @@ window.togglePasswordVisibility = function() {
                 <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                 <line x1="1" y1="1" x2="23" y2="23"></line>
             </svg>`;
-    }
-}
-
-
-window.updateStudentCheckboxEvaluation = function(classKey, studentId, criterionName, checkboxElement) {
-    if (!window.isLoggedIn) { 
-        alert("Vui lòng đăng nhập để đánh giá!"); 
-        checkboxElement.checked = !checkboxElement.checked; // Hoàn tác lại trạng thái tick
-        return; 
-    }
-    
-    let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
-    if (student) {
-        // Tìm tất cả các checkbox đang được tích trong cùng cụm của học sinh này
-        // (Dựa vào parent container chứa các checkbox)
-        const container = checkboxElement.closest('div').parentElement;
-        const checkedBoxes = container.querySelectorAll('input[type="checkbox"]:checked');
-        const selectedValues = Array.from(checkedBoxes).map(cb => cb.value);
-        
-        // Lưu gộp các giá trị được chọn cách nhau bởi dấu phẩy
-        student[criterionName] = selectedValues.join(', ');
-        student.lastUpdated = getCurrentTimeString();
-        student.lastModifiedBy = auth.currentUser ? auth.currentUser.email : "Giáo viên";
-        
-        saveDatabaseState();
-        showToast("Đã cập nhật: " + criterionName);
-        
-        // Cập nhật trực tiếp thời gian lên giao diện mà không làm thu gọn thẻ
-        const classKeyId = classKey.replace(/\s+/g, '-');
-        const timeInfoElement = document.getElementById(`time-info-${classKeyId}-${studentId}`);
-        if (timeInfoElement) {
-            timeInfoElement.innerHTML = `
-                <span class="student-editor">✏️ ${student.lastModifiedBy}</span>
-                <span style="color: #00f0ff;">⏱ ${student.lastUpdated}</span>
-            `;
-        }
     }
 }
 </script>
