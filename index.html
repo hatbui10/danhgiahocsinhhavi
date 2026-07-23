@@ -161,7 +161,30 @@
 .student-body-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding 0.3s ease; padding: 0 10px; background: #0d0d1a; border-top: 1px solid transparent; }
 .student-card.active .student-body-content { max-height: 1500px; padding: 12px 10px; border-top: 1px solid #222; }
 
+/* 🏷️ HUY HIỆU SOS VÀ NGÔI SAO */
+.sos-badge {
+    background-color: #ff007f;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 3px;
+    margin-left: 6px;
+    box-shadow: 0 0 6px rgba(255, 0, 127, 0.6);
+    vertical-align: middle;
+}
 
+.star-badge {
+    background-color: #ffd700;
+    color: #000;
+    font-size: 0.65rem;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 3px;
+    margin-left: 4px;
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+    vertical-align: middle;
+}
 
 </style>
 </head>
@@ -378,6 +401,62 @@ const dropdownConfig = {
         "Đề xuất của giáo viên": ["", "Có thể học vượt lớp", "Giữ nguyên", "GV Không thể dạy được", "Hà Vi không nên nhận dạy HS"]
     }
 };
+
+
+// Danh sách từ khóa kích hoạt cảnh báo SOS (Báo động đỏ)
+const sosKeywords = [
+    "Chán học muốn nghỉ", 
+    "Không chơi với ai", 
+    "Rụt rè ít nói", 
+    "Thường xuyên không làm", 
+    "Không bao giờ làm", 
+    "Kém đi", 
+    "Báo động", 
+    "GV Không thể dạy được", 
+    "Hà Vi không nên nhận dạy HS",
+    "Dưới 5",
+    "Mất gốc (1-2)",
+    "Yếu"
+];
+
+// Danh sách từ khóa kích hoạt Ngôi Sao (Điểm cao / Tích cực)
+const starKeywords = [
+    "9-10", 
+    "Xuất sắc", 
+    "Tốt"
+];
+
+
+
+// Hàm kiểm tra và trả về chuỗi HTML các huy hiệu (SOS hoặc Ngôi sao)
+function getStudentBadges(student) {
+    let hasSOS = false;
+    let hasStar = false;
+
+    for (let key in student) {
+        let val = student[key];
+        if (typeof val === 'string') {
+            // Kiểm tra nếu dính từ khóa báo động
+            if (sosKeywords.some(keyword => val.includes(keyword))) {
+                hasSOS = true;
+            }
+            // Kiểm tra nếu đạt điểm cao dựa trên danh sách hằng số starKeywords
+            if (starKeywords.some(keyword => val.includes(keyword))) {
+                hasStar = true;
+            }
+        }
+    }
+
+    let badgesHtml = '';
+    if (hasSOS) {
+        badgesHtml += `<span class="sos-badge">SOS</span>`;
+    }
+    if (hasStar) {
+        badgesHtml += `<span class="star-badge">⭐</span>`;
+    }
+    return badgesHtml;
+}
+
 
 function displayPhone(p) { 
     if(!p || p === 'Chưa có' || p === 'undefined') return 'Chưa có';
@@ -789,7 +868,8 @@ function renderStudentCardsHtml(classKey, students) {
     <!-- Phần tiêu đề học sinh -->
     <div class="student-card-header" onclick="toggleStudentCard(this)">
         <div class="student-meta" style="display: flex; flex-direction: column; gap: 0px;">
-            <span class="student-name">${idx + 1}. ${student.name}</span>
+           // Tìm đến đoạn hiển thị tên học sinh trong hàm renderStudentCardsHtml và sửa lại như sau:
+<span class="student-name">${idx + 1}. ${student.name} ${getStudentBadges(student)}</span>
             
             <!-- Gom chung Người sửa và Thời gian vào 1 hàng ngang, cách nhau bằng dấu chấm hoặc khoảng trắng -->
             <div style="display: flex; align-items: center; gap: 10px; font-size: 0.72rem; color: #a0a0a0; margin-top: 1px;">
