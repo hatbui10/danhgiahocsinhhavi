@@ -676,8 +676,8 @@ function renderFullSystemUI() {
             classSection.innerHTML = `
                 <div class="class-accordion-header" onclick="toggleClassAccordion(this)">
                     <div class="class-main-title">Lớp: ${classKey}</div>
-                    <div class="class-schedule">${classObj.schedule || ""}</div>
-                    <div class="class-stats" id="stats-${classKey.replace(/\s+/g, '-')}">Sĩ số: ${total} | Có mặt: ${present} | Vắng: ${absent}</div>
+                    <div class="class-schedule"style= "display :none;">${classObj.schedule || ""}</div>
+                    <div class="class-stats" id="stats-${classKey.replace(/\s+/g, '-')}" style= "display :none;">Sĩ số: ${total} | Có mặt: ${present} | Vắng: ${absent}</div>
                 </div>
                 
                 <div class="class-panel">
@@ -741,7 +741,7 @@ function renderStudentCardsHtml(classKey, students) {
         }
 
         const statusClass = student.status === 'absent' ? 'status-absent' : 'status-present';
-        const deleteButtonHtml = window.isLoggedIn ? `<button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')">Xoá</button>` : '';
+        const deleteButtonHtml = window.isLoggedIn ? `<button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')"style= "display :none;">Xoá</button>` : '';
 
         return `
             <div class="student-card ${statusClass}" id="${cardId}">
@@ -751,15 +751,15 @@ function renderStudentCardsHtml(classKey, students) {
                         <span class="student-phone" style="display: none;">SĐT: ${displayPhone(student.phone)}</span>
                     </div>
                     <div class="student-actions-right">
-                        <button class="btn-call" onclick="window.location.href='tel:${student.phone}'">Gọi</button>
+                        <button class="btn-call" onclick="window.location.href='tel:${student.phone}'"style= "display :none;">Gọi</button>
                         ${deleteButtonHtml}
                     </div>
                 </div>
                 
                 <div class="student-controls-row">
-                    <button class="btn-action btn-present ${student.status === 'present' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'present')">CÓ MẶT</button>
-                    <button class="btn-action btn-absent ${student.status === 'absent' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'absent')">VẮNG</button>
-                    <input type="text" class="note-select" style="flex: 1.5; padding: 8px 5px;" placeholder="Ghi chú vắng..." value="${student.note || ''}" ${readonlyAttr} onchange="updateStudentNote('${classKey}', ${student.id}, this.value)">
+                    <button class="btn-action btn-present ${student.status === 'present' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'present')"style= "display :none;">CÓ MẶT</button>
+                    <button class="btn-action btn-absent ${student.status === 'absent' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'absent')"style= "display :none;">VẮNG</button>
+                    <input type="text" class="note-select" style="flex: 1.5; padding: 8px 5px;" placeholder="Ghi chú ..." value="${student.note || ''}" ${readonlyAttr} onchange="updateStudentNote('${classKey}', ${student.id}, this.value)">
                 </div>
 
                 ${dynamicCriteriaHtml}
