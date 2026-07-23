@@ -161,30 +161,58 @@
 .student-body-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding 0.3s ease; padding: 0 10px; background: #0d0d1a; border-top: 1px solid transparent; }
 .student-card.active .student-body-content { max-height: 1500px; padding: 12px 10px; border-top: 1px solid #222; }
 
-/* 🏷️ HUY HIỆU SOS VÀ NGÔI SAO */
+/* ✨ HIỆU ỨNG EMOJI NGÔI SAO LẤP LÁNH */
+@keyframes sparkleEmojiStar {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+        filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.5));
+    }
+    50% {
+        transform: scale(1.25) rotate(10deg);
+        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.9));
+    }
+}
+
+.star-badge {
+    font-size: 0.95rem;
+    margin-left: 4px;
+    vertical-align: middle;
+    display: inline-block;
+    background: none;
+    padding: 0;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.6);
+    animation: sparkleEmojiStar 1.5s infinite ease-in-out;
+}
+
+
+
+/* 🚨 HIỆU ỨNG NHẤP NHÁY CHO SOS */
+@keyframes blinkSos {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.3;
+        transform: scale(0.95);
+    }
+}
+
 .sos-badge {
     background-color: #ff007f;
     color: #fff;
     font-size: 0.65rem;
     font-weight: bold;
-    padding: 2px 5px;
+    padding: 2px 6px;
     border-radius: 3px;
     margin-left: 6px;
-    box-shadow: 0 0 6px rgba(255, 0, 127, 0.6);
     vertical-align: middle;
+    display: inline-block;
+    box-shadow: 0 0 8px rgba(255, 0, 127, 0.7);
+    animation: blinkSos 0.8s infinite ease-in-out;
 }
 
-.star-badge {
-    background-color: #ffd700;
-    color: #000;
-    font-size: 0.65rem;
-    font-weight: bold;
-    padding: 2px 5px;
-    border-radius: 3px;
-    margin-left: 4px;
-    box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
-    vertical-align: middle;
-}
+
 
 </style>
 </head>
