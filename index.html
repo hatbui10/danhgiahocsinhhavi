@@ -282,6 +282,81 @@
     animation: blinkSos 0.8s infinite ease-in-out;
 }
 
+.login-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0px !important;
+}
+
+.login-form-group input[type="email"],
+.login-form-group .password-field-wrapper input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    background: #050508;
+    border: 1px solid #333;
+    color: #fff;
+    box-sizing: border-box;
+    outline: none;
+    margin: 0 !important;
+}
+
+.login-form-group input[type="email"] {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: none;
+}
+
+.password-field-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 12px; /* Khoảng cách từ ô mật khẩu xuống cụm nút bấm */
+}
+
+.password-field-wrapper input[type="password"] {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    padding-right: 42px;
+}
+
+#togglePasswordBtn {
+    position: absolute;
+    right: 10px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 100%;
+    cursor: pointer;
+    color: #00f0ff;
+}
+
+/* Cụm 2 nút nằm trên 1 dòng ngang */
+.login-actions-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.login-actions-row .modal-btn {
+    flex: 1; /* Chia đều không gian cho 2 nút */
+    margin: 0 !important;
+}
+
+.modal-cancel-btn {
+    background: #444;
+    color: #fff;
+    box-shadow: none;
+}
+
+
+
 
 
 </style>
@@ -378,15 +453,15 @@
 <!-- GIAO DIỆN MODAL ĐĂNG NHẬP -->
 <div class="custom-modal-overlay" id="loginModalOverlay">
     <div class="custom-modal-box">
-        <div class="modal-title">Đăng Nhập Giáo Viên</div>
-        <div class="modal-body">
-            <!-- Ô Email sát rạt phía trên -->
-            <input type="email" id="loginEmail" placeholder="Email giáo viên..." style="width:100%; padding:10px; margin-bottom: 0px; background:#050508; border:1px solid #333; color:#fff; border-radius:4px; box-sizing: border-box;">
+        <div class="modal-title" style="margin-bottom: 10px;">Đăng Nhập Giáo Viên</div>
+        <div class="modal-body login-form-group">
+            <!-- Ô Email -->
+            <input type="email" id="loginEmail" placeholder="Email giáo viên...">
             
-            <!-- Khung nhập mật khẩu (dính sát ngay dưới ô email) -->
-            <div style="position: relative; width: 100%; margin-bottom: 15px;">
-                <input type="password" id="loginPassword" placeholder="Mật khẩu..." style="width:100%; padding:10px; padding-right: 42px; background:#050508; border:1px solid #333; color:#fff; border-radius:4px; box-sizing: border-box; outline: none;">
-                <span id="togglePasswordBtn" onclick="togglePasswordVisibility()" style="position: absolute; right: 10px; top: 0; bottom: 0; margin: auto; display: flex; align-items: center; justify-content: center; width: 28px; height: 100%; cursor: pointer; color: #00f0ff;" title="Ẩn/Hiện mật khẩu">
+            <!-- Khung nhập mật khẩu -->
+            <div class="password-field-wrapper">
+                <input type="password" id="loginPassword" placeholder="Mật khẩu...">
+                <span id="togglePasswordBtn" onclick="togglePasswordVisibility()" title="Ẩn/Hiện mật khẩu">
                     <!-- Icon Con Mắt Đóng (Mặc định) -->
                     <svg id="eyeIconSvg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
@@ -395,9 +470,12 @@
                 </span>
             </div>
 
-            <button class="modal-btn" onclick="processLogin()" style="margin-bottom: 10px;">Xác Nhận Đăng Nhập</button>
+            <!-- Hàng chứa 2 nút Đăng nhập và Hủy bỏ nằm chung 1 dòng -->
+            <div class="login-actions-row">
+                <button class="modal-btn modal-cancel-btn" onclick="closeLoginModal()">Hủy bỏ</button>
+                <button class="modal-btn login-submit-btn" onclick="processLogin()">Đăng Nhập</button>
+            </div>
         </div>
-        <button class="modal-btn" style="background:#444; color:#fff; box-shadow:none;" onclick="closeLoginModal()">Hủy bỏ</button>
     </div>
 </div>
 
@@ -495,7 +573,7 @@ window.processLogin = async function() {
 
     // Kiểm tra xem email có tồn tại trong hệ thống không và mật khẩu có khớp không
     if (!teacherAccounts[inputId] || teacherAccounts[inputId] !== inputPass) {
-        alert("Email giáo viên hoặc Mật khẩu riêng không chính xác!");
+      showNotificationModal("Email giáo viên hoặc Mật khẩu riêng không chính xác!");
         return;
     }
 
@@ -511,7 +589,7 @@ window.processLogin = async function() {
         closeLoginModal();
         showToast("Đăng nhập thành công với tên: " + inputId);
     } catch (error) {
-        alert("Lỗi đăng nhập hệ thống: " + error.message);
+       showNotificationModal("Lỗi đăng nhập hệ thống: " + error.message);
     }
 }
 
@@ -702,7 +780,7 @@ function closeLoginModal() {
 
 function startProcessingExcel(input) {
     if (!window.isLoggedIn) {
-        alert("Bạn cần đăng nhập tài khoản giáo viên để thực hiện tính năng này!");
+        showNotificationModal("Bạn cần đăng nhập tài khoản giáo viên để thực hiện tính năng này!");
         return;
     }
     const file = input.files[0];
@@ -729,7 +807,7 @@ function startProcessingExcel(input) {
             
             const sheetsToProcess = workbook.SheetNames.filter(name => targetSheets.includes(name.trim()));
             if (sheetsToProcess.length === 0) {
-                alert("Không tìm thấy các sheet mục tiêu trong file Excel!");
+                showNotificationModal("Không tìm thấy các sheet mục tiêu trong file Excel!");
                 progressContainer.style.display = 'none';
                 return;
             }
@@ -855,7 +933,7 @@ function startProcessingExcel(input) {
             parseSheetStep();
         } catch (err) {
             console.error(err);
-            alert("Lỗi khi đọc dữ liệu từ file Excel!");
+           showNotificationModal("Lỗi khi đọc dữ liệu từ file Excel!");
             document.getElementById('progressContainer').style.display = 'none';
         }
     };
@@ -1198,7 +1276,7 @@ function renderStudentCardsHtml(classKey, students) {
 
 
 function updateStudentStatus(classKey, studentId, status) {
-    if (!window.isLoggedIn) { alert("Vui lòng đăng nhập để thay đổi trạng thái!"); return; }
+    if (!window.isLoggedIn) {showNotificationModal("Vui lòng đăng nhập để thay đổi trạng thái!"); return; }
     let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
     if (student) {
         student.status = status;
@@ -1239,7 +1317,7 @@ function updateStudentNote(classKey, studentId, value) {
 
 
 function updateStudentEvaluation(classKey, studentId, criterionName, value) {
-    if (!window.isLoggedIn) { alert("Vui lòng đăng nhập để đánh giá!"); return; }
+    if (!window.isLoggedIn) { showNotificationModal("Vui lòng đăng nhập để đánh giá!"); return; }
     let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
     if (student) {
         student[criterionName] = value;
@@ -1273,7 +1351,7 @@ function addNewStudentToClass(classKey) {
     const name = nameInput.value.trim();
     const phone = phoneInput.value.trim();
 
-    if (!name) { alert("Vui lòng điền họ tên học sinh!"); return; }
+    if (!name) { showNotificationModal("Vui lòng điền họ tên học sinh!"); return; }
 
     const studentsArr = bigClassesDatabase[classKey].students;
     const nextId = studentsArr.length > 0 ? Math.max(...studentsArr.map(s => s.id)) + 1 : 1;
@@ -1308,7 +1386,7 @@ function addNewStudentToClass(classKey) {
 
 
 function deleteStudentFromClass(classKey, studentId, studentName) {
-    if (!window.isLoggedIn) { alert("Vui lòng đăng nhập để xóa!"); return; }
+    if (!window.isLoggedIn) { showNotificationModal("Vui lòng đăng nhập để xóa!"); return; }
     if (confirm(`Bạn chắc chắn muốn xoá học viên "${studentName}" không?`)) {
         bigClassesDatabase[classKey].students = bigClassesDatabase[classKey].students.filter(s => s.id !== studentId);
         saveDatabaseState();
@@ -1417,7 +1495,7 @@ function focusToCard(classKey, studentId) {
 
 
 function clearSystemCache() {
-    if (!window.isLoggedIn) { alert("Bạn cần đăng nhập để thực hiện tính năng này!"); return; }
+    if (!window.isLoggedIn) { showNotificationModal("Bạn cần đăng nhập để thực hiện tính năng này!"); return; }
     if (confirm("Bạn có chắc chắn muốn xóa dữ liệu cũ không?")) {
         localStorage.clear();
         bigClassesDatabase = {};
@@ -1476,7 +1554,7 @@ window.togglePasswordVisibility = function() {
 
 window.updateStudentCheckboxEvaluation = function(classKey, studentId, criterionName, checkboxElement) {
     if (!window.isLoggedIn) { 
-        alert("Vui lòng đăng nhập để đánh giá!"); 
+        showNotificationModal("Vui lòng đăng nhập để đánh giá!"); 
         checkboxElement.checked = !checkboxElement.checked; // Hoàn tác lại trạng thái tick
         return; 
     }
@@ -1551,7 +1629,7 @@ function exportSingleStudentExcel(classKey, student) {
 // 2. Xuất Excel cho cả lớp
 function exportClassExcel(classKey, students) {
     if (!students || students.length === 0) {
-        alert("Danh sách lớp trống!");
+        showNotificationModal("Danh sách lớp trống!");
         return;
     }
 
@@ -1657,15 +1735,15 @@ function restoreAllDataPrompt() {
                             localStorage.setItem('bigClassesDatabase', JSON.stringify(bigClassesDatabase));
                         }
                         
-                        alert("Khôi phục dữ liệu thành công! Giao diện sẽ được tải lại.");
+                        showNotificationModal("Khôi phục dữ liệu thành công! Giao diện sẽ được tải lại.");
                         location.reload(); // Tải lại trang để cập nhật giao diện
                     }
                 } else {
-                    alert("File dự phòng không hợp lệ!");
+                   showNotificationModal("File dự phòng không hợp lệ!");
                 }
             } catch (err) {
                 console.error(err);
-                alert("Lỗi khi đọc file JSON dự phòng!");
+               showNotificationModal("Lỗi khi đọc file JSON dự phòng!");
             }
         };
         reader.readAsText(file);
@@ -1677,7 +1755,7 @@ function restoreAllDataPrompt() {
 function backupSingleClass(classKey) {
     const classData = bigClassesDatabase[classKey];
     if (!classData) {
-        alert("Không tìm thấy dữ liệu của lớp này!");
+        showNotificationModal("Không tìm thấy dữ liệu của lớp này!");
         return;
     }
 
@@ -1723,15 +1801,15 @@ function restoreSingleClassPrompt(classKey) {
                             localStorage.setItem('bigClassesDatabase', JSON.stringify(bigClassesDatabase));
                         }
                         
-                        alert("Khôi phục dữ liệu lớp thành công! Giao diện sẽ được tải lại.");
+                       showNotificationModal("Khôi phục dữ liệu lớp thành công! Giao diện sẽ được tải lại.");
                         location.reload(); // Tải lại trang để cập nhật giao diện
                     }
                 } else {
-                    alert("File dự phòng của lớp không hợp lệ!");
+                   showNotificationModal("File dự phòng của lớp không hợp lệ!");
                 }
             } catch (err) {
                 console.error(err);
-                alert("Lỗi khi đọc file JSON dự phòng của lớp!");
+             showNotificationModal("Lỗi khi đọc file JSON dự phòng của lớp!");
             }
         };
         reader.readAsText(file);
