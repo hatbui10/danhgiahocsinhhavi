@@ -101,7 +101,7 @@
         .student-card.highlight-search { border: 1px solid #ffd700 !important; box-shadow: 0 0 12px rgba(255, 215, 0, 0.4); }
         
         .student-info-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid #222; padding-bottom: 6px; }
-        .student-meta { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+        .student-meta { display: flex; flex-direction: column; gap: 1px; flex: 1; }
         .student-name { font-weight: bold; font-size: 0.95rem; color: #fff; }
         .student-phone { font-size: 0.8rem; color: #888; }
         
@@ -145,7 +145,25 @@
         .modal-title { color: #00ff66; font-size: 1.25rem; font-weight: bold; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 1px; }
         .modal-body { color: #e0e0e6; font-size: 0.95rem; margin-bottom: 2px; line-height: 1.5; text-align: left; white-space: pre-line; }
         .modal-btn { background: #00ff66; color: #000; border: none; padding: 5px 10px; font-weight: bold; font-size: 0.9rem; border-radius: 4px; cursor: pointer; text-transform: uppercase; width: 100%; letter-spacing: 1px; box-shadow: 0 0 8px #00ff66; }
-    </style>
+    /* 👨‍🎓 ACCORDION CHO HỌC SINH */
+.student-card { background: #121224; border: 1px solid #333; border-left: 4px solid #00f0ff; border-radius: 4px; overflow: hidden; transition: background 0.2s; }
+.student-card.status-absent { border-left-color: #ff007f; background: #1a0813; }
+.student-card.status-present { border-left-color: #00ff66; background: #081a10; }
+.student-card.highlight-search { border: 1px solid #ffd700 !important; box-shadow: 0 0 12px rgba(255, 215, 0, 0.4); }
+
+/* Tiêu đề học sinh (Click để mở/đóng) */
+.student-card-header { padding: 3px 5px; cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.02); transition: background 0.2s; }
+.student-card-header:active { background: rgba(255, 255, 255, 0.08); }
+.student-card-header::after { content: '▼'; font-size: 0.75rem; color: #00f0ff; transition: transform 0.3s; margin-left: 5px; }
+.student-card.active .student-card-header::after { content: '▲'; color: #00ff66; }
+
+/* Nội dung chi tiết đánh giá ẩn/hiện */
+.student-body-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding 0.3s ease; padding: 0 10px; background: #0d0d1a; border-top: 1px solid transparent; }
+.student-card.active .student-body-content { max-height: 1500px; padding: 12px 10px; border-top: 1px solid #222; }
+
+
+
+</style>
 </head>
 <body>
 
@@ -767,34 +785,38 @@ function renderStudentCardsHtml(classKey, students) {
         const deleteButtonHtml = window.isLoggedIn ? `<button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')"style= "display :none;">Xoá</button>` : '';
 
         return `
-            <div class="student-card ${statusClass}" id="${cardId}">
-                <div class="student-info-row">
-
-
-                    <div class="student-meta">
-                        <span class="student-name">${idx + 1}. ${student.name}</span>
-                        <!-- Tên người sửa đặt phía trên thời gian cập nhật -->
-                        <span class="student-editor" style="font-size: 0.75rem; color: #a0a0a0;">✏️ Người sửa: ${student.lastModifiedBy || 'Chưa rõ'}</span>
-                        <span style="font-size: 0.7rem; color: #00f0ff;  padding: 2px 6px; border-radius: 4px;">⏱ ${student.lastUpdated || 'Chưa cập nhật'} </span>
-                        <span class="student-phone" style="display: none;">SĐT: ${displayPhone(student.phone)}</span>
-                    </div>
-
-
-
-                    <div class="student-actions-right">
-                        <button class="btn-call" onclick="window.location.href='tel:${student.phone}'"style= "display :none;">Gọi</button>
-                        ${deleteButtonHtml}
-                    </div>
-                </div>
-                
-                <div class="student-controls-row">
-                    <button class="btn-action btn-present ${student.status === 'present' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'present')"style= "display :none;">CÓ MẶT</button>
-                    <button class="btn-action btn-absent ${student.status === 'absent' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'absent')"style= "display :none;">VẮNG</button>
-                    <input type="text" class="note-select" style="flex: 1.5; padding: 8px 5px;" placeholder="Ghi chú ..." value="${student.note || ''}" ${readonlyAttr} onchange="updateStudentNote('${classKey}', ${student.id}, this.value)">
-                </div>
-
-                ${dynamicCriteriaHtml}
+          <div class="student-card ${statusClass}" id="${cardId}">
+    <!-- Phần tiêu đề học sinh -->
+    <div class="student-card-header" onclick="toggleStudentCard(this)">
+        <div class="student-meta" style="display: flex; flex-direction: column; gap: 0px;">
+            <span class="student-name">${idx + 1}. ${student.name}</span>
+            
+            <!-- Gom chung Người sửa và Thời gian vào 1 hàng ngang, cách nhau bằng dấu chấm hoặc khoảng trắng -->
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 0.72rem; color: #a0a0a0; margin-top: 1px;">
+                <span class="student-editor">✏️ ${student.lastModifiedBy || 'Chưa rõ'}</span>
+                <span style="color: #00f0ff;">⏱ ${student.lastUpdated || 'Chưa cập nhật'}</span>
             </div>
+            
+            <span class="student-phone" style="display: none;">SĐT: ${displayPhone(student.phone)}</span>
+        </div>
+        
+        <div class="student-actions-right" onclick="event.stopPropagation()">
+            <button class="btn-call" onclick="window.location.href='tel:${student.phone}'" style="display: none;">Gọi</button>
+            ${deleteButtonHtml}
+        </div>
+    </div>
+
+    <!-- Phần nội dung chi tiết bên trong Accordion -->
+    <div class="student-body-content">
+        <div class="student-controls-row">
+            <button class="btn-action btn-present ${student.status === 'present' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'present')" style="display: none;">CÓ MẶT</button>
+            <button class="btn-action btn-absent ${student.status === 'absent' ? 'active' : ''}" ${disabledAttr} onclick="updateStudentStatus('${classKey}', ${student.id}, 'absent')" style="display: none;">VẮNG</button>
+            <input type="text" class="note-select" style="flex: 1.5; padding: 8px 5px;" placeholder="Ghi chú ..." value="${student.note || ''}" ${readonlyAttr} onchange="updateStudentNote('${classKey}', ${student.id}, this.value)">
+        </div>
+
+        ${dynamicCriteriaHtml}
+    </div>
+</div>
         `;
     }).join('');
 }
@@ -1040,6 +1062,12 @@ function getCurrentTimeString() {
 }
 
 
+
+/* 👨‍🎓 Hàm xử lý click mở/đóng Accordion từng học sinh */
+function toggleStudentCard(headerElement) {
+    const card = headerElement.parentElement;
+    card.classList.toggle('active');
+}
 
 
 
