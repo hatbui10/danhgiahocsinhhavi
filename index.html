@@ -362,17 +362,40 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
+
+
 window.processLogin = async function() {
-    const email = document.getElementById("loginEmail").value.trim();
-    const pass = document.getElementById("loginPassword").value;
+    const inputId = document.getElementById("loginEmail").value.trim();
+    const inputPass = document.getElementById("loginPassword").value;
+    
+    // --- ĐẶT ID VÀ MẬT KHẨU CHUNG CHO MỌI NGƯỜI GÕ ---
+    const MASTER_ID = "gv";       // Mọi người gõ ID này (ví dụ: gv)
+    const MASTER_PASS = "123";    // Mật khẩu ngắn tùy ý (ví dụ: 3 ký tự: 123)
+
+    // Kiểm tra xem người dùng có gõ đúng ID và Mật khẩu chung không
+    if (inputId !== MASTER_ID || inputPass !== MASTER_PASS) {
+        alert("ID hoặc Mật khẩu chung không đúng!");
+        return;
+    }
+
     try {
-        await signInWithEmailAndPassword(auth, email, pass);
+        // Tự động trỏ về tài khoản Firebase thật của bạn
+        const systemEmail = "cvbv674@gmail.com"; 
+        
+        // Mẹo: Vì Firebase yêu cầu mật khẩu phải từ 6 ký tự trở lên, 
+        // ta nối mật khẩu ngắn của bạn với một đoạn đuôi (ví dụ: "_havi") 
+        // để hệ thống Firebase chấp nhận.
+        const firebasePass = MASTER_PASS + "_havi"; 
+
+        await signInWithEmailAndPassword(auth, systemEmail, firebasePass);
+        
         closeLoginModal();
         showToast("Đăng nhập thành công!");
     } catch (error) {
-        alert("Đăng nhập thất bại: " + error.message);
+        alert("Lỗi đăng nhập: " + error.message + "\n(Hãy chắc chắn bạn đã làm theo Bước 2 bên dưới).");
     }
 }
+
 
 window.processLogout = async function() {
     try {
