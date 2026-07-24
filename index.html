@@ -394,7 +394,7 @@
         
         <!-- Nút tải lên File Excel -->
         <div style="display: flex; justify-content: center; width: 100%;">
-            <label for="excelFileInput" class="custom-upload-btn" cursor: pointer; text-align: center; width: 100%; box-sizing: border-box;">📂 Tải lên File Excel</label>
+            <label for="excelFileInput" class="custom-upload-btn" style="cursor: pointer; text-align: center; width: 100%; box-sizing: border-box;">📂 Tải lên File Excel</label>
         </div>
 
         <!-- Hai nút Sao lưu và Khôi phục nằm cùng 1 hàng bên dưới -->
@@ -508,7 +508,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
+
 window.auth = getAuth(app); // <-- Thêm window. vào trước auth
 
 // Biến lưu trạng thái quyền chỉnh sửa toàn cục
@@ -548,32 +548,30 @@ const currentTeacher = localStorage.getItem("currentTeacherId") || user.email;
 
 
 window.processLogin = async function() {
-   const inputId = document.getElementById("loginEmail").value.trim().toLowerCase();
+    const inputId = document.getElementById("loginEmail").value.trim().toLowerCase();
     const inputPass = document.getElementById("loginPassword").value;
     
-    // --- ĐẶT ID VÀ MẬT KHẨU CHUNG CHO MỌI NGƯỜI GÕ ---
-  // 🔐 DANH SÁCH GIÁO VIÊN VÀ MẬT KHẨU RIÊNG TƯƠNG TỨNG
+    // 🔐 DANH SÁCH GIÁO VIÊN VÀ MẬT KHẨU RIÊNG TƯƠNG TỨNG
     const teacherAccounts = {
-    "mydo140502@gmail.com": "tramy",
-    "lunalovegood4697@gmail.com": "haan",
-    "pttan28@gmail.com": "thanhtan",
-    "phuongphuong.np4@gmail.com": "thiphuong",
-    "hongnhung1093@gmail.com": "hongnhung",
-    "ntthaoabi1012@gmail.com": "thanhthao",
-    "nguyenthuha2321@gmail.com": "thuha",
-    "nguyenthuphuong130295@gmail.com": "thuphuong",
-    "Ngothuhang92@gmail.com": "thuhang",
-    "leminhphuong232003@gmail.com": "minhphuong",
-    "lethamstar@gmail.com": "thitham",
-    "lophoctienganhhavi@gmail.com": "thuha",
-    "tuan49xd5@gmail.com": "hoangtuan",
-    "maikhanhly1602@gmail.com": "khanhly"
-};
-
+        "mydo140502@gmail.com": "tramy",
+        "lunalovegood4697@gmail.com": "haan",
+        "pttan28@gmail.com": "thanhtan",
+        "phuongphuong.np4@gmail.com": "thiphuong",
+        "hongnhung1093@gmail.com": "hongnhung",
+        "ntthaoabi1012@gmail.com": "thanhthao",
+        "nguyenthuha2321@gmail.com": "thuha",
+        "nguyenthuphuong130295@gmail.com": "thuphuong",
+        "Ngothuhang92@gmail.com": "thuhang",
+        "leminhphuong232003@gmail.com": "minhphuong",
+        "lethamstar@gmail.com": "thitham",
+        "lophoctienganhhavi@gmail.com": "thuha",
+        "tuan49xd5@gmail.com": "hoangtuan",
+        "maikhanhly1602@gmail.com": "khanhly"
+    };
 
     // Kiểm tra xem email có tồn tại trong hệ thống không và mật khẩu có khớp không
     if (!teacherAccounts[inputId] || teacherAccounts[inputId] !== inputPass) {
-      showNotificationModal("Email giáo viên hoặc Mật khẩu riêng không chính xác!");
+        showNotificationModal("Email giáo viên hoặc Mật khẩu riêng không chính xác!");
         return;
     }
 
@@ -592,7 +590,6 @@ window.processLogin = async function() {
        showNotificationModal("Lỗi đăng nhập hệ thống: " + error.message);
     }
 }
-
 
 
 
@@ -1057,7 +1054,7 @@ function renderFullSystemUI() {
 
             // Nếu chưa đăng nhập thì ẩn khung thêm học sinh mới
             const addStudentBoxHtml = window.isLoggedIn ? `
-                <div class="add-student-box"style= "display :none;">
+                <div class="add-student-box" style= "display :none;">
                     <input type="text" id="inputName-${classKey.replace(/\s+/g, '-')}" placeholder="Dòng 1: Nhập họ và tên...">
                     <input type="tel" id="inputPhone-${classKey.replace(/\s+/g, '-')}" placeholder="Dòng 2: Nhập số điện thoại...">
                     <button class="btn-add" onclick="addNewStudentToClass('${classKey}')">+ Thêm vào danh sách</button>
