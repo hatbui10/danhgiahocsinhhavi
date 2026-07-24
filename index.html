@@ -644,7 +644,7 @@ const dropdownConfig = {
         "Đánh giá ngữ pháp": ["", "Xuất sắc 9-10", "Khá 7-8", "Trung bình 5-6", "Dưới 5", "Mất gốc (1-2)"],
         "Đánh giá khả năng nói": ["", "A", "B", "C", "D"],
         "Đánh giá khả năng nghe": ["", "A", "B", "C", "D"],
-        "Ý thức giờ học": ["", "Ngoan và hợp tác","Ngoan nhưng không tương tác","Hay làm việc riêng","Nghịch nhiều nhưng cố nhắc vẫn nghe", "Mất tập trung","Bắt nạt bạn","Nói bậy","Hay thắc mắc", "Không thích học nhiều","Thích khen nịnh","Nói chuyện nhiều/tự do","Chán học muốn nghỉ","Tự kỷ","Dễ khóc","Áp lực thành tích", "Tăng động"]
+        "Ý thức giờ học": ["", "Ngoan và hợp tác","Ngoan nhưng không tương tác","Hay làm việc riêng","Nghịch nhiều nhưng cô nhắc vẫn nghe", "Mất tập trung","Bắt nạt bạn","Nói bậy","Hay thắc mắc", "Không thích học nhiều","Thích khen nịnh","Nói chuyện nhiều/tự do","Chán học muốn nghỉ","Tự kỷ","Dễ khóc","Áp lực thành tích", "Tăng động"]
        
     },
     "Ý thức ôn bài ở nhà": {
@@ -1083,9 +1083,11 @@ function renderFullSystemUI() {
                 
                 <div class="class-panel" >
 
-  <div class="class-backup-actions" style="margin: 10px 0; display: flex; gap: 8px;">
-    <button onclick="backupSingleClass('${classKey}')" style="background: #17a2b8; color: #fff; padding: 5px 10px; border: none; border-radius: 15px; cursor: pointer; font-size: 15px;">💾 Sao lưu lớp này</button>
-    <button onclick="restoreSingleClassPrompt('${classKey}')" style="background: #e0a800; color: #000; padding: 5px 10px; border: none; border-radius: 15px; cursor: pointer; font-size: 15px;">📂 Khôi phục lớp này</button>
+  <div class="class-backup-actions" style="margin: 10px 0; display: flex; gap: 8px; flex-wrap: wrap;">
+    <button onclick="backupSingleClass('${classKey}')" style="background: #17a2b8; color: #fff; padding: 5px 10px; border: none; border-radius: 15px; cursor: pointer; font-size: 13px;">💾 Sao lưu lớp này</button>
+    <button onclick="restoreSingleClassPrompt('${classKey}')" style="background: #e0a800; color: #000; padding: 5px 10px; border: none; border-radius: 15px; cursor: pointer; font-size: 13px;">📂 Khôi phục lớp này</button>
+    <!-- Thêm nút Xuất Excel Cả Lớp vào đây -->
+    <button onclick="exportClassExcel('${classKey}', ${JSON.stringify(students).replace(/"/g, '&quot;')})" style="background: #28a745; color: #fff; padding: 5px 10px; border: none; border-radius: 15px; cursor: pointer; font-size: 13px;">📊 Xuất Excel Cả Lớp</button>
 </div>
                     <h3>Danh Sách Chi Tiết</h3>
                     <br>
@@ -1590,34 +1592,44 @@ window.updateStudentCheckboxEvaluation = function(classKey, studentId, criterion
 
 /* 📊 XUẤT EXCEL TỰ ĐỘNG CĂN ĐỘ RỘNG CỘT VÀ QUÉT TOÀN BỘ TIÊU CHÍ */
 
-// 1. Xuất Excel cho 1 học sinh
+// 1. Xuất Excel cho 1 học sinh (Mỗi dòng 1 tiêu chí)
 function exportSingleStudentExcel(classKey, student) {
-    let baseHeaders = ["STT", "Họ và tên", "SĐT", "Trạng thái", "Người sửa", "Thời gian cập nhật", "Ghi chú"];
-    
+    let headers = ["STT", "Họ và tên", "SĐT", "Người sửa", "Thời gian cập nhật", "Ghi chú chung", "Tên Tiêu Chí", "Đánh Giá"];
+    let rows = [headers];
+
     const ignoredKeys = ['id', 'name', 'phone', 'status', 'note', 'lastModifiedBy', 'lastUpdated'];
     let criteriaKeys = Object.keys(student).filter(key => !ignoredKeys.includes(key));
-    let headers = [...baseHeaders, ...criteriaKeys];
 
-    let rowData = [
-        1,
-        student.name || '',
-        student.phone || '',
-        student.status === 'present' ? 'Có mặt' : (student.status === 'absent' ? 'Vắng' : 'Chưa điểm danh'),
-        student.lastModifiedBy || 'Chưa rõ',
-        student.lastUpdated || 'Chưa cập nhật',
-        student.note || ''
-    ];
+    // Nếu học sinh chưa có tiêu chí nào, xuất 1 dòng thông tin cơ bản
+    if (criteriaKeys.length === 0) {
+        rows.push([
+            1,
+            student.name || '',
+            student.phone || '',
+            student.lastModifiedBy || 'Chưa rõ',
+            student.lastUpdated || 'Chưa cập nhật',
+            student.note || '',
+            'Chưa có tiêu chí',
+            ''
+        ]);
+    } else {
+        // Trải đều mỗi tiêu chí thành 1 dòng riêng biệt
+        criteriaKeys.forEach((key, idx) => {
+            rows.push([
+                idx + 1,
+                student.name || '',
+                student.phone || '',
+                student.lastModifiedBy || 'Chưa rõ',
+                student.lastUpdated || 'Chưa cập nhật',
+                student.note || '',
+                key,                 // Cột Tên Tiêu Chí
+                student[key] || ''   // Cột Đánh Giá tương ứng
+            ]);
+        });
+    }
 
-    criteriaKeys.forEach(key => {
-        rowData.push(student[key] || '');
-    });
-
-    // Tạo dữ liệu dạng mảng 2 chiều
-    let data = [headers, rowData];
-    let worksheet = XLSX.utils.aoa_to_sheet(data);
-
-    // 📐 Tự động tính toán và căn độ rộng cột theo nội dung dài nhất
-    autofitColumns(worksheet, data);
+    let worksheet = XLSX.utils.aoa_to_sheet(rows);
+    autofitColumns(worksheet, rows);
 
     let workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "HocSinh");
@@ -1626,50 +1638,45 @@ function exportSingleStudentExcel(classKey, student) {
     XLSX.writeFile(workbook, filename);
 }
 
-// 2. Xuất Excel cho cả lớp
+// 2. Xuất Excel cho cả lớp (Mỗi tiêu chí của học sinh là 1 dòng riêng)
 function exportClassExcel(classKey, students) {
     if (!students || students.length === 0) {
         showNotificationModal("Danh sách lớp trống!");
         return;
     }
 
-    let baseHeaders = ["STT", "Họ và tên", "SĐT", "Trạng thái", "Người sửa", "Thời gian cập nhật", "Ghi chú"];
-    
-    const ignoredKeys = ['id', 'name', 'phone', 'status', 'note', 'lastModifiedBy', 'lastUpdated'];
-    let criteriaSet = new Set();
-    students.forEach(student => {
-        Object.keys(student).forEach(key => {
-            if (!ignoredKeys.includes(key)) {
-                criteriaSet.add(key);
-            }
-        });
-    });
-    let criteriaKeys = Array.from(criteriaSet);
-
-    let headers = [...baseHeaders, ...criteriaKeys];
+    let headers = ["STT", "Họ và tên", "SĐT", "Người sửa", "Thời gian cập nhật", "Ghi chú chung", "Tên Tiêu Chí", "Đánh Giá"];
     let rows = [headers];
 
-    students.forEach((student, idx) => {
-        let rowData = [
-            idx + 1,
+    const ignoredKeys = ['id', 'name', 'phone', 'status', 'note', 'lastModifiedBy', 'lastUpdated'];
+    let globalStt = 1;
+
+    students.forEach(student => {
+        let criteriaKeys = Object.keys(student).filter(key => !ignoredKeys.includes(key));
+        
+        let baseInfo = [
+            globalStt++,
             student.name || '',
             student.phone || '',
-            student.status === 'present' ? 'Có mặt' : (student.status === 'absent' ? 'Vắng' : 'Chưa điểm danh'),
             student.lastModifiedBy || 'Chưa rõ',
             student.lastUpdated || 'Chưa cập nhật',
             student.note || ''
         ];
 
-        criteriaKeys.forEach(key => {
-            rowData.push(student[key] || '');
-        });
-
-        rows.push(rowData);
+        if (criteriaKeys.length === 0) {
+            rows.push([...baseInfo, 'Chưa có tiêu chí', '']);
+        } else {
+            criteriaKeys.forEach(key => {
+                rows.push([
+                    ...baseInfo,
+                    key,                 // Cột Tên Tiêu Chí
+                    student[key] || ''   // Cột Đánh Giá tương ứng
+                ]);
+            });
+        }
     });
 
     let worksheet = XLSX.utils.aoa_to_sheet(rows);
-
-    // 📐 Tự động tính toán và căn độ rộng cột theo nội dung dài nhất
     autofitColumns(worksheet, rows);
 
     let workbook = XLSX.utils.book_new();
@@ -1679,23 +1686,9 @@ function exportClassExcel(classKey, students) {
     XLSX.writeFile(workbook, filename);
 }
 
-// Hàm phụ trợ đo độ dài chữ để set kích thước cột Excel không bị tràn/bị ẩn dấu ###
-function autofitColumns(worksheet, data) {
-    let objectMaxLength = [];
-    data.forEach(row => {
-        row.forEach((cell, colIndex) => {
-            let value = cell ? cell.toString() : '';
-            // Cộng thêm khoảng trống đệm tính thẩm mỹ
-            let length = value.length + 3; 
-            if (!objectMaxLength[colIndex] || length > objectMaxLength[colIndex]) {
-                objectMaxLength[colIndex] = length;
-            }
-        });
-    });
 
-    let colWidths = objectMaxLength.map(w => ({ wch: Math.max(w, 10) })); // Đặt độ rộng tối thiểu là 10
-    worksheet['!cols'] = colWidths;
-}
+
+
 
 // Hàm tải toàn bộ dữ liệu bigClassesDatabase thành 1 file .json dự phòng về máy
 function backupAllData() {
@@ -1817,7 +1810,18 @@ function restoreSingleClassPrompt(classKey) {
     input.click();
 }
 
-
+function autofitColumns(worksheet, rows) {
+    let objectMaxLength = [];
+    rows.forEach(row => {
+        row.forEach((cell, colIndex) => {
+            if (cell) {
+                let cellLength = cell.toString().length;
+                objectMaxLength[colIndex] = Math.max(objectMaxLength[colIndex] || 10, cellLength + 3);
+            }
+        });
+    });
+    worksheet['!cols'] = objectMaxLength.map(w => ({ wch: w }));
+}
 
 </script>
 
