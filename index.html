@@ -514,29 +514,50 @@ window.auth = getAuth(app); // <-- Thêm window. vào trước auth
 // Biến lưu trạng thái quyền chỉnh sửa toàn cục
 window.isLoggedIn = false;
 
+
+
+
+
+
+
 // Theo dõi trạng thái đăng nhập từ Firebase
 onAuthStateChanged(auth, (user) => {
     const authStatusText = document.getElementById("authStatusText");
     const authActionButton = document.getElementById("authActionButton");
     const adminUploadCard = document.getElementById("adminUploadCard");
-const currentTeacher = localStorage.getItem("currentTeacherId") || user.email;
+    const excelUploadLabel = document.querySelector("label[for='excelFileInput']"); // Nút tải file Excel
+    
+    // 🔍 Ưu tiên lấy trực tiếp email bạn vừa nhập lưu trong localStorage trước, nếu không có mới lấy từ user
+    const currentTeacher = localStorage.getItem("currentTeacherId") || (user ? user.email : "");
+
+    // 🔐 ĐỊNH NGHĨA EMAIL TÀI KHOẢN ĐƯỢC PHÉP HIỆN NÚT TẢI EXCEL
+    const allowedExcelAccount = "tuan49xd5@gmail.com"; 
 
     if (user) {
         window.isLoggedIn = true;
-       authStatusText.innerHTML = `🟢 Đã đăng nhập: <strong style="color:#00ff66;">${currentTeacher}</strong>`;
+        // Hiển thị đúng tên tài khoản giáo viên bạn vừa nhập (VD: mydo140502@gmail.com)
+        authStatusText.innerHTML = `🟢 Đã đăng nhập: <strong style="color:#00ff66;">${currentTeacher}</strong>`;
         authActionButton.innerText = "Đăng Xuất";
         authActionButton.className = "auth-btn-danger";
         authActionButton.setAttribute("onclick", "processLogout()");
         adminUploadCard.style.display = "block";
+
+        // 🎯 KIỂM TRA ĐIỀU KIỆN TÀI KHOẢN ĐỂ HIỆN/ẨN NÚT TẢI EXCEL
+        if (currentTeacher.toLowerCase() === allowedExcelAccount.toLowerCase()) {
+            if (excelUploadLabel) excelUploadLabel.style.display = "inline-block";
+        } else {
+            if (excelUploadLabel) excelUploadLabel.style.display = "none";
+        }
     } else {
         window.isLoggedIn = false;
         authStatusText.innerHTML = `🔒 Chế độ Chỉ xem (Khách)`;
         authActionButton.innerText = "Đăng nhập GV";
         authActionButton.className = "auth-btn";
         authActionButton.setAttribute("onclick", "openLoginModal()");
+        
+        // 🔐 ẨN KHUNG TẢI FILE VÀ SAO LƯU KHI CHƯA ĐĂNG NHẬP
         adminUploadCard.style.display = "none";
-// 🔐 ẨN KHUNG TẢI FILE VÀ SAO LƯU KHI CHƯA ĐĂNG NHẬP
-        adminUploadCard.style.display = "none";
+        if (excelUploadLabel) excelUploadLabel.style.display = "none";
     }
 
     // Vẽ lại giao diện để cập nhật quyền khóa/mở nút bấm
@@ -544,6 +565,10 @@ const currentTeacher = localStorage.getItem("currentTeacherId") || user.email;
         renderFullSystemUI();
     }
 });
+
+
+
+
 
 
 
@@ -566,6 +591,7 @@ window.processLogin = async function() {
         "lethamstar@gmail.com": "thitham",
         "lophoctienganhhavi@gmail.com": "thuha",
         "tuan49xd5@gmail.com": "hoangtuan",
+        "cvbv674@gmail.com": "cvbv674",
         "maikhanhly1602@gmail.com": "khanhly"
     };
 
