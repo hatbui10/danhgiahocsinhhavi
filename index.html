@@ -1846,6 +1846,19 @@ function autofitColumns(worksheet, rows) {
     worksheet['!cols'] = objectMaxLength.map(w => ({ wch: w }));
 }
 
+
+    function getCurrentTeacherEmail() {
+    // Ưu tiên email giáo viên đã lưu khi đăng nhập
+    let email = localStorage.getItem("currentTeacherId");
+
+    // Nếu chưa có thì lấy từ Firebase Auth
+    if (!email && window.auth && window.auth.currentUser) {
+        email = window.auth.currentUser.email;
+    }
+
+    return email || "Giáo viên";
+}
+
 </script>
 
 </body>
