@@ -1,1 +1,1947 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bộ Lọc Học Viên Điểm Danh Chia Lớp</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+       body { background-image: url("https://hatbui10.github.io/danhgiahocsinhhavi/IMG_1784475752482_1784492455223.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+   color: #e0e0e6; padding: 20px 8px; max-width: 600px; margin: 0 auto; }
+        
+.main-title-box {
+    background: linear-gradient(135deg, rgba(13, 13, 26, 0.95), rgba(40, 10, 30, 0.95));
+    border: 2px solid #ff007f;          
+    border-radius: 12px;                 
+    padding: 18px 10px;                 
+    margin-bottom: 15px;                
+    text-align: center;                 
+    animation: glowingBorder 4s infinite ease-in-out; 
+    backdrop-filter: blur(6px);
+    position: relative;
+    overflow: hidden; /* Giữ các ngôi sao nằm gọn trong khung */
+}
+
+.main-title-box h2 {
+    text-transform: uppercase; 
+    letter-spacing: 1.5px; 
+    background: linear-gradient(90deg, #ff007f, #ffd700, #00ff66, #00f0ff, #ff007f);
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: sparkleText 6s linear infinite; 
+    font-size: 1.35rem;                  
+    font-weight: 900;
+    margin: 0;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    position: relative;
+    z-index: 2;
+}
+
+/* ✨ HIỆU ỨNG NHẤP NHÁY VÀ ĐỔI MÀU CHO NGÔI SAO */
+@keyframes multiColorStar {
+    0%, 100% {
+        transform: scale(0.7) rotate(0deg);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.3) rotate(25deg);
+        opacity: 1;
+    }
+}
+
+.floating-star {
+    position: absolute;
+    font-size: 0.9rem;
+    animation: multiColorStar 1.8s infinite ease-in-out;
+    z-index: 1;
+}
+
+/* Định vị và màu sắc riêng cho từng ngôi sao */
+.star-1 { top: 10%; left: 5%; color: #ff007f; text-shadow: 0 0 8px #ff007f; animation-delay: 0.1s; }
+.star-2 { top: 70%; left: 12%; color: #ffd700; text-shadow: 0 0 8px #ffd700; animation-delay: 0.5s; font-size: 0.7rem; }
+.star-3 { top: 20%; left: 25%; color: #00f0ff; text-shadow: 0 0 8px #00f0ff; animation-delay: 0.9s; }
+.star-4 { top: 75%; left: 40%; color: #00ff66; text-shadow: 0 0 8px #00ff66; animation-delay: 0.3s; font-size: 0.8rem; }
+.star-5 { top: 15%; right: 28%; color: #ff55a5; text-shadow: 0 0 8px #ff55a5; animation-delay: 1.2s; }
+.star-6 { top: 65%; right: 18%; color: #ffff00; text-shadow: 0 0 8px #ffff00; animation-delay: 0.7s; }
+.star-7 { top: 20%; right: 8%; color: #00ffff; text-shadow: 0 0 8px #00ffff; animation-delay: 0.4s; font-size: 1rem; }
+.star-8 { top: 80%; right: 5%; color: #ff8800; text-shadow: 0 0 8px #ff8800; animation-delay: 1s; font-size: 0.75rem; }
+
+
+
+
+
+
+
+
+
+        h3 { color: #ff007f; text-shadow: 0 0 10px rgba(255, 0, 127, 0.5); font-size: 1.1rem; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* 🔐 KHU VỰC ĐĂNG NHẬP / XÁC THỰC */
+        .auth-bar { display: flex; justify-content: space-between; align-items: center; background: #0d0d1a; border: 1px solid #00f0ff; border-radius: 6px; padding: 10px 15px; margin-bottom: px; font-size: 0.85rem; }
+        .auth-btn { background: #00f0ff; color: #000; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
+        .auth-btn-danger { background: #ff007f; color: #fff; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
+        
+        /* 📂 KHU VỰC TẢI FILE */
+        .upload-card { background: #0a0a14; border: 1px solid #ffd700; border-radius: 6px; padding: 15px 10px; margin-bottom: 15px; box-shadow: 0 0 10px rgba(255, 215, 0, 0.1); }
+        .upload-card p { font-size: 0.85rem; color: #aaa; text-align: center; margin-bottom: 12px; }
+        .btn-group-top { width: 100%; display: block; text-align: center; margin-bottom: 5px; }
+        
+        .custom-upload-btn { 
+            display: inline-block; width: 48%; background: transparent; border: 1px solid #00f0ff; color: #00f0ff; 
+            padding: 12px 5px; font-weight: bold; font-size: 0.85rem; border-radius: 25px; cursor: pointer; 
+            text-transform: uppercase; text-align: center; margin-right: 2%; box-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
+        }
+        .custom-upload-btn:active { background: #00f0ff; color: #000; }
+        
+        .btn-danger-top { 
+            display: inline-block; width: 48%; background: transparent; border: 1px solid #ff007f; color: #ff007f; 
+            padding: 12px 5px; font-weight: bold; font-size: 0.85rem; border-radius: 20px; cursor: pointer; 
+            text-transform: uppercase; text-align: center; box-shadow: 0 0 8px rgba(255, 0, 127, 0.2);
+        }
+        .btn-danger-top:active { background: #ff007f; color: #fff; }
+        .file-status { font-size: 0.85rem; color: #ffd700; text-align: center; margin-top: 12px; font-weight: bold; line-height: 1.3; white-space: pre-line; }
+        
+        /* ⏳ PROGRESS BAR */
+        .progress-container { width: 100%; background-color: #050508; border: 1px solid #333; border-radius: 4px; margin: 10px 0; display: none; overflow: hidden; }
+        .progress-bar { width: 0%; height: 16px; background-color: #00ff66; text-align: center; line-height: 16px; color: #000; font-weight: bold; font-size: 0.75rem; transition: width 0.1s ease; box-shadow: 0 0 10px #00ff66; }
+
+        /* 🔍 KHU VỰC TÌM KIẾM HỌC VIÊN CHUNG */
+        .search-box { display: block; background: #0d0d1a; border: 1px solid #333; border-radius: 4px; padding: 10px; margin-bottom: 15px; text-align: center; }
+        .search-input { width: 73%; background: #050508; border: 1px solid #333; color: #fff; padding: 10px; font-size: 0.9rem; border-radius: 4px; outline: none; margin-right: 2%; display: inline-block; vertical-align: middle; }
+        .search-input:focus { border-color: #ffd700; }
+        .search-btn { width: 23%; background: #ffd700; color: #000; border: none; padding: 11px 0; font-weight: bold; font-size: 0.85rem; border-radius: 4px; cursor: pointer; text-transform: uppercase; display: inline-block; vertical-align: middle; }
+
+        /* 📊 KẾT QUẢ TÌM KIẾM TRÊN BẢNG */
+        .search-result-panel { background: #1a0813; border: 1px dashed #ff007f; border-radius: 4px; padding: 12px 8px; margin-bottom: 15px; display: none; }
+        .result-title { color: #ff007f; font-weight: bold; font-size: 0.9rem; margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .result-table { width: 100%; border-collapse: collapse; }
+        .result-table th, .result-table td { border: 1px solid rgba(255, 0, 127, 0.2); padding: 8px 5px; text-align: left; font-size: 0.8rem; }
+        .result-table th { background-color: #4a0025; color: #fff; text-transform: uppercase; font-size: 0.75rem; }
+        .result-table tr:nth-child(even) { background-color: rgba(255, 0, 127, 0.03); }
+
+        /* 📦 KHỐI NHÓM LỚP */
+        .group-block-wrapper { margin-bottom: 20px; background: #04040a; border: 1px solid #ffd700; border-radius: 8px; overflow: hidden; box-shadow: 0 0 12px rgba(255, 215, 0, 0.05); }
+        .group-accordion-header { padding: 14px 12px; background: #111122; cursor: pointer; user-select: none; transition: background 0.2s; position: relative; border-bottom: 2px solid #ffd700; display: flex; justify-content: space-between; align-items: center; }
+        .group-accordion-header:active { background: #1c1c38; }
+        .group-accordion-header::after { content: '▼'; color: #ffd700; font-size: 0.9rem; transition: transform 0.3s; margin-left: 10px; }
+        .group-block-wrapper.active .group-accordion-header::after { content: '▲'; }
+        .group-main-title { color: #ffd700; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; text-shadow: 0 0 8px rgba(255, 215, 0, 0.2); }
+        .group-stats { color: #aaa; font-size: 0.85rem; font-weight: bold; }
+        .group-panel { padding: 12px 6px; display: none; background: #06060c; }
+        .group-block-wrapper.active .group-panel { display: block; }
+
+        /* 🏫 KHỐI LỚP CON ACCORDION */
+        .class-block-wrapper { margin-bottom: 12px; background: #0a0a14; border: 1px solid #333; border-radius: 6px; overflow: hidden; }
+        .class-accordion-header { padding: 12px 10px; background: #0d0d1f; cursor: pointer; user-select: none; transition: background 0.2s; position: relative; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .class-accordion-header:active { background: #151530; }
+        .class-accordion-header::after { content: '▼'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #00f0ff; font-size: 0.8rem; transition: transform 0.3s; }
+        .class-block-wrapper.active .class-accordion-header::after { content: '▲'; color: #00ff66; }
+        
+        .class-main-title { color: #00f0ff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.3); font-size: 1.15rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        .class-schedule { color: #ff007f; font-size: 0.85rem; margin-top: 2px; }
+        .class-stats { text-align: left; color: #00ff66; font-size: 0.85rem; margin-top: 3px; font-weight: 500; }
+        
+        .class-panel { padding: 15px 8px; display: none; background: #0a0a14; }
+        .class-block-wrapper.active .class-panel { display: block; }
+        
+        .add-student-box { display: flex; flex-direction: column; gap: 8px; background: #0d0d1a; border: 1px solid #ffd700; border-radius: 4px; padding: 12px 10px; margin-bottom: 15px; }
+        .add-student-box input { width: 100%; background: #050508; border: 1px solid #333; color: #fff; padding: 10px; font-size: 0.9rem; border-radius: 4px; outline: none; }
+        .add-student-box input:focus { border-color: #ffd700; }
+        .btn-add { background: #ffd700; color: #000; border: none; padding: 10px; font-weight: bold; font-size: 0.9rem; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+        
+        .absent-section { background: rgba(255, 0, 127, 0.05); border: 1px dashed #ff007f; border-radius: 4px; padding: 10px; margin-bottom: 20px; }
+        .absent-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .absent-title { color: #ff007f; font-weight: bold; font-size: 0.9rem; }
+        .copy-btn { background: #ff007f; color: #fff; border: none; padding: 6px 12px; font-size: 0.8rem; font-weight: bold; border-radius: 3px; cursor: pointer; box-shadow: 0 0 8px #ff007f; }
+        .absent-list { list-style: none; font-size: 0.9rem; color: #ff55a5; line-height: 1.4; }
+        .absent-list li { padding: 3px 0; border-bottom: 1px solid rgba(255, 0, 127, 0.1); }
+        
+        .student-list { display: flex; flex-direction: column; gap: 10px; }
+        .student-card { background: #121224; border: 1px solid #333; border-left: 4px solid #00f0ff; border-radius: 4px; padding: 12px 10px; display: flex; flex-direction: column; gap: 10px; transition: background 0.2s; }
+        .student-card.status-absent { border-left-color: #ff007f; background: #1a0813; }
+        .student-card.status-present { border-left-color: #00ff66; background: #081a10; }
+        .student-card.highlight-search { border: 1px solid #ffd700 !important; box-shadow: 0 0 12px rgba(255, 215, 0, 0.4); }
+        
+        .student-info-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid #222; padding-bottom: 6px; }
+        .student-meta { display: flex; flex-direction: column; gap: 1px; flex: 1; }
+        .student-name { font-weight: bold; font-size: 0.95rem; color: #fff; }
+        .student-phone { font-size: 0.8rem; color: #888; }
+        
+        .student-actions-right { display: flex; gap: 5px; }
+        .btn-call { background: #ffd700; color: #000; padding: 4px 8px; font-size: 0.8rem; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-delete { background: #4a0000; color: #ff3333; border: 1px solid #ff3333; padding: 6px 10px; font-size: 0.8rem; border-radius: 4px; cursor: pointer; }
+        
+        .student-controls-row { display: flex; gap: 6px; align-items: center; }
+        .btn-action { flex: 1; padding: 10px 3px; font-size: 0.8rem; font-weight: bold; border: none; border-radius: 3px; cursor: pointer; text-align: center; color: #fff; background: #333; }
+        .btn-absent { background: #4a0025; color: #ff007f; border: 1px solid #ff007f; }
+        .btn-absent.active { background: #ff007f; color: #fff; box-shadow: 0 0 10px #ff007f; }
+        .btn-present { background: #003311; color: #00ff66; border: 1px solid #00ff66; }
+        .btn-present.active { background: #00ff66; color: #000; box-shadow: 0 0 10px #00ff66; }
+        .note-select { flex: 1.5; background: #1a1a3a; color: #00f0ff; border: 1px solid #00f0ff; padding: 9px 3px; font-size: 0.8rem; border-radius: 3px; outline: none; }
+        
+        .empty-alert { text-align: center; padding: 40px 10px; color: #555; font-style: italic; font-size: 0.95rem; }
+
+        /* Toast Notification */
+        .toast-msg {
+            position: fixed; bottom: 20px; right: 20px; background: #00ff66; color: #000;
+            padding: 10px 20px; border-radius: 4px; font-weight: bold; z-index: 10000;
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.5); opacity: 0; transition: opacity 0.3s;
+        }
+        .toast-msg.show { opacity: 1; }
+
+        /* 🔔 HỘP THOẠI THÔNG BÁO NỔI (MODAL POPUP) */
+        .custom-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center;
+            align-items: center; z-index: 9999; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .custom-modal-overlay.show { opacity: 1; pointer-events: auto; }
+        .custom-modal-box {
+            background: #0d0d21; border: 2px solid #00ff66; border-radius: 8px;
+            padding: 22px 18px; max-width: 90%; width: 420px; text-align: center;
+            box-shadow: 0 0 25px rgba(0, 255, 102, 0.4);
+            transform: scale(0.8); transition: transform 0.3s ease;
+        }
+        .custom-modal-overlay.show .custom-modal-box { transform: scale(1); }
+        .modal-title { color: #00ff66; font-size: 1.25rem; font-weight: bold; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-body { color: #e0e0e6; font-size: 0.95rem; margin-bottom: 2px; line-height: 1.5; text-align: left; white-space: pre-line; }
+        .modal-btn { background: #00ff66; color: #000; border: none; padding: 5px 10px; font-weight: bold; font-size: 0.9rem; border-radius: 4px; cursor: pointer; text-transform: uppercase; width: 100%; letter-spacing: 1px; box-shadow: 0 0 8px #00ff66; }
+    /* 👨‍🎓 ACCORDION CHO HỌC SINH */
+.student-card { background: #121224; border: 1px solid #333; border-left: 4px solid #00f0ff; border-radius: 4px; overflow: hidden; transition: background 0.2s; }
+.student-card.status-absent { border-left-color: #ff007f; background: #1a0813; }
+.student-card.status-present { border-left-color: #00ff66; background: #081a10; }
+.student-card.highlight-search { border: 1px solid #ffd700 !important; box-shadow: 0 0 12px rgba(255, 215, 0, 0.4); }
+
+/* Tiêu đề học sinh (Click để mở/đóng) */
+.student-card-header { padding: 3px 5px; cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.02); transition: background 0.2s; }
+.student-card-header:active { background: rgba(255, 255, 255, 0.08); }
+.student-card-header::after { content: '▼'; font-size: 0.75rem; color: #00f0ff; transition: transform 0.3s; margin-left: 5px; }
+.student-card.active .student-card-header::after { content: '▲'; color: #00ff66; }
+
+/* Nội dung chi tiết đánh giá ẩn/hiện */
+.student-body-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding 0.3s ease; padding: 0 10px; background: #0d0d1a; border-top: 1px solid transparent; }
+.student-card.active .student-body-content { max-height: 1500px; padding: 12px 10px; border-top: 1px solid #222; }
+
+/* ✨ HIỆU ỨNG EMOJI NGÔI SAO LẤP LÁNH */
+@keyframes sparkleEmojiStar {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+        filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.5));
+    }
+    50% {
+        transform: scale(1.25) rotate(10deg);
+        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.9));
+    }
+}
+
+.star-badge {
+    font-size: 0.95rem;
+    margin-left: 4px;
+    vertical-align: middle;
+    display: inline-block;
+    background: none;
+    padding: 0;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.6);
+    animation: sparkleEmojiStar 1.5s infinite ease-in-out;
+}
+
+
+
+/* 🚨 HIỆU ỨNG NHẤP NHÁY CHO SOS */
+@keyframes blinkSos {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.3;
+        transform: scale(0.95);
+    }
+}
+
+.sos-badge {
+    background-color: #ff007f;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+    display: inline-block;
+    box-shadow: 0 0 8px rgba(255, 0, 127, 0.7);
+    animation: blinkSos 0.8s infinite ease-in-out;
+}
+
+.login-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0px !important;
+}
+
+.login-form-group input[type="email"],
+.login-form-group .password-field-wrapper input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    background: #050508;
+    border: 1px solid #333;
+    color: #fff;
+    box-sizing: border-box;
+    outline: none;
+    margin: 0 !important;
+}
+
+.login-form-group input[type="email"] {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: none;
+}
+
+.password-field-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 12px; /* Khoảng cách từ ô mật khẩu xuống cụm nút bấm */
+}
+
+.password-field-wrapper input[type="password"] {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    padding-right: 42px;
+}
+
+#togglePasswordBtn {
+    position: absolute;
+    right: 10px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 100%;
+    cursor: pointer;
+    color: #00f0ff;
+}
+
+/* Cụm 2 nút nằm trên 1 dòng ngang */
+.login-actions-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.login-actions-row .modal-btn {
+    flex: 1; /* Chia đều không gian cho 2 nút */
+    margin: 0 !important;
+}
+
+.modal-cancel-btn {
+    background: #444;
+    color: #fff;
+    box-shadow: none;
+}
+
+
+
+
+
+</style>
+</head>
+<body>
+
+<div class="main-title-box">
+    <!-- Các ngôi sao với đủ màu sắc rực rỡ xung quanh -->
+    <span class="floating-star star-1">⭐</span>
+    <span class="floating-star star-2">🌟</span>
+    <span class="floating-star star-3">✨</span>
+    <span class="floating-star star-4">⭐</span>
+    <span class="floating-star star-5">🌟</span>
+    <span class="floating-star star-6">✨</span>
+    <span class="floating-star star-7">⭐</span>
+    <span class="floating-star star-8">🌟</span>
+
+    <h2>HỆ THỐNG QUẢN LÝ ĐÁNH GIÁ HỌC SINH</h2>
+</div>
+
+
+
+
+
+
+<!-- THANH TRẠNG THÁI ĐĂNG NHẬP -->
+<div class="auth-bar" id="authBarContainer">
+    <span id="authStatusText">🔒 Chế độ Chỉ xem (Khách)</span>
+    <button class="auth-btn" id="authActionButton" onclick="openLoginModal()">Đăng nhập GV</button>
+</div>
+
+<!-- KHU VỰC TẢI FILE (Chỉ hiện khi đăng nhập) -->
+<div class="upload-card" id="adminUploadCard" style="display:none;z-index: 999; margin: 15px 0; background: rgba(13, 13, 26, 0.95); padding: 15px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.6); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15);">
+    <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+        
+        <!-- Nút tải lên File Excel -->
+        <div style="display: flex; justify-content: center; width: 100%;">
+            <label for="excelFileInput" class="custom-upload-btn" style="display:none; cursor: pointer; text-align: center; width: 100%; box-sizing: border-box;" >📂 Tải lên File Excel</label>
+        </div>
+
+        <!-- Hai nút Sao lưu và Khôi phục nằm cùng 1 hàng bên dưới -->
+        <div style="display: flex; gap: 10px; width: 100%;">
+            <button onclick="backupAllData()" title="Sao lưu toàn bộ dữ liệu ra file" style="flex: 1; background: #28a745; color: #fff; padding: 10px 10px; border: none; border-radius: 18px; cursor: pointer; font-weight: bold; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 4px; transition: 0.2s;">
+                💾 Sao lưu toàn bộ 
+            </button>
+            <button onclick="restoreAllDataPrompt()" title="Khôi phục dữ liệu từ file" style="flex: 1; background: #ffc107; color: #000; padding: 10px 10px; border: none; border-radius: 18px; cursor: pointer; font-weight: bold; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 4px; transition: 0.2s;">
+                📂 Khôi phục tất cả
+            </button>
+        </div>
+
+   
+
+
+        <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;" onchange="startProcessingExcel(this)">
+        <button class="btn-danger-top" onclick="clearSystemCache()" style="display: none;"> XÓA dữ liệu CŨ</button>
+    </div>
+    <div id="fileStatusMessage" class="file-status">Chưa có dữ liệu học viên. Vui lòng chọn tệp Excel.</div>
+</div>
+
+<div class="progress-container" id="progressContainer">
+    <div class="progress-bar" id="progressBar">0%</div>
+</div>
+
+<div class="search-box">
+    <input type="text" id="globalSearchInput" class="search-input" placeholder="Nhập tên hoặc số điện thoại để tìm nhanh..." onkeypress="handleSearchKeyPress(event)">
+    <button class="search-btn" onclick="searchGlobalStudent()">Tìm Kiếm</button>
+</div>
+
+<div id="searchResultBox" class="search-result-panel">
+    <div class="result-title">
+        <span>🔍 KẾT QUẢ TÌM KIẾM TOÀN HỆ THỐNG:</span>
+        <span id="resultCount" style="color: #ffd700;"></span>
+    </div>
+    <table class="result-table">
+        <thead>
+            <tr>
+                <th>Họ và Tên</th>
+                <th>SĐT</th>
+                <th>Lớp Học</th>
+                <th>Gọi</th>
+            </tr>
+        </thead>
+        <tbody id="resultTableBody"></tbody>
+    </table>
+</div>
+
+<div id="dynamicMainContainer">
+    <div class="empty-alert">Danh sách trống. Hệ thống sẽ tự động vẽ giao diện HTML sau khi bạn nạp file Excel thành công!</div>
+</div>
+
+
+
+
+<!-- GIAO DIỆN MODAL ĐĂNG NHẬP -->
+<div class="custom-modal-overlay" id="loginModalOverlay">
+    <div class="custom-modal-box">
+        <div class="modal-title" style="margin-bottom: 10px;">Đăng Nhập Giáo Viên</div>
+        <div class="modal-body login-form-group">
+            <!-- Ô Email -->
+            <input type="email" id="loginEmail" placeholder="Email giáo viên...">
+            
+            <!-- Khung nhập mật khẩu -->
+            <div class="password-field-wrapper">
+                <input type="password" id="loginPassword" placeholder="Mật khẩu...">
+                <span id="togglePasswordBtn" onclick="togglePasswordVisibility()" title="Ẩn/Hiện mật khẩu">
+                    <!-- Icon Con Mắt Đóng (Mặc định) -->
+                    <svg id="eyeIconSvg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                </span>
+            </div>
+
+            <!-- Hàng chứa 2 nút Đăng nhập và Hủy bỏ nằm chung 1 dòng -->
+            <div class="login-actions-row">
+                <button class="modal-btn modal-cancel-btn" onclick="closeLoginModal()">Hủy bỏ</button>
+                <button class="modal-btn login-submit-btn" onclick="processLogin()">Đăng Nhập</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- GIAO DIỆN POPUP THÔNG BÁO NỔI -->
+<div class="custom-modal-overlay" id="customNotificationModal">
+    <div class="custom-modal-box">
+        <div class="modal-title" id="modalTitle">Hệ Thống Thông Báo</div>
+        <div class="modal-body" id="modalBody">Nội dung thông báo ở đây...</div>
+        <button class="modal-btn" onclick="closeNotificationModal()">Đồng ý & Tiếp tục</button>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDbCF0pFsdXqD14Y-wjWLFoNCGfP1LBlD8",
+  authDomain: "tienganhhavi-12b54.firebaseapp.com",
+  projectId: "tienganhhavi-12b54",
+  storageBucket: "tienganhhavi-12b54.firebasestorage.app",
+  messagingSenderId: "208059039650",
+  appId: "1:208059039650:web:d272318418e01d0f50fcfb",
+  measurementId: "G-XPHJWRWSLZ"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.auth = getAuth(app); // <-- Thêm window. vào trước auth
+
+// Biến lưu trạng thái quyền chỉnh sửa toàn cục
+window.isLoggedIn = false;
+
+
+
+
+
+
+
+// Theo dõi trạng thái đăng nhập từ Firebase
+onAuthStateChanged(auth, (user) => {
+    const authStatusText = document.getElementById("authStatusText");
+    const authActionButton = document.getElementById("authActionButton");
+    const adminUploadCard = document.getElementById("adminUploadCard");
+    const excelUploadLabel = document.querySelector("label[for='excelFileInput']"); // Nút tải file Excel
+    
+    // 🔍 Ưu tiên lấy trực tiếp email bạn vừa nhập lưu trong localStorage trước, nếu không có mới lấy từ user
+    const currentTeacher = localStorage.getItem("currentTeacherId") || (user ? user.email : "");
+
+    // 🔐 ĐỊNH NGHĨA EMAIL TÀI KHOẢN ĐƯỢC PHÉP HIỆN NÚT TẢI EXCEL
+    const allowedExcelAccount = "tuan49xd5@gmail.com"; 
+
+    if (user) {
+        window.isLoggedIn = true;
+        // Hiển thị đúng tên tài khoản giáo viên bạn vừa nhập (VD: mydo140502@gmail.com)
+        authStatusText.innerHTML = `🟢 Đã đăng nhập: <strong style="color:#00ff66;">${currentTeacher}</strong>`;
+        authActionButton.innerText = "Đăng Xuất";
+        authActionButton.className = "auth-btn-danger";
+        authActionButton.setAttribute("onclick", "processLogout()");
+        adminUploadCard.style.display = "block";
+
+        // 🎯 KIỂM TRA ĐIỀU KIỆN TÀI KHOẢN ĐỂ HIỆN/ẨN NÚT TẢI EXCEL
+        if (currentTeacher.toLowerCase() === allowedExcelAccount.toLowerCase()) {
+            if (excelUploadLabel) excelUploadLabel.style.display = "inline-block";
+        } else {
+            if (excelUploadLabel) excelUploadLabel.style.display = "none";
+        }
+    } else {
+        window.isLoggedIn = false;
+        authStatusText.innerHTML = `🔒 Chế độ Chỉ xem (Khách)`;
+        authActionButton.innerText = "Đăng nhập GV";
+        authActionButton.className = "auth-btn";
+        authActionButton.setAttribute("onclick", "openLoginModal()");
+        
+        // 🔐 ẨN KHUNG TẢI FILE VÀ SAO LƯU KHI CHƯA ĐĂNG NHẬP
+        adminUploadCard.style.display = "none";
+        if (excelUploadLabel) excelUploadLabel.style.display = "none";
+    }
+
+    // Vẽ lại giao diện để cập nhật quyền khóa/mở nút bấm
+    if (Object.keys(bigClassesDatabase).length > 0) {
+        renderFullSystemUI();
+    }
+});
+
+
+
+
+
+
+
+window.processLogin = async function() {
+    const inputId = document.getElementById("loginEmail").value.trim().toLowerCase();
+    const inputPass = document.getElementById("loginPassword").value;
+    
+    // 🔐 DANH SÁCH GIÁO VIÊN VÀ MẬT KHẨU RIÊNG TƯƠNG TỨNG
+    const teacherAccounts = {
+        "mydo140502@gmail.com": "tramy",
+        "lunalovegood4697@gmail.com": "haan",
+        "pttan28@gmail.com": "thanhtan",
+        "phuongphuong.np4@gmail.com": "thiphuong",
+        "hongnhung1093@gmail.com": "hongnhung",
+        "ntthaoabi1012@gmail.com": "thanhthao",
+        "nguyenthuha2321@gmail.com": "thuha",
+        "nguyenthuphuong130295@gmail.com": "thuphuong",
+        "ngothuhang92@gmail.com": "thuhang",
+        "leminhphuong232003@gmail.com": "minhphuong",
+        "lethamstar@gmail.com": "thitham",
+        "lophoctienganhhavi2024@gmail.com": "thuha",
+         "lophoctienganhhavi@gmail.com": "thuha",
+        "tuan49xd5@gmail.com": "hoangtuan",
+        "cvbv674@gmail.com": "cvbv",
+        "maikhanhly1602@gmail.com": "khanhly"
+    };
+
+    // Kiểm tra xem email có tồn tại trong hệ thống không và mật khẩu có khớp không
+    if (!teacherAccounts[inputId] || teacherAccounts[inputId] !== inputPass) {
+        showNotificationModal("Email giáo viên hoặc Mật khẩu riêng không chính xác!");
+        return;
+    }
+
+    try {
+        const systemEmail = "cvbv674@gmail.com"; 
+        const firebasePass = "123_havi"; // Mật khẩu hệ thống dùng chung cho Firebase Auth ẩn phía sau
+
+        await signInWithEmailAndPassword(auth, systemEmail, firebasePass);
+        
+        // --- LƯU ID GIÁO VIÊN VÀO BỘ NHỚ TRÌNH DUYỆT ---
+        localStorage.setItem("currentTeacherId", inputId);
+        
+        closeLoginModal();
+        showToast("Đăng nhập thành công với tên: " + inputId);
+    } catch (error) {
+       showNotificationModal("Lỗi đăng nhập hệ thống: " + error.message);
+    }
+}
+
+
+
+window.processLogout = async function() {
+    try {
+        await signOut(auth);
+        showToast("Đã đăng xuất tài khoản!");
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+window.saveToFirebase = async function () { 
+    if (!window.isLoggedIn) return; // Chặn nếu chưa đăng nhập
+    try { 
+        await setDoc(doc(db, "system", "database"), { 
+            database: bigClassesDatabase, 
+            filename: localStorage.getItem("big_classes_filename") || "", 
+            updatedAt: new Date().toISOString() 
+        }); 
+        console.log("Đã lưu Firebase"); 
+    } catch (err) { console.error("Lỗi lưu Firebase:", err); } 
+}
+
+
+
+window.loadFromFirebase = async function () { 
+    try { 
+        const docRef = doc(db, "system", "database"); 
+        const docSnap = await getDoc(docRef); 
+        if (docSnap.exists()) { 
+            const data = docSnap.data(); 
+            bigClassesDatabase = data.database || {}; 
+            localStorage.setItem("big_classes_database", JSON.stringify(bigClassesDatabase)); 
+            if (data.filename) { localStorage.setItem("big_classes_filename", data.filename); } 
+            renderFullSystemUI(); 
+            console.log("Đã tải dữ liệu từ Firebase"); 
+        } 
+    } catch (err) { console.error("Lỗi đọc Firebase:", err); } 
+}
+</script>
+
+<script>
+const targetSheets = ["SV", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "DH25", "DH26"];
+let bigClassesDatabase = {};
+
+const dropdownConfig = {
+    "Trong giờ học": {
+        "Đánh giá ngữ pháp": ["", "Xuất sắc 9-10", "Khá 7-8", "Trung bình 5-6", "Dưới 5", "Mất gốc (1-2)"],
+        "Đánh giá khả năng nói": ["", "A", "B", "C", "D"],
+        "Đánh giá khả năng nghe": ["", "A", "B", "C", "D"],
+        "Ý thức giờ học": ["", "Ngoan và hợp tác","Ngoan nhưng không tương tác","Hay làm việc riêng","Nghịch nhiều nhưng cô nhắc vẫn nghe", "Mất tập trung","Bắt nạt bạn","Nói bậy","Hay thắc mắc", "Không thích học nhiều","Thích khen nịnh","Nói chuyện nhiều/tự do","Chán học muốn nghỉ","Tự kỷ","Dễ khóc","Áp lực thành tích", "Tăng động"]
+       
+    },
+    "Ý thức ôn bài ở nhà": {
+        "Thuộc từ mới": ["", "Tốt", "Khá", "Trung bình", "Yếu"],
+        "Ý thức làm BTVN": ["", "Làm và ôn bài đầy đủ", "Có buổi làm, có buổi thiếu", "Thường xuyên không làm", "Không bao giờ làm"],
+        "Thuộc ngữ pháp": ["", "Thuộc và biết cách áp dụng công thức", "Hiểu nhưng vẫn còn chưa vững...", "Gặp khó khăn...", "Không hiểu..."]
+    },
+    "Nhóm Đánh Giá Chung": {
+        "Độ chuyên cần ": ["", "Đi học cơ bản đầy đủ", "Thỉnh thoảng nghỉ", "Đi học ngắt quãng nhiều buổi"],
+        "So với tháng trước": ["", "Tiến bộ nhanh", "Tiến bộ chậm", "Như cũ", "Kém đi", "Báo động"],
+        "Đề xuất của giáo viên": ["", "Có thể học vượt lớp", "Giữ nguyên", "GV Không thể dạy được", "Hà Vi không nên nhận dạy HS"]
+    }
+};
+
+
+// Danh sách từ khóa kích hoạt cảnh báo SOS (Báo động đỏ)
+const sosKeywords = [
+    "Chán học muốn nghỉ", 
+    "Không chơi với ai", 
+    "Rụt rè ít nói", 
+    "Thường xuyên không làm", 
+    "Không bao giờ làm", 
+    "Kém đi", 
+    "Báo động", 
+    "GV Không thể dạy được", 
+    "Hà Vi không nên nhận dạy HS",
+    "Dưới 5",
+"Tăng động",
+    "Mất gốc (1-2)",
+    "Yếu"
+];
+
+// Danh sách từ khóa kích hoạt Ngôi Sao (Điểm cao / Tích cực)
+const starKeywords = [
+    "9-10", 
+    "Có thể học vượt lớp",
+ 
+];
+
+
+
+// Hàm kiểm tra và trả về chuỗi HTML các huy hiệu (SOS hoặc Ngôi sao)
+function getStudentBadges(student) {
+    let hasSOS = false;
+    let hasStar = false;
+
+    for (let key in student) {
+        let val = student[key];
+        if (typeof val === 'string') {
+            // Kiểm tra nếu dính từ khóa báo động
+            if (sosKeywords.some(keyword => val.includes(keyword))) {
+                hasSOS = true;
+            }
+            // Kiểm tra nếu đạt điểm cao dựa trên danh sách hằng số starKeywords
+            if (starKeywords.some(keyword => val.includes(keyword))) {
+                hasStar = true;
+            }
+        }
+    }
+
+    let badgesHtml = '';
+    if (hasSOS) {
+        badgesHtml += `<span class="sos-badge">SOS</span>`;
+    }
+    if (hasStar) {
+        badgesHtml += `<span class="star-badge">⭐</span>`;
+    }
+    return badgesHtml;
+}
+
+
+function displayPhone(p) { 
+    if(!p || p === 'Chưa có' || p === 'undefined') return 'Chưa có';
+    let c = p.toString().replace(/\s+/g, ''); 
+    if(c.length === 10) return c.substring(0,4) + ' ' + c.substring(4,7) + ' ' + c.substring(7);
+    return p; 
+}
+
+window.onload = async function () {
+    if (window.loadFromFirebase) {
+        try { await window.loadFromFirebase(); return; } catch (e) { console.log(e); }
+    }
+    const cachedData = localStorage.getItem("big_classes_database");
+    if (cachedData) {
+        bigClassesDatabase = JSON.parse(cachedData);
+        renderFullSystemUI();
+    }
+}
+
+async function saveDatabaseState() {
+    if (!window.isLoggedIn) return;
+    localStorage.setItem('big_classes_database', JSON.stringify(bigClassesDatabase));
+    if (window.saveToFirebase) {
+        try { await window.saveToFirebase(); } catch(e) {}
+    }
+}
+
+function showToast(message) {
+    let toast = document.createElement("div");
+    toast.className = "toast-msg";
+    toast.innerText = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add("show"), 10);
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 300);
+    }, 2000);
+}
+
+
+
+
+function showNotificationModal(title, message) {
+    document.getElementById('modalTitle').innerText = title;
+    document.getElementById('modalBody').innerText = message;
+    document.getElementById('customNotificationModal').classList.add('show');
+}
+function closeNotificationModal() {
+    document.getElementById('customNotificationModal').classList.remove('show');
+}
+
+function openLoginModal() {
+    document.getElementById('loginModalOverlay').classList.add('show');
+}
+function closeLoginModal() {
+    document.getElementById('loginModalOverlay').classList.remove('show');
+}
+
+
+
+
+
+
+function startProcessingExcel(input) {
+    if (!window.isLoggedIn) {
+        showNotificationModal("Bạn cần đăng nhập tài khoản giáo viên để thực hiện tính năng này!");
+        return;
+    }
+    const file = input.files[0];
+    if (!file) return;
+
+    document.getElementById('fileStatusMessage').style.color = "#ffd700";
+    document.getElementById('fileStatusMessage').innerText = `Đang xử lý phân tách lớp từ tệp: ${file.name}...`;
+    document.getElementById('searchResultBox').style.display = 'none';
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+    progressContainer.style.display = 'block';
+    progressBar.style.width = '0%';
+    progressBar.innerText = '0%';
+
+    // Sao lưu dữ liệu cũ để lấy lại các ghi chú, đánh giá cũ
+    let oldDatabase = JSON.parse(JSON.stringify(bigClassesDatabase));
+    let updatedDatabase = {};
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array', cellStyles: true });
+            
+            const sheetsToProcess = workbook.SheetNames.filter(name => targetSheets.includes(name.trim()));
+            if (sheetsToProcess.length === 0) {
+                showNotificationModal("Không tìm thấy các sheet mục tiêu trong file Excel!");
+                progressContainer.style.display = 'none';
+                return;
+            }
+
+            let totalSheets = sheetsToProcess.length;
+            let currentSheetIdx = 0;
+
+            async function parseSheetStep() {
+                if (currentSheetIdx >= totalSheets) {
+                    progressBar.style.width = '100%';
+                    progressBar.innerText = '100% Hoàn thành';
+                    
+                    // Cập nhật database chính bằng dữ liệu mới đã được kế thừa ghi chú cũ
+                    bigClassesDatabase = updatedDatabase;
+
+                    let totalStudentsCount = 0;
+                    Object.keys(bigClassesDatabase).forEach(classKey => {
+                        totalStudentsCount += bigClassesDatabase[classKey].students.length;
+                    });
+                    
+                    const successMessage = `🎉 CẬP NHẬT THÀNH CÔNG!\n\n🔹 Tên tệp: ${file.name}\n🔹 Tổng số học viên: ${totalStudentsCount} học viên.\n(Đã xóa học sinh ngoài danh sách mới và giữ nguyên vẹn ghi chú/đánh giá của học sinh cũ).`;
+                    
+                    document.getElementById('fileStatusMessage').style.color = "#00ff66";
+                    document.getElementById('fileStatusMessage').innerText = `✅ Nạp thành công! Tổng số ${totalStudentsCount} học viên.`;
+                    
+                    localStorage.setItem('big_classes_database', JSON.stringify(bigClassesDatabase));
+                    localStorage.setItem('big_classes_filename', file.name);
+                    
+                    await saveDatabaseState();
+                    renderFullSystemUI();
+                    showNotificationModal("CẬP NHẬT HOÀN TẤT", successMessage);
+                    return;
+                }
+
+                let percent = Math.round((currentSheetIdx / totalSheets) * 100);
+                progressBar.style.width = percent + '%';
+                progressBar.innerText = percent + '%';
+
+                const sheetName = sheetsToProcess[currentSheetIdx];
+                const sheet = workbook.Sheets[sheetName];
+                const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false });
+                
+                if (rows.length > 0) {
+                    const colBIndex = 1;
+                    const colPIndex = 16;
+
+                    let detectedClassName = "";
+                    let detectedSchedule = "";
+                    let previousText = "";
+                    let readingStudents = false;
+
+                    rows.forEach((row) => {
+                        if (!row) return;
+                        let cellB = row[colBIndex] ? row[colBIndex].toString().trim() : "";
+                        let cellP = row[colPIndex] ? row[colPIndex].toString().trim() : "";
+                        let cellB_lower = cellB.toLowerCase();
+                        let cleanPhone = cellP.replace(/[^0-9]/g, "");
+                    
+                        if (cleanPhone.length === 9 && !cleanPhone.startsWith("0")) {
+                            cleanPhone = "0" + cleanPhone;
+                        }
+
+                        if (cellB === "" || cellB_lower === "tên học sinh" || cellB_lower === "tên hs" || cellB_lower === "họ và tên") {
+                            return;
+                        }
+
+                        const isSchedule = /^t[2-7]/i.test(cellB) || /^cn/i.test(cellB) || /18h|19h|20h/i.test(cellB) || cellB.includes("THỨ");
+
+                        if (isSchedule) {
+                            if (previousText) { detectedClassName = previousText; }
+                            detectedSchedule = cellB;
+                            readingStudents = true;
+                            return;
+                        }
+
+                        if (readingStudents) {
+                            if (cellB && !/^\d+$/.test(cellB) && cleanPhone.length >= 9 && cleanPhone.length <= 11) {
+                                let currentClassKey = detectedClassName;
+                                if (!updatedDatabase[currentClassKey]) {
+                                    updatedDatabase[currentClassKey] = { sheet: sheetName, schedule: detectedSchedule, students: [] };
+                                }
+
+                                // Kiểm tra xem học sinh này đã có trong dữ liệu cũ chưa để kế thừa lại đánh giá/ghi chú cũ
+                                let foundOldStudent = null;
+                                Object.keys(oldDatabase).forEach(oldKey => {
+                                    if (oldDatabase[oldKey].students) {
+                                        let match = oldDatabase[oldKey].students.find(s => 
+                                            s.name.trim().toLowerCase() === cellB.trim().toLowerCase() && 
+                                            s.phone === cleanPhone
+                                        );
+                                        if (match) foundOldStudent = match;
+                                    }
+                                });
+
+                                if (foundOldStudent) {
+                                    // Giữ nguyên học sinh cũ cùng toàn bộ đánh giá/ghi chú cũ của họ
+                                    updatedDatabase[currentClassKey].students.push(foundOldStudent);
+                                } else {
+                                    // Nếu là học sinh mới hoàn toàn xuất hiện trong file Excel
+                                    updatedDatabase[currentClassKey].students.push({
+                                        id: Date.now() + Math.random(), 
+                                        name: cellB,
+                                        phone: cleanPhone,
+                                        status: "present",
+                                        note: "",
+                                        lastUpdated: getCurrentTimeString() // Ghi nhận thời gian lúc thêm
+                                    });
+                                }
+                                return;
+                            } else if (cellB && cleanPhone.length < 9) {
+                                readingStudents = false;
+                                previousText = cellB;
+                                return;
+                            }
+                        } else {
+                            if (cellB && cleanPhone.length < 9) { previousText = cellB; }
+                        }
+                    });
+                }
+                currentSheetIdx++;
+                setTimeout(parseSheetStep, 10);
+            }
+            parseSheetStep();
+        } catch (err) {
+            console.error(err);
+           showNotificationModal("Lỗi khi đọc dữ liệu từ file Excel!");
+            document.getElementById('progressContainer').style.display = 'none';
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+
+
+function toggleClassAccordion(headerElement) {
+    headerElement.parentElement.classList.toggle('active');
+}
+
+
+
+function toggleGroupAccordion(headerElement) {
+    headerElement.parentElement.classList.toggle('active');
+}
+
+
+
+function getGroupKeyBySheet(sheetName) {
+    const s = sheetName.trim();
+    if (["2", "3", "4", "5"].includes(s)) return { key: "TIEU_HOC", name: "Khối Tiểu Học (Lớp 2-5)" };
+    if (["6", "7", "8", "9"].includes(s)) return { key: "THCS", name: "Khối THCS (Lớp 6-9)" };
+    if (["10", "11", "12"].includes(s)) return { key: "THPT", name: "Khối THPT (Lớp 10-12)" };
+    if (["DH25", "DH26"].includes(s)) return { key: "DAI_HOC", name: "Khối Đại Học (DH25-26)" };
+    return { key: "KHAC", name: "Khối Khác / Sinh Viên" };
+}
+
+
+
+
+
+
+
+function renderFullSystemUI() {
+    const mainContainer = document.getElementById("dynamicMainContainer");
+    mainContainer.innerHTML = "";
+
+    const classKeys = Object.keys(bigClassesDatabase);
+    if (classKeys.length === 0) {
+        mainContainer.innerHTML = '<div class="empty-alert">Danh sách trống. Hệ thống sẽ tự động vẽ giao diện HTML sau khi bạn nạp file Excel thành công!</div>';
+        return;
+    }
+
+    classKeys.sort((a, b) => {
+        const order = ["SV","2","3","4","5","6","7","8","9","10","11","12","DH25","DH26"];
+        const sa = bigClassesDatabase[a].sheet;
+        const sb = bigClassesDatabase[b].sheet;
+        const ia = order.indexOf(sa);
+        const ib = order.indexOf(sb);
+        if (ia !== ib) return ia - ib;
+        return a.localeCompare(b, "vi");
+    });
+
+    const groupedData = {
+        "TIEU_HOC": { name: "Khối Tiểu Học (Lớp 2-5)", classes: [], totalStudents: 0 },
+        "THCS": { name: "Khối THCS (Lớp 6-9)", classes: [], totalStudents: 0 },
+        "THPT": { name: "Khối THPT (Lớp 10-12)", classes: [], totalStudents: 0 },
+        "DAI_HOC": { name: "Khối Đại Học", classes: [], totalStudents: 0 },
+        "KHAC": { name: "Khối Khác / Khối SV", classes: [], totalStudents: 0 }
+    };
+
+    classKeys.forEach(classKey => {
+        const classObj = bigClassesDatabase[classKey];
+        const groupInfo = getGroupKeyBySheet(classObj.sheet);
+        groupedData[groupInfo.key].classes.push({ key: classKey, data: classObj });
+        groupedData[groupInfo.key].totalStudents += classObj.students.length;
+    });
+
+    const groupOrder = ["TIEU_HOC", "THCS", "THPT", "DAI_HOC", "KHAC"];
+    groupOrder.forEach(gKey => {
+        const group = groupedData[gKey];
+        if (group.classes.length === 0) return;
+
+        const groupSection = document.createElement("div");
+        groupSection.className = "group-block-wrapper";
+        groupSection.id = `group-wrapper-${gKey}`;
+        
+        groupSection.innerHTML = `
+            <div class="group-accordion-header" onclick="toggleGroupAccordion(this)">
+                <div class="group-main-title">${group.name}</div>
+                <div class="group-stats" id="group-stats-${gKey}" style="display:none">Tổng số lớp: ${group.classes.length} | Học sinh: ${group.totalStudents}</div>
+            </div>
+            <div class="group-panel" id="group-panel-${gKey}"></div>
+        `;
+        mainContainer.appendChild(groupSection);
+
+        const groupPanel = groupSection.querySelector(".group-panel");
+
+
+
+
+
+        group.classes.forEach(cls => {
+            const classKey = cls.key;
+            const classObj = cls.data;
+            const students = classObj.students;
+            
+            const total = students.length;
+            const absent = students.filter(s => s.status === 'absent').length;
+            const present = total - absent;
+
+
+                // 🌟 TÍNH SỐ LƯỢNG HỌC SINH CÓ SAO VÀ SOS TRONG LỚP
+            let starCount = 0;
+            let sosCount = 0;
+            students.forEach(student => {
+                let hasSOS = false;
+                let hasStar = false;
+                for (let key in student) {
+                    let val = student[key];
+                    if (typeof val === 'string') {
+                        if (sosKeywords.some(keyword => val.includes(keyword))) hasSOS = true;
+                        if (starKeywords.some(keyword => val.includes(keyword))) hasStar = true;
+                    }
+                }
+                if (hasSOS) sosCount++;
+                if (hasStar) starCount++;
+            });
+
+            // Nếu chưa đăng nhập thì ẩn khung thêm học sinh mới
+            const addStudentBoxHtml = window.isLoggedIn ? `
+                <div class="add-student-box" style= "display :none;">
+                    <input type="text" id="inputName-${classKey.replace(/\s+/g, '-')}" placeholder="Dòng 1: Nhập họ và tên...">
+                    <input type="tel" id="inputPhone-${classKey.replace(/\s+/g, '-')}" placeholder="Dòng 2: Nhập số điện thoại...">
+                    <button class="btn-add" onclick="addNewStudentToClass('${classKey}')">+ Thêm vào danh sách</button>
+                </div>` : '';
+
+            const classSection = document.createElement("div");
+            classSection.className = "class-block-wrapper";
+            classSection.setAttribute("data-classname-box", classKey);
+
+            classSection.innerHTML = `
+                <div class="class-accordion-header" onclick="toggleClassAccordion(this)">
+                    <div class="class-main-title">Lớp: ${classKey}</div>
+
+
+
+                  <span style="font-size: 0.8rem; font-weight: normal; margin-left: 8px; color: #ffd700;">
+                            (Tổng số ⭐: ${starCount} | <span style="color: #ff007f; font-weight: bold;">Tổng số SOS: ${sosCount}</span>)
+                        </span>
+
+                    <div class="class-schedule"style= "display :none;">${classObj.schedule || ""}</div>
+                    <div class="class-stats" id="stats-${classKey.replace(/\s+/g, '-')}" style= "display :none;">Sĩ số: ${total} | Có mặt: ${present} | Vắng: ${absent}</div>
+                </div>
+                
+                <div class="class-panel" >
+
+  <div class="class-backup-actions" style="margin: 10px 0; display: flex; gap: 8px; flex-wrap: wrap;">
+    <button onclick="backupSingleClass('${classKey}')" style="background: #17a2b8; color: #fff; padding: 5px 10px; border: none; border-radius: 15px; cursor: pointer; font-size: 13px;">💾 Sao lưu lớp này</button>
+    <button onclick="restoreSingleClassPrompt('${classKey}')" style="background: #e0a800; color: #000; padding: 5px 10px; border: none; border-radius: 15px; cursor: pointer; font-size: 13px;">📂 Khôi phục lớp này</button>
+    <!-- Thêm nút Xuất Excel Cả Lớp vào đây -->
+    <button onclick="exportClassExcel('${classKey}', ${JSON.stringify(students).replace(/"/g, '&quot;')})" style="background: #28a745; color: #fff; padding: 5px 10px; border: none; border-radius: 15px; cursor: pointer; font-size: 13px;">📊 Xuất Excel Cả Lớp</button>
+</div>
+                    <h3>Danh Sách Chi Tiết</h3>
+                    <br>
+
+                 
+                    ${addStudentBoxHtml}
+                    
+                    <div class="absent-section" style= "display :none;">
+                        <div class="absent-header">
+                            <span class="absent-title">DANH SÁCH VẮNG HÔM NAY</span>
+                            <button class="copy-btn" onclick="copyAbsentReport('${classKey}')">Copy</button>
+                        </div>
+                        <ul class="absent-list" id="absentList-${classKey.replace(/\s+/g, '-')}">
+                            ${renderAbsentRowsHtml(students)}
+                        </ul>
+                    </div>
+                    
+                    <div class="student-list" id="studentList-${classKey.replace(/\s+/g, '-')}">
+                        ${renderStudentCardsHtml(classKey, students)}
+                    </div>
+                </div>
+            `;
+            groupPanel.appendChild(classSection);
+        });
+    });
+}
+
+
+
+
+function renderAbsentRowsHtml(students) {
+    const absentStudents = students.filter(s => s.status === 'absent');
+    if (absentStudents.length === 0) return '<li><em>Chưa có học sinh vắng</em></li>';
+    return absentStudents.map(s => `<li>• ${s.name} ${s.note ? '(' + s.note + ')' : '(Chưa rõ lý do)'}</li>`).join('');
+}
+
+
+
+
+function renderStudentCardsHtml(classKey, students) {
+    const disabledAttr = window.isLoggedIn ? '' : 'disabled';
+    const readonlyAttr = window.isLoggedIn ? '' : 'readonly';
+
+    return students.map((student, idx) => {
+        const cardId = `card-${classKey.replace(/\s+/g, '-')}-${student.id}`;
+
+        let dynamicCriteriaHtml = '';
+        for (const [groupName, criteria] of Object.entries(dropdownConfig)) {
+            dynamicCriteriaHtml += `
+                <div style="margin-top: 8px; border-top: 1px dashed rgba(0, 240, 255, 0.15); padding-top: 6px;" onclick="event.stopPropagation()">
+                    <strong style="color: #ffd700; font-size: 0.75rem; text-transform: uppercase;">${groupName}</strong>
+                    <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
+            `;
+            
+            for (const [criterion, options] of Object.entries(criteria)) {
+                const savedValue = student[criterion] || '';
+
+                // 🌟 NẾU LÀ "Ý thức giờ học" THÌ HIỂN THỊ DẠNG CHECKBOX
+                if (criterion === "Ý thức giờ học") {
+                    const savedValuesArr = savedValue ? savedValue.split(', ') : [];
+                    
+                    dynamicCriteriaHtml += `
+        <div style="margin-top: 4px; padding-left: 4px;">
+            <span style="font-size: 0.75rem; color: #bbb; display: block; margin-bottom: 4px;">${criterion}:</span>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 8px;">
+    `;
+                    
+                    options.forEach(opt => {
+                        if (!opt) return;
+                        const isChecked = savedValuesArr.includes(opt) ? 'checked' : '';
+                        dynamicCriteriaHtml += `
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: #bbb; cursor: pointer; text-align: left; margin-bottom: 2px;">
+                <input type="checkbox" value="${opt}" ${isChecked} ${disabledAttr}
+                       onchange="updateStudentCheckboxEvaluation('${classKey}', ${student.id}, '${criterion.replace(/'/g, "\\'")}', this)">
+                <span>${opt}</span>
+            </label>
+        `;
+                    });
+                    
+                    dynamicCriteriaHtml += `</div></div>`;
+                } 
+                // 🌟 CÁC TIÊU CHÍ KHÁC GIỮ NGUYÊN DẠNG DROPDOWN
+                else {
+                    dynamicCriteriaHtml += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 4px;">
+                            <span style="font-size: 0.75rem; color: #bbb; flex: 1; text-align: left;">${criterion}:</span>
+                            <select class="note-select" style="flex: 1.3; padding: 3px; font-size: 0.75rem;" ${disabledAttr}
+                                    onchange="updateStudentEvaluation('${classKey}', ${student.id}, '${criterion.replace(/'/g, "\\'")}', this.value)">
+                                ${options.map(o => `<option value="${o}" ${savedValue === o ? 'selected' : ''}>${o || '--'}</option>`).join('')}
+                            </select>
+                        </div>
+                    `;
+                }
+            }
+            dynamicCriteriaHtml += `</div></div>`;
+        }
+
+        const statusClass = student.status === 'absent' ? 'status-absent' : 'status-present';
+        const deleteButtonHtml = window.isLoggedIn ? `<button class="btn-delete" onclick="deleteStudentFromClass('${classKey}', ${student.id}, '${student.name.replace(/'/g, "\\'")}')" style="display: none;">Xoá</button>` : '';
+
+       return `
+<div class="student-card ${statusClass}" id="${cardId}">
+    
+    <!-- Phần tiêu đề học sinh -->
+    <div class="student-card-header" onclick="toggleStudentCard(this)">
+        
+        <div class="student-meta" style="display: flex; flex-direction: column; gap: 0px;">
+            
+            <span class="student-name">
+                ${idx + 1}. ${student.name} ${getStudentBadges(student)}
+            </span>
+
+            <div
+                style="display: flex; align-items: center; gap: 10px; font-size: 0.72rem; color: #a0a0a0; margin-top: 1px;"
+                id="time-info-${classKey.replace(/\s+/g, '-')}-${student.id}">
+                
+                <span class="student-editor">
+                    ✏️ ${student.lastModifiedBy || 'Chưa rõ'}
+                </span>
+
+                <span style="color: #00f0ff;">
+                    <i class="fa-solid fa-clock"></i>
+                    ${student.lastUpdated || 'Chưa cập nhật'}
+                </span>
+            </div>
+
+            <span class="student-phone" style="display: none;">
+                SĐT: ${displayPhone(student.phone)}
+            </span>
+
+        </div>
+
+        <div class="student-actions-right" onclick="event.stopPropagation()">
+            <button
+                class="btn-call"
+                onclick="window.location.href='tel:${student.phone}'"
+                style="display: none;">
+                Gọi
+            </button>
+
+            ${deleteButtonHtml}
+        </div>
+
+    </div>
+
+    <!-- Phần nội dung Accordion -->
+    <div class="student-body-content" onclick="event.stopPropagation()">
+           
+
+        <div class="student-controls-row">
+          <button class="btn-action" style="background: #008040; color: #fff; margin-top: 8px;" onclick="exportSingleStudentExcel('${classKey}', ${JSON.stringify(student).replace(/"/g, '&quot;')})">📊 Xuất Excel học sinh này</button>
+            <button
+                class="btn-action btn-present ${student.status === 'present' ? 'active' : ''}"
+                ${disabledAttr}
+                onclick="updateStudentStatus('${classKey}', ${student.id}, 'present')"
+                style="display: none;">
+                CÓ MẶT
+            </button>
+
+            <button
+                class="btn-action btn-absent ${student.status === 'absent' ? 'active' : ''}"
+                ${disabledAttr}
+                onclick="updateStudentStatus('${classKey}', ${student.id}, 'absent')"
+                style="display: none;">
+                VẮNG
+            </button>
+
+            <input
+                type="text"
+                class="note-select"
+                style="flex: 1.5; padding: 8px 5px;"
+                placeholder="Ghi chú: quên vở, đồ dùng, ăn vặt, sức khoẻ yếu, tự kỷ, mắt kém..."
+                value="${student.note || ''}"
+                ${readonlyAttr}
+                onclick="event.stopPropagation()"
+                onchange="updateStudentNote('${classKey}', ${student.id}, this.value)">
+        </div>
+
+        ${dynamicCriteriaHtml}
+
+    </div>
+
+</div>
+`;
+    }).join('');
+}
+
+
+
+function updateStudentStatus(classKey, studentId, status) {
+    if (!window.isLoggedIn) {showNotificationModal("Vui lòng đăng nhập để thay đổi trạng thái!"); return; }
+    let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
+    if (student) {
+        student.status = status;
+        student.lastUpdated = getCurrentTimeString(); // Cập nhật thời gian
+        student.lastModifiedBy = localStorage.getItem("currentTeacherId") || "Giáo viên"; // Ghi nhận tên người sửa
+        saveDatabaseState();
+        showToast("Đã chuyển sang: " + (status === 'present' ? 'Có mặt' : 'Vắng'));
+        
+        const classKeyId = classKey.replace(/\s+/g, '-');
+        const studentsArr = bigClassesDatabase[classKey].students;
+        const total = studentsArr.length;
+        const absent = studentsArr.filter(s => s.status === 'absent').length;
+        const present = total - absent;
+        
+        document.getElementById(`stats-${classKeyId}`).innerText = 'Sĩ số: ' + total + ' | Có mặt: ' + present + ' | Vắng: ' + absent;
+        document.getElementById(`absentList-${classKeyId}`).innerHTML = renderAbsentRowsHtml(studentsArr);
+        document.getElementById(`studentList-${classKeyId}`).innerHTML = renderStudentCardsHtml(classKey, studentsArr);
+    }
+}
+
+
+
+function updateStudentNote(classKey, studentId, value) {
+    if (!window.isLoggedIn) return;
+    let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
+    if (student) {
+        student.note = value;
+        student.lastUpdated = getCurrentTimeString(); // Cập nhật thời gian
+        student.lastModifiedBy =localStorage.getItem("currentTeacherId") || "Giáo viên"; // Ghi nhận tên người sửa
+        saveDatabaseState();
+        showToast("Đã lưu ghi chú!");
+
+
+        
+    }
+}
+
+
+
+function updateStudentEvaluation(classKey, studentId, criterionName, value) {
+    if (!window.isLoggedIn) { showNotificationModal("Vui lòng đăng nhập để đánh giá!"); return; }
+    let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
+    if (student) {
+        student[criterionName] = value;
+        student.lastUpdated = getCurrentTimeString(); // Lấy thời gian mới
+        student.lastModifiedBy = localStorage.getItem("currentTeacherId") || "Giáo viên"; // Lấy tên người sửa mới
+        saveDatabaseState();
+        showToast("Đã cập nhật: " + criterionName);
+        
+        // 🌟 CẬP NHẬT TRỰC TIẾP LÊN GIAO DIỆN MÀ KHÔNG LÀM THẺ BỊ THU LẠI
+        const classKeyId = classKey.replace(/\s+/g, '-');
+        const timeInfoElement = document.getElementById(`time-info-${classKeyId}-${studentId}`);
+        if (timeInfoElement) {
+            timeInfoElement.innerHTML = `
+                <span class="student-editor">✏️ ${student.lastModifiedBy}</span>
+                <span style="color: #00f0ff;">⏱ ${student.lastUpdated}</span>
+            `;
+        }
+    }
+}
+
+
+
+
+
+
+function addNewStudentToClass(classKey) {
+    if (!window.isLoggedIn) return;
+    const classKeyId = classKey.replace(/\s+/g, '-');
+    const nameInput = document.getElementById(`inputName-${classKeyId}`);
+    const phoneInput = document.getElementById(`inputPhone-${classKeyId}`);
+    const name = nameInput.value.trim();
+    const phone = phoneInput.value.trim();
+
+    if (!name) { showNotificationModal("Vui lòng điền họ tên học sinh!"); return; }
+
+    const studentsArr = bigClassesDatabase[classKey].students;
+    const nextId = studentsArr.length > 0 ? Math.max(...studentsArr.map(s => s.id)) + 1 : 1;
+
+    studentsArr.push({
+        id: nextId,
+        name: name,
+        phone: phone || "Chưa có",
+        status: "present",
+        note: "",
+        lastUpdated: "" // Thêm trường lưu thời gian
+    });
+
+    nameInput.value = "";
+    phoneInput.value = "";
+    saveDatabaseState();
+
+
+
+
+
+
+
+
+    const total = studentsArr.length;
+    const absent = studentsArr.filter(s => s.status === 'absent').length;
+    const present = total - absent;
+    document.getElementById(`stats-${classKeyId}`).innerText = 'Sĩ số: ' + total + ' | Có mặt: ' + present + ' | Vắng: ' + absent;
+    document.getElementById(`studentList-${classKeyId}`).innerHTML = renderStudentCardsHtml(classKey, studentsArr);
+    showToast("Đã thêm học sinh mới!");
+}
+
+
+function deleteStudentFromClass(classKey, studentId, studentName) {
+    if (!window.isLoggedIn) { showNotificationModal("Vui lòng đăng nhập để xóa!"); return; }
+    if (confirm(`Bạn chắc chắn muốn xoá học viên "${studentName}" không?`)) {
+        bigClassesDatabase[classKey].students = bigClassesDatabase[classKey].students.filter(s => s.id !== studentId);
+        saveDatabaseState();
+
+        const classKeyId = classKey.replace(/\s+/g, '-');
+        const studentsArr = bigClassesDatabase[classKey].students;
+        const total = studentsArr.length;
+        const absent = studentsArr.filter(s => s.status === 'absent').length;
+        const present = total - absent;
+
+        document.getElementById(`stats-${classKeyId}`).innerText = 'Sĩ số: ' + total + ' | Có mặt: ' + present + ' | Vắng: ' + absent;
+        document.getElementById(`absentList-${classKeyId}`).innerHTML = renderAbsentRowsHtml(studentsArr);
+        document.getElementById(`studentList-${classKeyId}`).innerHTML = renderStudentCardsHtml(classKey, studentsArr);
+        showToast("Đã xóa học viên!");
+    }
+}
+
+
+
+
+function copyAbsentReport(classKey) {
+    const students = bigClassesDatabase[classKey].students;
+    const absentArr = students.filter(s => s.status === 'absent');
+    let msg = `DANH SÁCH VẮNG LỚP ${classKey}:\n`;
+    if(absentArr.length === 0) {
+        msg += "- Hôm nay không có ai vắng.";
+    } else {
+        absentArr.forEach((s, idx) => {
+            msg += `${idx+1}. ${s.name} ${s.note ? '('+s.note+')' : '(Chưa rõ lý do)'}\n`;
+        });
+    }
+    navigator.clipboard.writeText(msg).then(() => {
+        showToast("Đã sao chép báo cáo vắng!");
+    });
+}
+
+
+
+
+function handleSearchKeyPress(event) {
+    if (event.key === "Enter") searchGlobalStudent();
+}
+
+
+
+
+function searchGlobalStudent() {
+    const query = document.getElementById("globalSearchInput").value.trim().toLowerCase();
+    const resultBox = document.getElementById("searchResultBox");
+    const tableBody = document.getElementById("resultTableBody");
+    const countSpan = document.getElementById("resultCount");
+
+    if (!query) { resultBox.style.display = "none"; return; }
+
+    tableBody.innerHTML = "";
+    let count = 0;
+
+    Object.keys(bigClassesDatabase).forEach(classKey => {
+        bigClassesDatabase[classKey].students.forEach(s => {
+            if (s.name.toLowerCase().includes(query) || s.phone.toString().includes(query)) {
+                count++;
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td style="font-weight:bold; color:#fff;">${s.name}</td>
+                    <td>${displayPhone(s.phone)}</td>
+                    <td><span style="color:#00f0ff; font-weight:bold; cursor:pointer; text-decoration:underline;" onclick="focusToCard('${classKey}', ${s.id})">${classKey}</span></td>
+                    <td><button class="btn-call" onclick="window.location.href='tel:${s.phone}'">Gọi</button></td>
+                `;
+                tableBody.appendChild(tr);
+            }
+        });
+    });
+
+    countSpan.innerText = `(${count} kết quả)`;
+    resultBox.style.display = "block";
+}
+
+
+
+
+
+function focusToCard(classKey, studentId) {
+    const clsObj = bigClassesDatabase[classKey];
+    if (!clsObj) return;
+    const groupInfo = getGroupKeyBySheet(clsObj.sheet);
+
+    const groupWrapper = document.getElementById(`group-wrapper-${groupInfo.key}`);
+    if (groupWrapper && !groupWrapper.classList.contains('active')) groupWrapper.classList.add('active');
+
+    const subClasses = document.querySelectorAll(`[data-classname-box="${classKey}"]`);
+    subClasses.forEach(box => { if (!box.classList.contains('active')) box.classList.add('active'); });
+
+    setTimeout(() => {
+        const cardId = `card-${classKey.replace(/\s+/g, '-')}-${studentId}`;
+        const card = document.getElementById(cardId);
+        if (card) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            card.classList.add('highlight-search');
+            setTimeout(() => card.classList.remove('highlight-search'), 2500);
+        }
+    }, 150);
+}
+
+
+
+
+
+function clearSystemCache() {
+    if (!window.isLoggedIn) { showNotificationModal("Bạn cần đăng nhập để thực hiện tính năng này!"); return; }
+    if (confirm("Bạn có chắc chắn muốn xóa dữ liệu cũ không?")) {
+        localStorage.clear();
+        bigClassesDatabase = {};
+        document.getElementById('fileStatusMessage').style.color = "#ff007f";
+        document.getElementById('fileStatusMessage').innerText = "Chưa có dữ liệu học viên. Vui lòng chọn tệp Excel.";
+        document.getElementById('searchResultBox').style.display = 'none';
+        renderFullSystemUI();
+        showToast("Đã xóa dữ liệu hệ thống!");
+    }
+}
+
+
+
+function getCurrentTimeString() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    return `${hours}:${minutes} ${day}/${month}`;
+}
+
+
+
+/* 👨‍🎓 Hàm xử lý click mở/đóng Accordion từng học sinh */
+function toggleStudentCard(headerElement) {
+    const card = headerElement.parentElement;
+    card.classList.toggle('active');
+}
+
+
+
+window.togglePasswordVisibility = function() {
+    const passwordInput = document.getElementById("loginPassword");
+    const toggleBtnContainer = document.getElementById("togglePasswordBtn");
+    
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        // Đổi sang icon Mở (Mắt sáng lung linh)
+        toggleBtnContainer.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff66" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 4px rgba(0,255,102,0.6));">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>`;
+    } else {
+        passwordInput.type = "password";
+        // Đổi về icon Đóng (Gạch chéo)
+        toggleBtnContainer.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00f0ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>`;
+    }
+}
+
+
+window.updateStudentCheckboxEvaluation = function(classKey, studentId, criterionName, checkboxElement) {
+    if (!window.isLoggedIn) { 
+        showNotificationModal("Vui lòng đăng nhập để đánh giá!"); 
+        checkboxElement.checked = !checkboxElement.checked; // Hoàn tác lại trạng thái tick
+        return; 
+    }
+    
+    let student = bigClassesDatabase[classKey].students.find(s => s.id === studentId);
+    if (student) {
+        // Tìm tất cả các checkbox đang được tích trong cùng cụm của học sinh này
+        // (Dựa vào parent container chứa các checkbox)
+        const container = checkboxElement.closest('div').parentElement;
+        const checkedBoxes = container.querySelectorAll('input[type="checkbox"]:checked');
+        const selectedValues = Array.from(checkedBoxes).map(cb => cb.value);
+        
+        // Lưu gộp các giá trị được chọn cách nhau bởi dấu phẩy
+        student[criterionName] = selectedValues.join(', ');
+        student.lastUpdated = getCurrentTimeString();
+        student.lastModifiedBy = auth.currentUser ? auth.currentUser.email : "Giáo viên";
+        
+        saveDatabaseState();
+        showToast("Đã cập nhật: " + criterionName);
+        
+        // Cập nhật trực tiếp thời gian lên giao diện mà không làm thu gọn thẻ
+        const classKeyId = classKey.replace(/\s+/g, '-');
+        const timeInfoElement = document.getElementById(`time-info-${classKeyId}-${studentId}`);
+        if (timeInfoElement) {
+            timeInfoElement.innerHTML = `
+                <span class="student-editor">✏️ ${student.lastModifiedBy}</span>
+                <span style="color: #00f0ff;">⏱ ${student.lastUpdated}</span>
+            `;
+        }
+    }
+}
+
+
+/* 📊 XUẤT EXCEL TỰ ĐỘNG CĂN ĐỘ RỘNG CỘT VÀ QUÉT TOÀN BỘ TIÊU CHÍ */
+
+// 1. Xuất Excel cho 1 học sinh (Mỗi dòng 1 tiêu chí)
+function exportSingleStudentExcel(classKey, student) {
+    let headers = ["STT", "Họ và tên", "SĐT", "Người sửa", "Thời gian cập nhật", "Ghi chú chung", "Tên Tiêu Chí", "Đánh Giá"];
+    let rows = [headers];
+
+    const ignoredKeys = ['id', 'name', 'phone', 'status', 'note', 'lastModifiedBy', 'lastUpdated'];
+    let criteriaKeys = Object.keys(student).filter(key => !ignoredKeys.includes(key));
+
+    // Nếu học sinh chưa có tiêu chí nào, xuất 1 dòng thông tin cơ bản
+    if (criteriaKeys.length === 0) {
+        rows.push([
+            1,
+            student.name || '',
+            student.phone || '',
+            student.lastModifiedBy || 'Chưa rõ',
+            student.lastUpdated || 'Chưa cập nhật',
+            student.note || '',
+            'Chưa có tiêu chí',
+            ''
+        ]);
+    } else {
+        // Trải đều mỗi tiêu chí thành 1 dòng riêng biệt
+        criteriaKeys.forEach((key, idx) => {
+            rows.push([
+                idx + 1,
+                student.name || '',
+                student.phone || '',
+                student.lastModifiedBy || 'Chưa rõ',
+                student.lastUpdated || 'Chưa cập nhật',
+                student.note || '',
+                key,                 // Cột Tên Tiêu Chí
+                student[key] || ''   // Cột Đánh Giá tương ứng
+            ]);
+        });
+    }
+
+    let worksheet = XLSX.utils.aoa_to_sheet(rows);
+    autofitColumns(worksheet, rows);
+
+    let workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "HocSinh");
+
+    const filename = `Tieu_chi_${(student.name || 'hoc_sinh').replace(/\s+/g, '_')}_${classKey}.xlsx`;
+    XLSX.writeFile(workbook, filename);
+}
+
+// 2. Xuất Excel cho cả lớp (Mỗi tiêu chí của học sinh là 1 dòng riêng)
+function exportClassExcel(classKey, students) {
+    if (!students || students.length === 0) {
+        showNotificationModal("Danh sách lớp trống!");
+        return;
+    }
+
+    let headers = ["STT", "Họ và tên", "SĐT", "Người sửa", "Thời gian cập nhật", "Ghi chú chung", "Tên Tiêu Chí", "Đánh Giá"];
+    let rows = [headers];
+
+    const ignoredKeys = ['id', 'name', 'phone', 'status', 'note', 'lastModifiedBy', 'lastUpdated'];
+    let globalStt = 1;
+
+    students.forEach(student => {
+        let criteriaKeys = Object.keys(student).filter(key => !ignoredKeys.includes(key));
+        
+        let baseInfo = [
+            globalStt++,
+            student.name || '',
+            student.phone || '',
+            student.lastModifiedBy || 'Chưa rõ',
+            student.lastUpdated || 'Chưa cập nhật',
+            student.note || ''
+        ];
+
+        if (criteriaKeys.length === 0) {
+            rows.push([...baseInfo, 'Chưa có tiêu chí', '']);
+        } else {
+            criteriaKeys.forEach(key => {
+                rows.push([
+                    ...baseInfo,
+                    key,                 // Cột Tên Tiêu Chí
+                    student[key] || ''   // Cột Đánh Giá tương ứng
+                ]);
+            });
+        }
+    });
+
+    let worksheet = XLSX.utils.aoa_to_sheet(rows);
+    autofitColumns(worksheet, rows);
+
+    let workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "DanhSachLop");
+
+    const filename = `Danh_sach_Tieu_chi_Lop_${classKey.replace(/\s+/g, '_')}.xlsx`;
+    XLSX.writeFile(workbook, filename);
+}
+
+
+
+function orderStudent(student) {
+
+    return {
+
+        id: student.id,
+        name: student.name,
+        phone: student.phone,
+        gender: student.gender,
+        birthday: student.birthday,
+        status: student.status,
+
+        "Đánh giá ngữ pháp": student["Đánh giá ngữ pháp"],
+        "Đánh giá khả năng nói": student["Đánh giá khả năng nói"],
+        "Đánh giá khả năng nghe": student["Đánh giá khả năng nghe"],
+        "Ý thức giờ học": student["Ý thức giờ học"],
+        "Tâm lý học sinh": student["Tâm lý học sinh"],
+
+        "Thuộc ngữ pháp": student["Thuộc ngữ pháp"],
+        "Thuộc từ mới": student["Thuộc từ mới"],
+        "Ý thức làm BTVN": student["Ý thức làm BTVN"],
+
+        "Độ chuyên cần ": student["Độ chuyên cần "],
+        "So với tháng trước": student["So với tháng trước"],
+        "Đề xuất của giáo viên": student["Đề xuất của giáo viên"],
+
+        note: student.note,
+
+        lastUpdated: student.lastUpdated,
+        lastEditor: student.lastEditor,
+        lastModifiedBy: student.lastModifiedBy,
+
+        history: student.history
+    };
+
+}
+
+// Hàm tải toàn bộ dữ liệu bigClassesDatabase thành 1 file .json dự phòng về máy
+function backupAllData() {
+
+   const orderedDatabase = {};
+
+const classKeys = Object.keys(bigClassesDatabase);
+
+classKeys.sort((a, b) => {
+    const order = ["SV","2","3","4","5","6","7","8","9","10","11","12","DH25","DH26"];
+
+    const sa = bigClassesDatabase[a].sheet;
+    const sb = bigClassesDatabase[b].sheet;
+
+    const ia = order.indexOf(sa);
+    const ib = order.indexOf(sb);
+
+    if (ia !== ib) return ia - ib;
+
+    return a.localeCompare(b, "vi");
+});
+
+classKeys.forEach(className => {
+
+    const classData = bigClassesDatabase[className];
+
+    orderedDatabase[className] = {
+        ...classData,
+        students: classData.students.map(orderStudent)
+    };
+
+});
+
+    const dataStr =
+        "data:text/json;charset=utf-8," +
+        encodeURIComponent(JSON.stringify(orderedDatabase, null, 2));
+
+    const downloadAnchor = document.createElement("a");
+
+    const dateObj = new Date();
+
+    const dateString =
+        `${dateObj.getDate()}-${dateObj.getMonth() + 1}-${dateObj.getFullYear()}`;
+
+    downloadAnchor.setAttribute("href", dataStr);
+
+    downloadAnchor.setAttribute(
+        "download",
+        `Du_phong_danh_gia_hoc_sinh_${dateString}.json`
+    );
+
+    document.body.appendChild(downloadAnchor);
+
+    downloadAnchor.click();
+
+    downloadAnchor.remove();
+}
+
+
+
+
+
+// Hàm mở cửa sổ chọn file JSON để khôi phục lại dữ liệu
+function restoreAllDataPrompt() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            try {
+                const restoredData = JSON.parse(event.target.result);
+                if (restoredData && typeof restoredData === 'object') {
+                    if (confirm("Cảnh báo: Thao tác này sẽ ghi đè toàn bộ dữ liệu hiện tại bằng bản sao lưu. Bạn có chắc chắn muốn khôi phục?")) {
+                        bigClassesDatabase = restoredData;
+                        
+                        // Lưu lại vào LocalStorage của trình duyệt
+                        if (typeof saveToLocalStorage === 'function') {
+                            saveToLocalStorage();
+                        } else {
+                            localStorage.setItem('bigClassesDatabase', JSON.stringify(bigClassesDatabase));
+                        }
+                        
+                        showNotificationModal("Khôi phục dữ liệu thành công! Giao diện sẽ được tải lại.");
+                        location.reload(); // Tải lại trang để cập nhật giao diện
+                    }
+                } else {
+                   showNotificationModal("File dự phòng không hợp lệ!");
+                }
+            } catch (err) {
+                console.error(err);
+               showNotificationModal("Lỗi khi đọc file JSON dự phòng!");
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+// Hàm sao lưu riêng 1 lớp thành file JSON
+function backupSingleClass(classKey) {
+    const classData = bigClassesDatabase[classKey];
+    if (!classData) {
+        showNotificationModal("Không tìm thấy dữ liệu của lớp này!");
+        return;
+    }
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(classData, null, 2));
+    const downloadAnchor = document.createElement('a');
+    
+    // Đặt tên file theo mã hoặc tên lớp để dễ phân biệt
+    const safeClassName = classKey.replace(/[^a-zA-Z0-9]/g, '_');
+    const dateObj = new Date();
+    const dateString = `${dateObj.getDate()}-${dateObj.getMonth() + 1}-${dateObj.getFullYear()}`;
+    
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `Du_phong_lop_${safeClassName}_${dateString}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+}
+
+// Hàm khôi phục dữ liệu riêng cho 1 lớp từ file JSON dự phòng
+function restoreSingleClassPrompt(classKey) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            try {
+                const restoredClassData = JSON.parse(event.target.result);
+                // Kiểm tra xem file JSON có cấu trúc hợp lệ của một lớp không (ví dụ có chứa mảng học sinh hoặc thông tin lớp)
+                if (restoredClassData && typeof restoredClassData === 'object') {
+                    if (confirm(`Cảnh báo: Thao tác này sẽ ghi đè toàn bộ dữ liệu hiện tại của lớp "${classKey}" bằng bản sao lưu. Bạn có chắc chắn muốn tiếp tục?`)) {
+                        
+                        // Gán đè dữ liệu cho đúng lớp đó
+                        bigClassesDatabase[classKey] = restoredClassData;
+                        
+                        // Lưu lại vào LocalStorage
+                        if (typeof saveToLocalStorage === 'function') {
+                            saveToLocalStorage();
+                        } else {
+                            localStorage.setItem('bigClassesDatabase', JSON.stringify(bigClassesDatabase));
+                        }
+                        
+                       showNotificationModal("Khôi phục dữ liệu lớp thành công! Giao diện sẽ được tải lại.");
+                        location.reload(); // Tải lại trang để cập nhật giao diện
+                    }
+                } else {
+                   showNotificationModal("File dự phòng của lớp không hợp lệ!");
+                }
+            } catch (err) {
+                console.error(err);
+             showNotificationModal("Lỗi khi đọc file JSON dự phòng của lớp!");
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+function autofitColumns(worksheet, rows) {
+    let objectMaxLength = [];
+    rows.forEach(row => {
+        row.forEach((cell, colIndex) => {
+            if (cell) {
+                let cellLength = cell.toString().length;
+                objectMaxLength[colIndex] = Math.max(objectMaxLength[colIndex] || 10, cellLength + 3);
+            }
+        });
+    });
+    worksheet['!cols'] = objectMaxLength.map(w => ({ wch: w }));
+}
+
+
+    function getCurrentTeacherEmail() {
+    // Ưu tiên email giáo viên đã lưu khi đăng nhập
+    let email = localStorage.getItem("currentTeacherId");
+
+    // Nếu chưa có thì lấy từ Firebase Auth
+    if (!email && window.auth && window.auth.currentUser) {
+        email = window.auth.currentUser.email;
+    }
+
+    return email || "Giáo viên";
+}
+
+</script>
+
+</body>
+</html>
